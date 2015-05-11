@@ -1,8 +1,9 @@
 import Agent from './Agent';
 import ClientError from './ClientError';
 import ServerError from './ServerError';
+import HTTPError from './HTTPError';
 import TransportError from './TransportError';
-import XHRTransport from './Transport';
+import XHRTransport from './XHRTransport';
 import JSONTransform from './JSONTransform';
 import Response from './Response';
 
@@ -14,6 +15,7 @@ export default  {
     ClientError: ClientError,
     ServerError: ServerError,
     TransportError: TransportError,
+    HTTPRequestError: HTTPRequestError,
     createAgent: function() {
         return new Agent(new XHRTransport(new JSONTransform()));
     }

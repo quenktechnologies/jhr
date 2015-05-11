@@ -1,7 +1,6 @@
 import is from 'is';
 
 import Utils from './Utils';
-import HTTPRequest from './HTTPRequest';
 
 
 
