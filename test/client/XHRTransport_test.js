@@ -132,8 +132,6 @@ describe('XHRTransport.send()', function () {
 
         return trn.send('GET', '/csrfProtected').
             then(function(res) {
-                console.log('csrf ', res.headers);
-                console.log('all the cpploes ',document.cookies);
                 return trn.send('POST','/csrfProtected').
                     then(function(res) {
                         assert(res.status === 204);

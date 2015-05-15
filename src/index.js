@@ -15,7 +15,7 @@ export default  {
     ClientError: ClientError,
     ServerError: ServerError,
     TransportError: TransportError,
-    HTTPRequestError: HTTPRequestError,
+    HTTPError: HTTPError,
     createAgent: function() {
         return new Agent(new XHRTransport(new JSONTransform()));
     }

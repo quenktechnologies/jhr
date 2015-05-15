@@ -1,8 +1,10 @@
 import is from 'is';
+import qs from 'qs';
 
-import Utils from './Utils';
-
-
+var buildUrl = function(url, params){
+    if(!params) return url;
+    return url+'?'+qs.stringify(params);
+}
 
 
 /**
@@ -26,8 +28,8 @@ class Agent {
      */
     head(url, params) {
 
-        url = Utils.buildUrl(url, params);
-        return this.send('HEAD', url);
+        url = buildUrl(url, params);
+        return this.send('HEAD', url, params);
 
     }
 
@@ -38,7 +40,7 @@ class Agent {
      * @return {Promise}
      */
     get(url, params) {
-        url = Utils.buildUrl(url, params);
+        url = buildUrl(url, params);
         return this.send('GET', url, params);
     }
 
@@ -87,18 +89,7 @@ class Agent {
      * @returns {Promise}
      */
     send(method, url, params) {
-
-        var self = this;
-
-        return new Promise(function (resolve, reject) {
-
-            self.transport.send(method, url, params, function(err, res) {
-
-                if(err) return reject(err, res);
-                resolve(res);
-
-            });
-        });
+        return this.transport.send(method, url, params)
     }
 
 

@@ -6,7 +6,7 @@
   "scripts": {
     "test": "./node_modules/.bin/zuul --local 4000 -- test/init.js test/client/*.js",
     "build": "./node_modules/.bin/babel -D -w src -s inline -d build",
-    "bundle":"./node_modules/.bin/browserify -s HTTP_XHR -t babelify src > build/http-xhr.js"
+    "bundle": "./node_modules/.bin/browserify -s JHR -t babelify src > bundle/jhr.js"
   },
   "keywords": [
     "promise",
@@ -20,7 +20,8 @@
     "bluebird": "^2.9.25",
     "browser-cookies": "^1.0.8",
     "is": "^3.0.1",
-    "parse-headers": "^2.0.0"
+    "parse-headers": "^2.0.0",
+    "qs": "^2.4.2"
   },
   "browser": "src/index.js",
   "browserify": {

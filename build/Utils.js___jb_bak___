@@ -84,6 +84,7 @@ class Utils {
                         v = JSON.stringify(v);
                     }
                 }
+                
                 parts.push(self.encodeUriQuery(key) + '=' +
                     self.encodeUriQuery(v));
             });

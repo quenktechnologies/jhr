@@ -33,30 +33,20 @@ class XHRTransport {
         var headers = this.headers;
         var config = this.config;
 
+
         if (body)
             body = transformer.transformRequestBody(body);
 
         headers['Content-Type'] = transformer.CONTENT_TYPE_HEADER || 'application/json;charset=utf-8';
         headers['Accept'] = transformer.ACCEPT_HEADER || 'application/json, text/plain, */*';
 
-        console.log('xsrf ', cookies.get('xsrf_token'));
-
         this.headers['x-xsrf-token'] = cookies.get(config.xsrfCookieName || 'xsrf_token');
 
         return new Promise(function (resolve, reject) {
 
-            xhr.open(method, url, true);
-
-            for (var key in headers)
-                if (headers[key])
-                    xhr.setRequestHeader(key, headers[key]);
-
-            xhr.onerror = ()=>reject(new TransportError());
-            xhr.onabort = ()=>reject(new TransportError());
-
             xhr.onload = function () {
 
-                xhr.responseType = transformer.responseType;
+                //xhr.responseType = transformer.responseType;
 
                 if (xhr.status > 499)
                     return reject(new ServerError(Response.create(xhr, transformer)));
@@ -67,6 +57,15 @@ class XHRTransport {
                 resolve(Response.create(xhr, transformer));
 
             }
+
+            xhr.open(method, url, true);
+
+            for (var key in headers)
+                if (headers[key])
+                    xhr.setRequestHeader(key, headers[key]);
+
+            xhr.onerror = ()=>reject(new TransportError());
+            xhr.onabort = ()=>reject(new TransportError());
 
             xhr.send(body);
 
