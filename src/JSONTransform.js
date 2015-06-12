@@ -25,8 +25,13 @@ class JSONTransform {
 
             body = body.replace(this.prefix, '').trim();
 
-            if(body)
-            body = JSON.parse(body);
+            if(body) {
+              try{
+                body = JSON.parse(body);
+              }catch(e){
+
+              }
+            }
 
             }
 
