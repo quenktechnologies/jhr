@@ -26,12 +26,15 @@ class XHRTransport {
         return this;
     }
 
-    send(method, url, body) {
+    send(req) {
 
         var xhr = new XMLHttpRequest();
         var transformer = this.transformer;
         var headers = this.headers;
         var config = this.config;
+        var method = req.method || 'get';
+        var url = req.url;
+        var body = req.body;
 
 
         if (body)
@@ -56,7 +59,7 @@ class XHRTransport {
 
                 resolve(Response.create(xhr, transformer));
 
-            }
+            };
 
             xhr.open(method, url, true);
 
@@ -64,8 +67,8 @@ class XHRTransport {
                 if (headers[key])
                     xhr.setRequestHeader(key, headers[key]);
 
-            xhr.onerror = ()=>reject(new TransportError());
-            xhr.onabort = ()=>reject(new TransportError());
+            xhr.onerror = ()=>reject(new TransportError(Response.create(xhr, transformer)));
+            xhr.onabort = ()=>reject(new TransportError(Response.create(xhr, transformer)));
 
             xhr.send(body);
 

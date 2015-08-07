@@ -5,7 +5,7 @@ import HTTPError from './HTTPError';
 class ClientError extends HTTPError {
   constructor(res) {
     super(res);
-    this.body = res.data;
+    this.data = res.data;
   }
 }
 export default ClientError

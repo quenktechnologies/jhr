@@ -5,13 +5,12 @@ import parse from 'parse-headers';
  */
 class Response {
 
-    constructor(status, data, headers, text) {
-
+    constructor(status, data, headers, body, statusText) {
         this.status = status;
+        this.statusText = statusText;
         this.data = data;
         this.headers = headers;
-        this.text = text;
-
+        this.body = body;
     }
 
 }
@@ -23,6 +22,6 @@ class Response {
  */
 Response.create = function(xhr, transform) {
     return new Response(xhr.status, transform.transformResponseBody(xhr.response),
-        parse(xhr.getAllResponseHeaders()), xhr.statusText);
+        parse(xhr.getAllResponseHeaders()), xhr.responseText, xhr.statusText);
 }
 export default Response;

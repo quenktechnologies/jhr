@@ -15,9 +15,7 @@ var buildUrl = function(url, params){
 class Agent {
 
     constructor(transport) {
-
         this.transport = transport;
-
     }
 
     /**
@@ -27,10 +25,8 @@ class Agent {
      * @return {Promise}
      */
     head(url, params) {
-
         url = buildUrl(url, params);
-        return this.send('HEAD', url, params);
-
+        return this.send({method:'HEAD', url:url, body:params});
     }
 
     /**
@@ -41,7 +37,7 @@ class Agent {
      */
     get(url, params) {
         url = buildUrl(url, params);
-        return this.send('GET', url, params);
+        return this.send({method:'GET', url:url, body:params});
     }
 
     /**
@@ -51,7 +47,7 @@ class Agent {
      * @return {Promise}
      */
     post(url, params) {
-        return this.send('POST', url, params);
+        return this.send({method:'POST', url:url, body:params});
     }
 
     /**
@@ -61,7 +57,7 @@ class Agent {
      * @return {Promise}
      */
     put(url, params) {
-        return this.send('PUT', url, params);
+        return this.send({method:'PUT', url:url, body:params});
     }
 
     /**
@@ -71,25 +67,24 @@ class Agent {
      * @return {Promise}
      */
     delete(url, params) {
-        return this.send('DELETE', url, params);
+        return this.send({method:'DELETE', url:url, body:params});
     }
 
     setHeader(name, value) {
-
         this.headers[name] = value;
         return this;
-
     }
 
     /**
      *
-     * @param {String} method
-     * @param {String} url
-     * @param {Object} params
+     * @param {Object} req
+     * @param {String} req.method
+     * @param {String} req.url
+     * @param {Object} [req.params]
      * @returns {Promise}
      */
-    send(method, url, params) {
-        return this.transport.send(method, url, params)
+    send(req) {
+        return this.transport.send(req)
     }
 
 
