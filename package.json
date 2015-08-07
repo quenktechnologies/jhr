@@ -1,6 +1,6 @@
 {
   "name": "jhr",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Promise based XHR api that reminds you of angular's $http service.",
   "main": "build/index.js",
   "scripts": {
