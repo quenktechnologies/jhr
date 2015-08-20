@@ -1,4 +1,4 @@
-import ES6Error from 'es6-error';
+import ES6Error from 'error-class';
 
 /**
  * HTTPError

@@ -12,9 +12,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var _es6Error = require('es6-error');
+var _errorClass = require('error-class');
 
-var _es6Error2 = _interopRequireDefault(_es6Error);
+var _errorClass2 = _interopRequireDefault(_errorClass);
 
 /**
  * HTTPError
@@ -35,8 +35,8 @@ var HTTPError = (function (_ES6Error) {
   }
 
   return HTTPError;
-})(_es6Error2['default']);
+})(_errorClass2['default']);
 
 exports['default'] = HTTPError;
 module.exports = exports['default'];
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uL3NyYy9IVFRQRXJyb3IuanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7d0JBQXFCLFdBQVc7Ozs7Ozs7O0lBSzFCLFNBQVM7WUFBVCxTQUFTOzs7Ozs7QUFLQSxXQUxULFNBQVMsQ0FLQyxHQUFHLEVBQUU7MEJBTGYsU0FBUzs7QUFNUCwrQkFORixTQUFTLDZDQU1ELEdBQUcsQ0FBQyxJQUFJLEVBQUU7QUFDaEIsUUFBSSxDQUFDLE1BQU0sR0FBRyxHQUFHLENBQUMsTUFBTSxDQUFDO0dBQzVCOztTQVJDLFNBQVM7OztxQkFXQSxTQUFTIiwiZmlsZSI6IkhUVFBFcnJvci5qcyIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBFUzZFcnJvciBmcm9tICdlczYtZXJyb3InO1xuXG4vKipcbiAqIEhUVFBFcnJvclxuICovXG5jbGFzcyBIVFRQRXJyb3IgZXh0ZW5kcyBFUzZFcnJvciB7XG5cbiAgICAvKipcbiAgICAgKiBAcGFyYW0ge1Jlc3BvbnNlfSByZXNcbiAgICAgKi9cbiAgICBjb25zdHJ1Y3RvcihyZXMpIHtcbiAgICAgICAgc3VwZXIocmVzLmJvZHkpO1xuICAgICAgICB0aGlzLnN0YXR1cyA9IHJlcy5zdGF0dXM7XG4gICAgfVxufVxuXG5leHBvcnQgZGVmYXVsdCBIVFRQRXJyb3I7XG4iXX0=
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uL3NyYy9IVFRQRXJyb3IuanMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7Ozs7Ozs7Ozs7Ozs7MEJBQXFCLGFBQWE7Ozs7Ozs7O0lBSzVCLFNBQVM7WUFBVCxTQUFTOzs7Ozs7QUFLQSxXQUxULFNBQVMsQ0FLQyxHQUFHLEVBQUU7MEJBTGYsU0FBUzs7QUFNUCwrQkFORixTQUFTLDZDQU1ELEdBQUcsQ0FBQyxJQUFJLEVBQUU7QUFDaEIsUUFBSSxDQUFDLE1BQU0sR0FBRyxHQUFHLENBQUMsTUFBTSxDQUFDO0dBQzVCOztTQVJDLFNBQVM7OztxQkFXQSxTQUFTIiwiZmlsZSI6IkhUVFBFcnJvci5qcyIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBFUzZFcnJvciBmcm9tICdlcnJvci1jbGFzcyc7XG5cbi8qKlxuICogSFRUUEVycm9yXG4gKi9cbmNsYXNzIEhUVFBFcnJvciBleHRlbmRzIEVTNkVycm9yIHtcblxuICAgIC8qKlxuICAgICAqIEBwYXJhbSB7UmVzcG9uc2V9IHJlc1xuICAgICAqL1xuICAgIGNvbnN0cnVjdG9yKHJlcykge1xuICAgICAgICBzdXBlcihyZXMuYm9keSk7XG4gICAgICAgIHRoaXMuc3RhdHVzID0gcmVzLnN0YXR1cztcbiAgICB9XG59XG5cbmV4cG9ydCBkZWZhdWx0IEhUVFBFcnJvcjtcbiJdfQ==

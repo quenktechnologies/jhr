@@ -12,9 +12,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-var _es6Error = require('es6-error');
+var _errorClass = require('error-class');
 
-var _es6Error2 = _interopRequireDefault(_es6Error);
+var _errorClass2 = _interopRequireDefault(_errorClass);
 
 /**
  * TransportError indicates a lowlevel error.
@@ -33,8 +33,8 @@ var TransportError = (function (_ES6Error) {
     }
 
     return TransportError;
-})(_es6Error2['default']);
+})(_errorClass2['default']);
 
 exports['default'] = TransportError;
 module.exports = exports['default'];
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uL3NyYy9UcmFuc3BvcnRFcnJvci5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7Ozt3QkFBcUIsV0FBVzs7Ozs7Ozs7Ozs7SUFPMUIsY0FBYztjQUFkLGNBQWM7O0FBQ0wsYUFEVCxjQUFjLENBQ0osR0FBRyxFQUFDOzhCQURkLGNBQWM7O0FBRVosbUNBRkYsY0FBYyw2Q0FFTix3REFBd0QsRUFBRTtLQUNuRTs7V0FIQyxjQUFjOzs7cUJBS0wsY0FBYyIsImZpbGUiOiJUcmFuc3BvcnRFcnJvci5qcyIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBFUzZFcnJvciBmcm9tICdlczYtZXJyb3InO1xuLyoqXG4gKiBUcmFuc3BvcnRFcnJvciBpbmRpY2F0ZXMgYSBsb3dsZXZlbCBlcnJvci5cbiAqXG4gKiBUaGUgZXJyb3IgbWF5IGJlIGR1ZSB0byBhbiBhYm9ydCBvbiBhIHJlcXVlc3Qgb3IgdGhlIGJyb3dzZXIgYmVpbmcgdW5hYmxlIHRvXG4gKiBob25vdXIgaXQuXG4gKi9cbmNsYXNzIFRyYW5zcG9ydEVycm9yIGV4dGVuZHMgRVM2RXJyb3Ige1xuICAgIGNvbnN0cnVjdG9yKHJlcyl7XG4gICAgICAgIHN1cGVyKCdBbiBlcnJvciBvY2N1cmVkIGR1cmluZyB0cmFuc3BvcnQhIElzIHRoZSBzZXJ2ZXIgZG93bj8nKTtcbiAgICB9XG59XG5leHBvcnQgZGVmYXVsdCBUcmFuc3BvcnRFcnJvclxuXG4iXX0=
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uL3NyYy9UcmFuc3BvcnRFcnJvci5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7OzswQkFBcUIsYUFBYTs7Ozs7Ozs7Ozs7SUFPNUIsY0FBYztjQUFkLGNBQWM7O0FBQ0wsYUFEVCxjQUFjLENBQ0osR0FBRyxFQUFDOzhCQURkLGNBQWM7O0FBRVosbUNBRkYsY0FBYyw2Q0FFTix3REFBd0QsRUFBRTtLQUNuRTs7V0FIQyxjQUFjOzs7cUJBS0wsY0FBYyIsImZpbGUiOiJUcmFuc3BvcnRFcnJvci5qcyIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBFUzZFcnJvciBmcm9tICdlcnJvci1jbGFzcyc7XG4vKipcbiAqIFRyYW5zcG9ydEVycm9yIGluZGljYXRlcyBhIGxvd2xldmVsIGVycm9yLlxuICpcbiAqIFRoZSBlcnJvciBtYXkgYmUgZHVlIHRvIGFuIGFib3J0IG9uIGEgcmVxdWVzdCBvciB0aGUgYnJvd3NlciBiZWluZyB1bmFibGUgdG9cbiAqIGhvbm91ciBpdC5cbiAqL1xuY2xhc3MgVHJhbnNwb3J0RXJyb3IgZXh0ZW5kcyBFUzZFcnJvciB7XG4gICAgY29uc3RydWN0b3IocmVzKXtcbiAgICAgICAgc3VwZXIoJ0FuIGVycm9yIG9jY3VyZWQgZHVyaW5nIHRyYW5zcG9ydCEgSXMgdGhlIHNlcnZlciBkb3duPycpO1xuICAgIH1cbn1cbmV4cG9ydCBkZWZhdWx0IFRyYW5zcG9ydEVycm9yXG5cbiJdfQ==
