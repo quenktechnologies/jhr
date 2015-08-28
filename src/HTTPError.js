@@ -9,8 +9,9 @@ class HTTPError extends ES6Error {
      * @param {Response} res
      */
     constructor(res) {
-        super(res.body);
+        super('HTTPError');
         this.status = res.status;
+        this.message = res.body;
     }
 }
 
