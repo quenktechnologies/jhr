@@ -20,7 +20,6 @@
     "bluebird": "^2.9.25",
     "browser-cookies": "^1.0.8",
     "is": "^3.0.1",
-    "error-class": "^1.0.5",
     "parse-headers": "^2.0.0",
     "qs": "^2.4.2"
   },
