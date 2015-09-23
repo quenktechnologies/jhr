@@ -29,7 +29,7 @@ class JSONTransform {
               try{
                 body = JSON.parse(body);
               }catch(e){
-
+                body = undefined;
               }
             }
 
