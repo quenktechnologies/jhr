@@ -1,6 +1,6 @@
 import cookies from 'browser-cookies';
 import Promise from 'bluebird';
-
+import buildUrl from './buildUrl';
 import Utils from './Utils';
 import ClientError from './ClientError';
 import ServerError from './ServerError';
@@ -35,8 +35,15 @@ class XHRTransport {
         var method = req.method || 'get';
         var url = req.url;
         var body = req.body;
+        var params = req.params;
+        var adapter = req.adapter;
 
+        params = (params)? (adapter)? adapter(params) :params: null;
 
+        if (['get', 'head'].indexOf(method.toLowerCase()) > -1)
+            if (params) 
+                url = buildUrl(url, params);
+            
         if (body)
             body = transformer.transformRequestBody(body);
 
@@ -45,9 +52,9 @@ class XHRTransport {
 
         this.headers['x-xsrf-token'] = cookies.get(config.xsrfCookieName || 'xsrf_token');
 
-        return new Promise(function (resolve, reject) {
+        return new Promise(function(resolve, reject) {
 
-            xhr.onload = function () {
+            xhr.onload = function() {
 
                 //xhr.responseType = transformer.responseType;
 
@@ -67,8 +74,8 @@ class XHRTransport {
                 if (headers[key])
                     xhr.setRequestHeader(key, headers[key]);
 
-            xhr.onerror = ()=>reject(new TransportError(Response.create(xhr, transformer)));
-            xhr.onabort = ()=>reject(new TransportError(Response.create(xhr, transformer)));
+            xhr.onerror = () => reject(new TransportError(Response.create(xhr, transformer)));
+            xhr.onabort = () => reject(new TransportError(Response.create(xhr, transformer)));
 
             xhr.send(body);
 
@@ -81,4 +88,3 @@ class XHRTransport {
 }
 
 export default XHRTransport;
-

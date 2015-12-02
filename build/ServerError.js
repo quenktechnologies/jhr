@@ -23,10 +23,11 @@ var _HTTPError3 = _interopRequireDefault(_HTTPError2);
 var ServerError = (function (_HTTPError) {
   _inherits(ServerError, _HTTPError);
 
-  function ServerError() {
+  function ServerError(res) {
     _classCallCheck(this, ServerError);
 
-    _get(Object.getPrototypeOf(ServerError.prototype), 'constructor', this).apply(this, arguments);
+    _get(Object.getPrototypeOf(ServerError.prototype), 'constructor', this).call(this, res);
+    this.response = response;
   }
 
   return ServerError;
@@ -34,4 +35,4 @@ var ServerError = (function (_HTTPError) {
 
 exports['default'] = ServerError;
 module.exports = exports['default'];
-//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uL3NyYy9TZXJ2ZXJFcnJvci5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7OzswQkFBc0IsYUFBYTs7Ozs7Ozs7SUFJN0IsV0FBVztZQUFYLFdBQVc7O1dBQVgsV0FBVzswQkFBWCxXQUFXOzsrQkFBWCxXQUFXOzs7U0FBWCxXQUFXOzs7cUJBQ0YsV0FBVyIsImZpbGUiOiJTZXJ2ZXJFcnJvci5qcyIsInNvdXJjZXNDb250ZW50IjpbImltcG9ydCBIVFRQRXJyb3IgZnJvbSAnLi9IVFRQRXJyb3InO1xuLyoqXG4gKiBTZXJ2ZXJFcnJvclxuICovXG5jbGFzcyBTZXJ2ZXJFcnJvciBleHRlbmRzIEhUVFBFcnJvcnt9XG5leHBvcnQgZGVmYXVsdCBTZXJ2ZXJFcnJvclxuXG4iXX0=
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJzb3VyY2VzIjpbIi4uL3NyYy9TZXJ2ZXJFcnJvci5qcyJdLCJuYW1lcyI6W10sIm1hcHBpbmdzIjoiOzs7Ozs7Ozs7Ozs7OzswQkFBc0IsYUFBYTs7Ozs7Ozs7SUFJN0IsV0FBVztZQUFYLFdBQVc7O0FBRUosV0FGUCxXQUFXLENBRUgsR0FBRyxFQUFFOzBCQUZiLFdBQVc7O0FBR2pCLCtCQUhNLFdBQVcsNkNBR1gsR0FBRyxFQUFFO0FBQ1gsUUFBSSxDQUFDLFFBQVEsR0FBRyxRQUFRLENBQUM7R0FDdEI7O1NBTEcsV0FBVzs7O3FCQVFGLFdBQVciLCJmaWxlIjoiU2VydmVyRXJyb3IuanMiLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgSFRUUEVycm9yIGZyb20gJy4vSFRUUEVycm9yJztcbi8qKlxuICogU2VydmVyRXJyb3JcbiAqL1xuY2xhc3MgU2VydmVyRXJyb3IgZXh0ZW5kcyBIVFRQRXJyb3J7XG5cbiAgY29uc3RydWN0b3IocmVzKSB7XG5zdXBlcihyZXMpO1xudGhpcy5yZXNwb25zZSA9IHJlc3BvbnNlO1xuICB9XG5cbn1cbmV4cG9ydCBkZWZhdWx0IFNlcnZlckVycm9yXG5cbiJdfQ==

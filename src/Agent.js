@@ -1,11 +1,4 @@
-import is from 'is';
-import qs from 'qs';
-
-var buildUrl = function(url, params){
-    if(!params) return url;
-    return url+'?'+qs.stringify(params);
-}
-
+import buildUrl from './buildUrl';
 
 /**
  * Http provides an api similar to angular's $http.

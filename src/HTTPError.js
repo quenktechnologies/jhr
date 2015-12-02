@@ -10,6 +10,7 @@ class HTTPError extends ErrorClass {
 	 */
 	constructor(res) {
 		super(res.body);
+                this.status = res.status;
 	}
 }
 
