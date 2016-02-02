@@ -6,7 +6,7 @@ class ServerError extends HTTPError{
 
   constructor(res) {
 super(res);
-this.response = response;
+this.response = res;
   }
 
 }
