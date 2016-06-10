@@ -5,7 +5,7 @@
   "main": "build/index.js",
   "scripts": {
     "test": "./node_modules/.bin/zuul --local 4000 -- test/init.js test/client/*.js",
-    "build": "./node_modules/.bin/babel -D -w src -s inline -d build",
+    "build": "./node_modules/.bin/babel -D -w src -s inline -d lib",
     "bundle": "./node_modules/.bin/browserify -s JHR -t babelify src > bundle/jhr.js"
   },
   "keywords": [
