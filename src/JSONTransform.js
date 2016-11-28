@@ -1,4 +1,3 @@
-import is from 'is';
 import Utils from './Utils';
 
 /**
@@ -6,34 +5,56 @@ import Utils from './Utils';
  */
 class JSONTransform {
 
-    constructor(prefix) {
+    constructor(prefix = /^\)\]\}',?\n/) {
 
-        this.prefix = prefix || /^\)\]\}',?\n/;
-        this.responseType = 'json';
-        this.ACCEPT_HEADER = 'application/json';
-        this.CONTENT_TYPE_HEADER = 'application/json;charset=utf-8';
+        this.prefix = prefix;
+        this.responseType = '';
+
     }
 
-    transformRequestBody(body) {
-        return (is.object(body) && !Utils.isFile(body)
-        && !Utils.isBlob(body) && !Utils.isFormData(body)) ? JSON.stringify(body) : body;
+    accepts() {
+
+        return 'application/json';
+
     }
 
-    transformResponseBody(body) {
+    contentType() {
 
-        if (is.string(body)) {
+        return 'application/json;charset=utf-8';
+
+    }
+
+    parseRequestBody(body) {
+
+        return (Utils.isObject(body) &&
+                !Utils.isFile(body) &&
+                !Utils.isBlob(body) &&
+                !Utils.isFormData(body)) ?
+            JSON.stringify(body) : body;
+
+    }
+
+    parseResponseBody(body) {
+
+        if (typeof body === 'string') {
 
             body = body.replace(this.prefix, '').trim();
 
-            if(body) {
-              try{
-                body = JSON.parse(body);
-              }catch(e){
-                body = undefined;
-              }
-            }
+            if (body) {
+
+                try {
+
+                    body = JSON.parse(body);
+
+                } catch (e) {
+
+                    body =  null;
+
+                }
 
             }
+
+        }
 
         return body;
 
@@ -42,4 +63,3 @@ class JSONTransform {
 }
 
 export default JSONTransform;
-

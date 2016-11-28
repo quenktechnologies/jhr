@@ -1,27 +1,38 @@
-import parse from 'parse-headers';
+import beof from 'beof';
+import Headers from './Headers';
 
 /**
  * Response
+ * @property {number} status
+ * @property {Object} body
+ * @property {Object} headers
  */
 class Response {
 
-    constructor(status, data, headers, body, statusText) {
+    constructor(status, body, headers) {
+
+        beof({ status }).number();
+        beof({ body }).optional().object();
+        beof({ headers }).object();
+
         this.status = status;
-        this.statusText = statusText;
-        this.data = data;
         this.headers = headers;
         this.body = body;
+
+    }
+
+    /**
+     * create a new HTTPResponse
+     * @param {XMLHttpRequest} xhr
+     * @param {object} body
+     */
+    static create(xhr, body) {
+
+        return new Response(xhr.status, body,
+            Headers.parse(xhr.getAllResponseHeaders()));
+
     }
 
 }
 
-/**
- * create a new HTTPResponse
- * @param {XMLHttpRequest} xhr
- * @param {Transform} transform
- */
-Response.create = function(xhr, transform) {
-    return new Response(xhr.status, transform.transformResponseBody(xhr.response),
-        parse(xhr.getAllResponseHeaders()), xhr.responseText, xhr.statusText);
-}
-export default Response;
+export default Response
