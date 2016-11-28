@@ -15,9 +15,11 @@
   "author": "Lasana Murray <lmurray@quenk.com> (http://lasana.quenk.com/)",
   "license": "Apache-2.0",
   "dependencies": {
-    "bluebird": "^2.9.25",
+    "bluebird": "^3.4.6",
+    "mocha": "^3.2.0",
+    "must": "^0.13.2",
     "parse-headers": "^2.0.0",
-    "qs": "^2.4.2"
+    "qs": "^6.3.0"
   },
   "devDependencies": {
     "babel-cli": "^6.9.0",
@@ -31,8 +33,8 @@
     "cookie-parser": "^1.4.3",
     "csurf": "^1.9.0",
     "express": "^4.14.0",
-    "mocha": "^2.2.4",
-    "must": "^0.12.0",
+    "mocha": "^3.2.0",
+    "must": "^0.13.2",
     "zuul": "^3.0.0"
   }
 }
