@@ -6,7 +6,7 @@
 
 ```sh
 npm install --save-dev jhr
-``
+```
 
 ## Usage
 
