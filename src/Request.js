@@ -110,9 +110,14 @@ class Request {
             xhr.responseType = this.agent.transform.responseType || '';
 
             this.agent.adapters.forEach(a => a.beforeRequest(this, xhr, this.agent));
+            rejec = function(val) {
 
-            xhr.onerror = () => reject(new TransportError());
-            xhr.onabort = () => reject(new TransportError());
+                console.log(val);
+                reject(val);
+
+            }
+            xhr.onerror = () => rejec(new TransportError());
+            xhr.onabort = () => rejec(new TransportError());
             xhr.send(this.body);
 
         }).

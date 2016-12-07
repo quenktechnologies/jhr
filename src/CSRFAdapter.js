@@ -8,7 +8,7 @@ import Cookies from './Cookies';
  */
 class CSRFAdapter {
 
-    constructor(cookieName, headerName) {
+    constructor(cookieName='xsrf-token', headerName='x-xsrf-token') {
 
         beof({ cookieName }).string();
         beof({ headerName }).string();
