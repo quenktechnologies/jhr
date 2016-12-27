@@ -4,7 +4,8 @@ import Headers from './Headers';
 import Url from './Url';
 import TransportError from './TransportError';
 import Response from './Response';
-import * as HTTPError from './HTTPError';
+import HTTPError from './HTTPError';
+import {create} from './HTTPError';
 
 /**
  * Maco
@@ -95,7 +96,7 @@ class Request {
                     responseBody = this.agent.transform.parseResponseBody(xhr.response);
 
                 if (xhr.status >= 400)
-                    return reject(HTTPError.create(xhr.status,
+                    return reject(create(xhr.status,
                         xhr.responseText, responseBody, xhr.response));
 
                 resolve(Response.create(xhr, responseBody));
@@ -110,19 +111,14 @@ class Request {
             xhr.responseType = this.agent.transform.responseType || '';
 
             this.agent.adapters.forEach(a => a.beforeRequest(this, xhr, this.agent));
-            rejec = function(val) {
 
-                console.log(val);
-                reject(val);
-
-            }
-            xhr.onerror = () => rejec(new TransportError());
-            xhr.onabort = () => rejec(new TransportError());
+            xhr.onerror = () => reject(new TransportError());
+            xhr.onabort = () => reject(new TransportError());
             xhr.send(this.body);
 
         }).
         then(res => this.maco.onResponse(res)).
-        catch(e => this.maco.onError(e));
+        catch(HTTPError, e => this.maco.onError(e));
 
     }
 

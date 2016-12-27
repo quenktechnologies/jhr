@@ -11,6 +11,7 @@ class Methods {
       this.PUT = 'PUT';
       this.POST = 'POST';
       this.DELETE = 'DELETE';
+      this.PATCH = 'PATCH';
 
   }
 
