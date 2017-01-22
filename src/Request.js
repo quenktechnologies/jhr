@@ -71,7 +71,7 @@ class Request {
 
         this.url = url;
         this.query = {};
-        this.body = null;
+        this.body = {};
         this.agent = agent;
         this.method = '';
         this.headers = {};
@@ -90,7 +90,7 @@ class Request {
 
             xhr.onload = () => {
 
-                var responseBody = null;
+                var responseBody = {};
 
                 if ((xhr.response != null) && xhr.response !== '')
                     responseBody = this.agent.transform.parseResponseBody(xhr.response);

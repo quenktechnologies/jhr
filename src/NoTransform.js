@@ -13,13 +13,13 @@ class NoTransform {
 
     accepts() {
 
-        return null;
+        return;
 
     }
 
     contentType() {
 
-        return null;
+        return;
 
     }
 
@@ -29,7 +29,7 @@ class NoTransform {
 
     }
 
-    parseResponseBody(body) {
+    parseResponseBody(body={}) {
 
         return body;
 

@@ -48,7 +48,8 @@ class JSONTransform {
 
                 } catch (e) {
 
-                    body =  null;
+                    //originally null set to undefined for ES2015 default values
+                    body = undefined;
 
                 }
 
