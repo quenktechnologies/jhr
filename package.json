@@ -3,6 +3,7 @@
   "version": "1.1.0",
   "description": "Promise based XHR client wrapper for real SPAs.",
   "main": "lib/Agent.js",
+  "types": "lib/Agent.d.ts",
   "scripts": {
     "test": "./node_modules/.bin/zuul --local 4000 --debug -- test/init.js test/*.js",
     "build": "rm -R lib; ./node_modules/.bin/tsc --project  src"
