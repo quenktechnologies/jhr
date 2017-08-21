@@ -10,7 +10,7 @@ import { Cookies } from './Cookies';
 export { Status, Headers, Methods, Errors };
 export { ResponseFilter } from './ResponseFilter';
 
-export const headers = new Headers.Headers();
+export const HEADERS = new Headers.Headers();
 
 export interface Adapter {
 
@@ -133,48 +133,48 @@ export interface OutGoingHeaders {
  */
 export class Request<P> {
 
-    constructor(
-        public method: string,
-        public url: string,
-        public params: P,
-        public headers: OutGoingHeaders = {},
-        public ttl: number = 0,
-        public agent: Agent<P>) { }
+    constructor(public url: string, public method: Methods.Method<P>, public agent: Agent<P>) { }
 
     execute<O>(): Promise<Response<O>> {
 
-        var xhr = new XMLHttpRequest();
+        let xhr = new XMLHttpRequest();
+        let { method, params, headers, ttl } = this.method;
+        let { url, agent } = this;
+
+        let read: boolean = (method.toUpperCase() === Methods.GET) ||
+            (method.toUpperCase() === Methods.HEAD);
 
         return new Promise((resolve: (r: Response<O>) => void, reject) => {
 
-            xhr.open(this.method, Utils.urlFromString(this.url,
-                [Methods.GET, Methods.HEAD].indexOf(this.method.toUpperCase()) > -1 ?
-                    this.params : null), true);
+            xhr.open(method, Utils.urlFromString(url,
+                read ? agent.transform.parseRequestBody(params) : null), true);
 
             xhr.onload = () => {
 
                 if (xhr.status >= 400)
                     return reject(Errors.create(xhr.status,
-                        xhr.responseText, this.agent.transform.parseResponseBody(xhr.response), xhr.response));
+                        xhr.responseText, agent.transform.parseResponseBody(xhr.response), xhr.response));
 
                 if ((xhr.response != null) && xhr.response !== '')
                     resolve(Response.create<O>(xhr,
-                        this.agent.transform.parseResponseBody<O>(xhr.response)));
+                        agent.transform.parseResponseBody<O>(xhr.response)));
 
             };
 
-            if (this.ttl > 0)
-                xhr.timeout = this.ttl;
+            if (ttl > 0)
+                xhr.timeout = ttl;
 
-            headers.set(xhr, this.agent.headers, this.headers);
+            HEADERS.set(xhr, agent.headers, read ?
+                { [Headers.ACCEPTS]: agent.transform.accepts } :
+                { [Headers.CONTENT_TYPE]: agent.transform.contentType }, headers);
 
-            xhr.responseType = this.agent.transform.responseType;
+            xhr.responseType = agent.transform.responseType;
 
-            this.agent.adapters.forEach(a => a.beforeRequest(this, xhr, this.agent));
+            agent.adapters.forEach(a => a.beforeRequest(this, xhr, agent));
 
             xhr.onerror = () => reject(new Errors.TransportError(''));
             xhr.onabort = () => reject(new Errors.TransportError(''));
-            xhr.send(this.params);
+            xhr.send(params);
 
         });
 
@@ -195,7 +195,7 @@ export class Response<B> {
     static create<B>(xhr: XMLHttpRequest, body: B): Response<B> {
 
         return new Response(xhr.status, body,
-            headers.parse(xhr.getAllResponseHeaders()));
+            HEADERS.parse(xhr.getAllResponseHeaders()));
 
     }
 
@@ -223,9 +223,9 @@ export class Agent<P> {
     /**
      * send a request
      */
-    static send<A>(request: Request<A>) {
+    static send<P, O>(url: string, r: Methods.Method<P>): Promise<Response<O>> {
 
-        return Agent.create().send(request);
+        return Agent.create().send<O>(url, r);
 
     }
 
@@ -241,57 +241,46 @@ export class Agent<P> {
 
     head(url: string, params?: P, headers?: OutGoingHeaders): Promise<Response<never>> {
 
-        return this.send<never>(new Methods.Head(url, params, headers));
+        return this.send<never>(url, new Methods.Head(params, headers));
 
     }
 
     get<O>(url: string, params?: P, headers?: OutGoingHeaders): Promise<Response<O>> {
 
-        return this.send<O>(new Methods.Get(url, params, headers));
+        return this.send<O>(url, new Methods.Get(params, headers));
 
     }
 
     post<O>(url: string, params: P, headers?: OutGoingHeaders): Promise<Response<O>> {
 
-        return this.send<O>(new Methods.Post(url, params, headers));
+        return this.send<O>(url, new Methods.Post(params, headers));
 
     }
 
     put<O>(url: string, params: P, headers: OutGoingHeaders): Promise<Response<O>> {
 
-        return this.send<O>(new Methods.Put(url, params, headers));
+        return this.send<O>(url, new Methods.Put(params, headers));
 
     }
 
     delete<O>(url: string, params?: P, headers?: OutGoingHeaders): Promise<Response<O>> {
 
-        return this.send<O>(new Methods.Delete(url, params, headers));
+        return this.send<O>(url, new Methods.Delete(params, headers));
 
     }
 
-    send<O>(req: Methods.Method<P>): Promise<Response<O>> {
+    send<O>(url: string, req: Methods.Method<P>): Promise<Response<O>> {
 
-        return this.newRequest(req).execute<O>();
+        return this.newRequest(url, req).execute<O>();
     }
 
     /**
      * newRequest creates a new Request from an object descriptor.
      * 
      */
-    newRequest(req: Methods.Method<P>): Request<P> {
+    newRequest(url: string, req: Methods.Method<P>): Request<P> {
 
-        let read: boolean = (req.method === Methods.GET) || (req.method === Methods.HEAD);
-
-        var ret: Request<P> = new Request(
-            req.method,
-            req.url,
-            read ? req.params : this.transform.parseRequestBody(req.params),
-            read ? (<any>Object).assign({}, req.headers, { [Headers.ACCEPTS]: this.transform.accepts }) :
-                (<any>Object).assign({}, req.headers, { [Headers.CONTENT_TYPE]: this.transform.contentType }),
-            req.ttl,
-            this);
-
-        return ret;
+        return new Request(url, req, this);
 
     }
 

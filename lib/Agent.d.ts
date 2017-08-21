@@ -5,7 +5,7 @@ import * as Methods from './Methods';
 import * as Errors from './Errors';
 export { Status, Headers, Methods, Errors };
 export { ResponseFilter } from './ResponseFilter';
-export declare const headers: Headers.Headers;
+export declare const HEADERS: Headers.Headers;
 export interface Adapter {
     beforeRequest<P>(req: Request<P>, xhr: XMLHttpRequest, agent: Agent<P>): void;
 }
@@ -59,13 +59,10 @@ export interface OutGoingHeaders {
  * Request
  */
 export declare class Request<P> {
-    method: string;
     url: string;
-    params: P;
-    headers: OutGoingHeaders;
-    ttl: number;
+    method: Methods.Method<P>;
     agent: Agent<P>;
-    constructor(method: string, url: string, params: P, headers: OutGoingHeaders, ttl: number, agent: Agent<P>);
+    constructor(url: string, method: Methods.Method<P>, agent: Agent<P>);
     execute<O>(): Promise<Response<O>>;
 }
 /**
@@ -96,7 +93,7 @@ export declare class Agent<P> {
     /**
      * send a request
      */
-    static send<A>(request: Request<A>): Promise<Response<{}>>;
+    static send<P, O>(url: string, r: Methods.Method<P>): Promise<Response<O>>;
     /**
      * add an Adapter to this Agent.
      */
@@ -106,10 +103,10 @@ export declare class Agent<P> {
     post<O>(url: string, params: P, headers?: OutGoingHeaders): Promise<Response<O>>;
     put<O>(url: string, params: P, headers: OutGoingHeaders): Promise<Response<O>>;
     delete<O>(url: string, params?: P, headers?: OutGoingHeaders): Promise<Response<O>>;
-    send<O>(req: Methods.Method<P>): Promise<Response<O>>;
+    send<O>(url: string, req: Methods.Method<P>): Promise<Response<O>>;
     /**
      * newRequest creates a new Request from an object descriptor.
      *
      */
-    newRequest(req: Methods.Method<P>): Request<P>;
+    newRequest(url: string, req: Methods.Method<P>): Request<P>;
 }

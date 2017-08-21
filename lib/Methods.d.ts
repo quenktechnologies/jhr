@@ -5,13 +5,16 @@ export declare const PUT = "PUT";
 export declare const POST = "POST";
 export declare const DELETE = "DELETE";
 export declare const PATCH = "PATCH";
+export interface Tags {
+    [key: string]: string;
+}
 export declare class Method<A> {
-    url: string;
     params: A;
     headers: OutGoingHeaders;
+    tags: Tags;
     ttl: number;
     method: string;
-    constructor(url: string, params: A, headers?: OutGoingHeaders, ttl?: number);
+    constructor(params: A, headers?: OutGoingHeaders, tags?: Tags, ttl?: number);
 }
 export declare class Get<A> extends Method<A> {
     method: string;

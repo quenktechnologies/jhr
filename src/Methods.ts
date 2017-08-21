@@ -7,10 +7,20 @@ export const POST = 'POST';
 export const DELETE = 'DELETE';
 export const PATCH = 'PATCH';
 
+export interface Tags {
+
+    [key: string]: string
+
+}
+
 export class Method<A>{
 
     public method: string;
-    constructor(public url: string, public params: A, public headers?: OutGoingHeaders, public ttl?: number) { }
+    constructor(
+        public params: A,
+        public headers?: OutGoingHeaders,
+        public tags?: Tags,
+        public ttl?: number) { }
 
 }
 
