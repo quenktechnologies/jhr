@@ -1,0 +1,84 @@
+{
+  "_args": [
+    [
+      "beof@^0.2.0",
+      "/home/master/Documents/code/development/node/jhr"
+    ]
+  ],
+  "_from": "beof@>=0.2.0 <0.3.0",
+  "_id": "beof@0.2.0",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/beof",
+  "_nodeVersion": "4.0.0",
+  "_npmOperationalInternal": {
+    "host": "packages-12-west.internal.npmjs.com",
+    "tmp": "tmp/beof-0.2.0.tgz_1476811174685_0.4101559822447598"
+  },
+  "_npmUser": {
+    "email": "lmurray@quenk.com",
+    "name": "metasansana"
+  },
+  "_npmVersion": "3.6.0",
+  "_phantomChildren": {},
+  "_requested": {
+    "name": "beof",
+    "raw": "beof@^0.2.0",
+    "rawSpec": "^0.2.0",
+    "scope": null,
+    "spec": ">=0.2.0 <0.3.0",
+    "type": "range"
+  },
+  "_requiredBy": [
+    "#DEV:/"
+  ],
+  "_shasum": "1746394e89cc9d8703181126bba96a44460ce06b",
+  "_shrinkwrap": null,
+  "_spec": "beof@^0.2.0",
+  "_where": "/home/master/Documents/code/development/node/jhr",
+  "author": {
+    "email": "dev@quenk.com",
+    "name": "Lasana Murray",
+    "url": "http://quenk.com"
+  },
+  "dependencies": {},
+  "description": "Simple library for type checking with ES2015+",
+  "devDependencies": {
+    "babel-cli": "^6.14.0",
+    "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-preset-es2015": "^6.14.0",
+    "babel-register": "^6.14.0",
+    "mocha": "^2.3.4",
+    "must": "^0.13.1"
+  },
+  "directories": {},
+  "dist": {
+    "shasum": "1746394e89cc9d8703181126bba96a44460ce06b",
+    "tarball": "https://registry.npmjs.org/beof/-/beof-0.2.0.tgz"
+  },
+  "gitHead": "e48759e02afb1f4c8d03aaf1001f0ec2c8103243",
+  "keywords": [
+    "check",
+    "interface",
+    "oojs",
+    "oop",
+    "test",
+    "typeof"
+  ],
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "maintainers": [
+    {
+      "name": "metasansana",
+      "email": "lmurray@quenk.com"
+    }
+  ],
+  "name": "beof",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "scripts": {
+    "build": "rm -R lib; mkdir -p lib; ./node_modules/.bin/babel -D src -s inline -d lib",
+    "test": "mocha --opts mocha.opts test"
+  },
+  "version": "0.2.0"
+}

@@ -1,8 +1,8 @@
 import assert from 'assert';
 import must from 'must';
-import Promise from 'bluebird';
-
-import { default as Agent, Response, CSRFAdapter, HTTPError, TransportError } from '../src/Agent';
+import * as Promise from 'bluebird';
+import { Agent, Response, CSRFAdapter } from '../lib/Agent';
+import { InternalServerError, TransportError } from '../lib/Errors';
 
 var agent;
 
@@ -12,17 +12,8 @@ describe('Agent', function() {
 
         agent = new Agent({
 
-            contentType() {
-
-                return 'application/json';
-
-            },
-
-            accepts() {
-
-                return 'application/json';
-
-            },
+            contentType: 'application/json',
+            accepts: 'application/json',
 
             parseRequestBody(body) {
 
@@ -97,7 +88,7 @@ describe('Agent', function() {
         }).
         catch(function(e) {
 
-            must(e).be.instanceOf(HTTPError.InternalServerError);
+            must(e).be.instanceOf(InternalServerError);
 
         });
 

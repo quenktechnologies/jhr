@@ -1,0 +1,89 @@
+{
+  "_args": [
+    [
+      "oolong@>= 1.11.0 < 2",
+      "/home/master/Documents/code/development/node/jhr/node_modules/must"
+    ]
+  ],
+  "_from": "oolong@>=1.11.0 <2.0.0",
+  "_id": "oolong@1.15.1",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/oolong",
+  "_nodeVersion": "0.12.7",
+  "_npmOperationalInternal": {
+    "host": "packages-16-east.internal.npmjs.com",
+    "tmp": "tmp/oolong-1.15.1.tgz_1469086441415_0.1597152422182262"
+  },
+  "_npmUser": {
+    "email": "andri@dot.ee",
+    "name": "moll"
+  },
+  "_npmVersion": "2.15.5",
+  "_phantomChildren": {},
+  "_requested": {
+    "name": "oolong",
+    "raw": "oolong@>= 1.11.0 < 2",
+    "rawSpec": ">= 1.11.0 < 2",
+    "scope": null,
+    "spec": ">=1.11.0 <2.0.0",
+    "type": "range"
+  },
+  "_requiredBy": [
+    "/must"
+  ],
+  "_resolved": "https://registry.npmjs.org/oolong/-/oolong-1.15.1.tgz",
+  "_shasum": "90bac9e7ce52f60906ab2228d9e2b115f1086cea",
+  "_shrinkwrap": null,
+  "_spec": "oolong@>= 1.11.0 < 2",
+  "_where": "/home/master/Documents/code/development/node/jhr/node_modules/must",
+  "author": {
+    "email": "andri@dot.ee",
+    "name": "Andri Möll",
+    "url": "http://themoll.com"
+  },
+  "bugs": {
+    "url": "https://github.com/moll/js-oolong/issues"
+  },
+  "dependencies": {},
+  "description": "Utilities for objects. Simple, tasteful and plentiful. Supports inherited properties.",
+  "devDependencies": {
+    "mocha": ">= 2.5.3 < 3",
+    "must": ">= 0.13.2 < 0.14",
+    "sinon": ">= 1.10.3 < 2"
+  },
+  "directories": {},
+  "dist": {
+    "shasum": "90bac9e7ce52f60906ab2228d9e2b115f1086cea",
+    "tarball": "https://registry.npmjs.org/oolong/-/oolong-1.15.1.tgz"
+  },
+  "gitHead": "92391c8ec762e40426cdcc4c88af8177c036ca62",
+  "homepage": "https://github.com/moll/js-oolong",
+  "keywords": [
+    "functional",
+    "underscore",
+    "util"
+  ],
+  "licenses": [
+    {
+      "type": "LAGPL",
+      "url": "https://github.com/moll/js-oolong/blob/master/LICENSE"
+    }
+  ],
+  "main": "index.js",
+  "maintainers": [
+    {
+      "name": "moll",
+      "email": "andri@dot.ee"
+    }
+  ],
+  "name": "oolong",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/moll/js-oolong.git"
+  },
+  "scripts": {},
+  "version": "1.15.1"
+}

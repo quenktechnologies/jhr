@@ -1,66 +1,49 @@
 /**
  * FilteredResposneHandler
- * @interface
  */
-class FilteredResposneHandler {
+export interface class FilteredResponseHandler {
 
     /**
      * onSuccess is called on status 200
-     * @param {Response} response
      */
-    onSuccess() {
-
-    }
+    onSuccess(r:Response);
 
     /**
      * onCreated is called on status 201.
-     * @param {Response} response
      */
-    onCreated() {
-
-    }
+    onCreated(r:Response) ;
 
     /**
      * onNoContent is called on status 204.
-     * @param {Response} response
      */
-    onNoContent() {
-
-    }
+    onNoContent(r:Response) ;
 
     /**
      * onBadRequest is called on status 400.
-     * @param {ClientError} err
      */
-onBadRequest() {}
+onBadRequest(e:ClientError) {}
 
     /**
      * onUnauthorized is called on status 401.
-     * The user must authenticate to complete the request.
-     * @param {ClientError} err
      */
-    onUnauthorized() {}
+    onUnauthorized(e:ClientError) {}
 
     /**
      * onForbidden is called on status 403.
      * The user does not have enough permissions to
-     * perform the request.
-     * @param {ClientError} err
      */
-    onForbidden() {}
+    onForbidden(e:ClientError) {}
 
     /**
      * onNotFound is called on status 404.
      * The resource was not found.
-     * @param {ClientError} err
      */
-    onNotFound() {}
+    onNotFound(e:ClientError) {}
 
     /**
      * onConflict is called on status 409.
-     * @param {ClientError} err
      */
-    onConflict() {}
+    onConflict(e:ClientError) {}
 
     /**
      * onInternalError is called on status 500.
