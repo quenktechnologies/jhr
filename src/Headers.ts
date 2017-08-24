@@ -84,14 +84,15 @@ export class Headers {
 
         var i = args.length;
 
-        while (i--)
-            if (i !== 0)
-                Object.keys(args[i]).forEach(k => {
+        if (args.length > 0)
+            while (i--)
+                if (i !== 0)
+                    Object.keys(args[i]).forEach(k => {
 
-                    if (args[i][k] != null)
-                        xhr.setRequestHeader(k, <string>args[i][k])
+                        if (args[i][k] != null)
+                            xhr.setRequestHeader(k, <string>args[i][k])
 
-                });
+                    });
 
     }
 
