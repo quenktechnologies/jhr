@@ -13,48 +13,48 @@ export interface Tags {
 
 }
 
-export class Method<A>{
+export class Method<P>{
 
     public method: string;
     constructor(
-        public params: A,
+        public params: P,
         public headers?: OutGoingHeaders,
         public tags?: Tags,
         public ttl?: number) { }
 
 }
 
-export class Get<A> extends Method<A> {
+export class Get<P> extends Method<P> {
 
     method = GET;
 
 }
 
-export class Head<A> extends Method<A> {
+export class Head<P> extends Method<P> {
 
     method = HEAD;
 
 }
 
-export class Post<A> extends Method<A> {
+export class Post<P> extends Method<P> {
 
     method = POST;
 
 }
 
-export class Put<A> extends Method<A> {
+export class Put<P> extends Method<P> {
 
     method = PUT;
 
 }
 
-export class Patch<A> extends Method<A> {
+export class Patch<P> extends Method<P> {
 
     method = PATCH;
 
 }
 
-export class Delete<A> extends Method<A> {
+export class Delete<P> extends Method<P> {
 
     method = DELETE;
 
