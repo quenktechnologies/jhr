@@ -155,9 +155,8 @@ export class Request<P> {
                     return reject(Errors.create(xhr.status,
                         xhr.responseText, agent.transform.parseResponseBody(xhr.response), xhr.response));
 
-                if ((xhr.response != null) && xhr.response !== '')
-                    resolve(Response.create<O>(xhr,
-                        agent.transform.parseResponseBody<O>(xhr.response)));
+                return resolve(Response.create<O>(xhr, ((xhr.response != null) && xhr.response !== '') ?
+                    agent.transform.parseResponseBody<O>(xhr.response) : undefined));
 
             };
 
