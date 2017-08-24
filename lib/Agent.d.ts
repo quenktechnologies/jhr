@@ -40,7 +40,7 @@ export declare class JSONTransform<P> {
     contentType: string;
     constructor(prefix?: RegExp);
     parseRequestBody(body: P): string;
-    parseResponseBody<O>(body: any): O;
+    parseResponseBody<O>(body?: any): O;
 }
 /**
  * NoTransform lets the browser do everything.

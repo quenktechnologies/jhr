@@ -70,7 +70,7 @@ export class JSONTransform<P> {
 
     }
 
-    parseResponseBody<O>(body: any): O {
+    parseResponseBody<O>(body: any = {}): O {
 
         if (typeof body === 'string') {
 
