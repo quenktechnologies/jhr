@@ -8,29 +8,29 @@ export declare const PATCH = "PATCH";
 export interface Tags {
     [key: string]: string;
 }
-export declare class Method<A> {
-    params: A;
+export declare class Method<P> {
+    params: P;
     headers: OutGoingHeaders;
     tags: Tags;
     ttl: number;
     method: string;
-    constructor(params: A, headers?: OutGoingHeaders, tags?: Tags, ttl?: number);
+    constructor(params?: P, headers?: OutGoingHeaders, tags?: Tags, ttl?: number);
 }
-export declare class Get<A> extends Method<A> {
+export declare class Get<P> extends Method<P> {
     method: string;
 }
-export declare class Head<A> extends Method<A> {
+export declare class Head<P> extends Method<P> {
     method: string;
 }
-export declare class Post<A> extends Method<A> {
+export declare class Post<P> extends Method<P> {
     method: string;
 }
-export declare class Put<A> extends Method<A> {
+export declare class Put<P> extends Method<P> {
     method: string;
 }
-export declare class Patch<A> extends Method<A> {
+export declare class Patch<P> extends Method<P> {
     method: string;
 }
-export declare class Delete<A> extends Method<A> {
+export declare class Delete<P> extends Method<P> {
     method: string;
 }
