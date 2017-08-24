@@ -84,8 +84,7 @@ export class JSONTransform<P> {
 
                 } catch (e) {
                     console.warn(`Could not parse server data as json : '${body}'`);
-                    //originally null set to undefined for ES2015 default values
-                    body = undefined;
+                    body = {};
 
                 }
 
