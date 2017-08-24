@@ -18,7 +18,7 @@ export class Method<P>{
     public method: string;
     constructor(
         public params?: P,
-        public headers?: OutGoingHeaders,
+        public headers: OutGoingHeaders = {},
         public tags: Tags = {},
         public ttl?: number) { }
 
