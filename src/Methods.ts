@@ -19,7 +19,7 @@ export class Method<P>{
     constructor(
         public params?: P,
         public headers?: OutGoingHeaders,
-        public tags?: Tags,
+        public tags: Tags = {},
         public ttl?: number) { }
 
 }
