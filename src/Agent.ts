@@ -145,8 +145,9 @@ export class Request<P> {
 
         return new Promise((resolve: (r: Response<O>) => void, reject) => {
 
-            xhr.open(method, Utils.urlFromString(url,
-                read ? agent.transform.parseRequestBody(params) : null), true);
+            let payload = params ? agent.transform.parseRequestBody(params) : null;
+
+            xhr.open(method, Utils.urlFromString(url, read ? payload : null), true);
 
             xhr.onload = () => {
 
@@ -172,7 +173,8 @@ export class Request<P> {
 
             xhr.onerror = () => reject(new Errors.TransportError(''));
             xhr.onabort = () => reject(new Errors.TransportError(''));
-            xhr.send(params);
+
+            xhr.send(read ? null : payload);
 
         });
 
