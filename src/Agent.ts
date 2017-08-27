@@ -6,7 +6,6 @@ import * as Errors from './Errors';
 import * as Utils from './Utils';
 import { Cookies } from './Cookies';
 
-
 export { Status, Headers, Methods, Errors };
 export { ResponseFilter } from './ResponseFilter';
 
@@ -19,8 +18,6 @@ export interface Adapter {
 
 /**
  * CSRFAdapter sets the CSRF prevention header on write requests.
- * @param {string} cookieName - The name of the cookie to read the token from.
- * @param {string} headerName - The name of the header to set.
  */
 export class CSRFAdapter implements Adapter {
 
