@@ -10,19 +10,33 @@ npm install --save-dev jhr
 
 ## Usage
 
-```javascript
+This module attempts to treat AJAX/XHR requests as a function of http.
+Responses are typed for common http statuses (see the Response submodule) 
+un-supported ones have the type Response.Untyped.
+
+
+```typescript
 
 import * as Agent from 'jhr';
 
-var agent = new Agent();
+let agent = new jhr.Agent();
 
 agent.get('http://example.com').
-then(res=>{
+then((r:jhr.Response)=> {
 
+  if(r instanceof jhr.Response.Ok)
+     //it's ok
+  else if(r instanceof jhr.Response.Conflict)
+    //it's a conflict
+  else if(r instanceof jhr.Response.InternalServerError)
+    //it's serious
+  else
+    //it's a regular jhr.Response.Untyped
 
 }).
-catch(Agent.HTTPError.InternalServerError, e=>{
+catch(e=>{
 
+  //TransportError
 
 });
 
