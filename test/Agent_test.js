@@ -54,30 +54,6 @@ describe('Agent', function() {
 
     });
 
-    it('should recognize client errors.', function() {
-
-        var expected = [400, 401, 403, 404, 405, 409];
-        var results = [];
-
-        return Promise.all(expected.map(function(code) {
-
-            return agent.get(`/status/${code}`).
-            then(function(res) {
-
-                must.be.true(false);
-
-            }).
-            catch(e => e.status);
-
-        })).
-        then(function(results) {
-
-            must(results).eql(expected);
-
-        });
-
-    });
-
     it('should detect transport errors', function() {
 
         return agent.get('hddp://google.com').
