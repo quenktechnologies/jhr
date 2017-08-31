@@ -4,17 +4,10 @@ export interface Map {
     [key: string]: string | string[];
 }
 /**
- * Headers
+ * parse a string of headers into an object.
  */
-export declare class Headers {
-    /**
-     * parse a string of headers into an object.
-     */
-    parse(str: string): Map;
-    /**
-     * set headers on an XMLHttpRequest object.
-     * @param {XMLHttpRequest} xhr
-     * @param {object} ..headers
-     */
-    set(xhr: XMLHttpRequest, ...args: Map[]): void;
-}
+export declare const parse: (str: string) => Map;
+/**
+ * set headers on an XMLHttpRequest object.
+ */
+export declare const set: (xhr: XMLHttpRequest, ...args: Map[]) => void;

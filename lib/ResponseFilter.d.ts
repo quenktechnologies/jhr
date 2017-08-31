@@ -1,5 +1,5 @@
 import * as Errors from './Errors';
-import { Response } from './Agent';
+import { Response } from './Response';
 export interface FilteredResponseHandler {
     /**
      * onSuccess is called on status 200

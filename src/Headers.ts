@@ -60,40 +60,27 @@ const parseHeaders = (headers: string): Map => {
 
 }
 
+/**
+ * parse a string of headers into an object.
+ */
+export const parse = (str: string): Map => parseHeaders(str);
 
 /**
- * Headers
+ * set headers on an XMLHttpRequest object.
  */
-export class Headers {
+export const set = (xhr: XMLHttpRequest, ...args: Map[]): void => {
 
-    /**
-     * parse a string of headers into an object.
-     */
-    parse(str: string): Map {
+    var i = args.length;
 
-        return parseHeaders(str);
+    if (args.length > 0)
+        while (i--)
+            if (i !== 0)
+                Object.keys(args[i]).forEach(k => {
 
-    }
+                    if (args[i][k] != null)
+                        xhr.setRequestHeader(k, <string>args[i][k])
 
-    /**
-     * set headers on an XMLHttpRequest object.
-     * @param {XMLHttpRequest} xhr
-     * @param {object} ..headers
-     */
-    set(xhr: XMLHttpRequest, ...args: Map[]): void {
-
-        var i = args.length;
-
-        if (args.length > 0)
-            while (i--)
-                if (i !== 0)
-                    Object.keys(args[i]).forEach(k => {
-
-                        if (args[i][k] != null)
-                            xhr.setRequestHeader(k, <string>args[i][k])
-
-                    });
-
-    }
+                });
 
 }
+

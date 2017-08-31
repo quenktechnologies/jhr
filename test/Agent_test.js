@@ -22,7 +22,7 @@ describe('Agent', function() {
             },
             parseResponseBody(body) {
 
-                return JSON.parse(body);
+                return body? JSON.parse(body) : null;
 
             }
         });
@@ -78,25 +78,9 @@ describe('Agent', function() {
 
     });
 
-    it('should recognize server errors', function() {
-
-        return agent.get(`/status/500`).
-        then(function() {
-
-            must.be.true(false);
-
-        }).
-        catch(function(e) {
-
-            must(e).be.instanceOf(InternalServerError);
-
-        });
-
-    });
-
     it('should detect transport errors', function() {
 
-        return agent.get('http://google.com').
+        return agent.get('hddp://google.com').
         then(function() {
 
             must.be.true(false);

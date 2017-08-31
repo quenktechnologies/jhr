@@ -3,16 +3,15 @@ import * as Status from './Status';
 import * as Headers from './Headers';
 import * as Methods from './Methods';
 import * as Errors from './Errors';
+import * as Response from './Response';
 export { Status, Headers, Methods, Errors };
 export { ResponseFilter } from './ResponseFilter';
-export declare const HEADERS: Headers.Headers;
+export { Response };
 export interface Adapter {
     beforeRequest<P>(req: Request<P>, xhr: XMLHttpRequest, agent: Agent<P>): void;
 }
 /**
  * CSRFAdapter sets the CSRF prevention header on write requests.
- * @param {string} cookieName - The name of the cookie to read the token from.
- * @param {string} headerName - The name of the header to set.
  */
 export declare class CSRFAdapter implements Adapter {
     cookieName: string;
@@ -63,20 +62,7 @@ export declare class Request<P> {
     method: Methods.Method<P>;
     agent: Agent<P>;
     constructor(url: string, method: Methods.Method<P>, agent: Agent<P>);
-    execute<O>(): Promise<Response<O>>;
-}
-/**
- * Response
- */
-export declare class Response<B> {
-    status: number;
-    body: B;
-    headers: Headers.Map;
-    constructor(status: number, body: B, headers: Headers.Map);
-    /**
-     * create a new HTTPResponse
-     */
-    static create<B>(xhr: XMLHttpRequest, body: B): Response<B>;
+    execute<O>(): Promise<Response.Response<O>>;
 }
 /**
  * @param {Transform} [transform]
@@ -93,17 +79,17 @@ export declare class Agent<P> {
     /**
      * send a request
      */
-    static send<P, O>(url: string, r: Methods.Method<P>): Promise<Response<O>>;
+    static send<P, O>(url: string, r: Methods.Method<P>): Promise<Response.Response<O>>;
     /**
      * add an Adapter to this Agent.
      */
     add(a: Adapter): Agent<P>;
-    head(url: string, params?: P, headers?: OutGoingHeaders): Promise<Response<never>>;
-    get<O>(url: string, params?: P, headers?: OutGoingHeaders): Promise<Response<O>>;
-    post<O>(url: string, params: P, headers?: OutGoingHeaders): Promise<Response<O>>;
-    put<O>(url: string, params: P, headers: OutGoingHeaders): Promise<Response<O>>;
-    delete<O>(url: string, params?: P, headers?: OutGoingHeaders): Promise<Response<O>>;
-    send<O>(url: string, req: Methods.Method<P>): Promise<Response<O>>;
+    head(url: string, params?: P, headers?: OutGoingHeaders): Promise<Response.Response<never>>;
+    get<O>(url: string, params?: P, headers?: OutGoingHeaders): Promise<Response.Response<O>>;
+    post<O>(url: string, params: P, headers?: OutGoingHeaders): Promise<Response.Response<O>>;
+    put<O>(url: string, params: P, headers: OutGoingHeaders): Promise<Response.Response<O>>;
+    delete<O>(url: string, params?: P, headers?: OutGoingHeaders): Promise<Response.Response<O>>;
+    send<O>(url: string, req: Methods.Method<P>): Promise<Response.Response<O>>;
     /**
      * newRequest creates a new Request from an object descriptor.
      *

@@ -4,12 +4,12 @@ import * as Headers from './Headers';
 import * as Methods from './Methods';
 import * as Errors from './Errors';
 import * as Utils from './Utils';
+import * as Response from './Response';
 import { Cookies } from './Cookies';
 
 export { Status, Headers, Methods, Errors };
 export { ResponseFilter } from './ResponseFilter';
-
-export const HEADERS = new Headers.Headers();
+export { Response };
 
 export interface Adapter {
 
@@ -131,7 +131,7 @@ export class Request<P> {
 
     constructor(public url: string, public method: Methods.Method<P>, public agent: Agent<P>) { }
 
-    execute<O>(): Promise<Response<O>> {
+    execute<O>(): Promise<Response.Response<O>> {
 
         let xhr = new XMLHttpRequest();
         let { method, params, headers, ttl } = this.method;
@@ -140,17 +140,13 @@ export class Request<P> {
         let read: boolean = (method.toUpperCase() === Methods.GET) ||
             (method.toUpperCase() === Methods.HEAD);
 
-        return new Promise((resolve: (r: Response<O>) => void, reject) => {
+        return new Promise((resolve: (r: Response.Response<O>) => void, reject) => {
 
             let payload = params ? agent.transform.parseRequestBody(params) : null;
 
             xhr.open(method, Utils.urlFromString(url, read ? payload : null), true);
 
             xhr.onload = () => {
-
-                if (xhr.status >= 400)
-                    return reject(Errors.create(xhr.status,
-                        xhr.responseText, agent.transform.parseResponseBody(xhr.response), xhr.response));
 
                 return resolve(Response.create<O>(xhr,
                     agent.transform.parseResponseBody<O>(xhr.response)));
@@ -160,7 +156,7 @@ export class Request<P> {
             if (ttl > 0)
                 xhr.timeout = ttl;
 
-            HEADERS.set(xhr, agent.headers, read ?
+            Headers.set(xhr, agent.headers, read ?
                 { [Headers.ACCEPTS]: agent.transform.accepts } :
                 { [Headers.CONTENT_TYPE]: agent.transform.contentType }, headers);
 
@@ -179,24 +175,6 @@ export class Request<P> {
 
 }
 
-/**
- * Response
- */
-export class Response<B> {
-
-    constructor(public status: number, public body: B, public headers: Headers.Map) { }
-
-    /**
-     * create a new HTTPResponse
-     */
-    static create<B>(xhr: XMLHttpRequest, body: B): Response<B> {
-
-        return new Response(xhr.status, body,
-            HEADERS.parse(xhr.getAllResponseHeaders()));
-
-    }
-
-}
 
 /**
  * @param {Transform} [transform]
@@ -220,7 +198,7 @@ export class Agent<P> {
     /**
      * send a request
      */
-    static send<P, O>(url: string, r: Methods.Method<P>): Promise<Response<O>> {
+    static send<P, O>(url: string, r: Methods.Method<P>): Promise<Response.Response<O>> {
 
         return Agent.create().send<O>(url, r);
 
@@ -236,37 +214,37 @@ export class Agent<P> {
 
     }
 
-    head(url: string, params?: P, headers?: OutGoingHeaders): Promise<Response<never>> {
+    head(url: string, params?: P, headers?: OutGoingHeaders): Promise<Response.Response<never>> {
 
         return this.send<never>(url, new Methods.Head(params, headers));
 
     }
 
-    get<O>(url: string, params?: P, headers?: OutGoingHeaders): Promise<Response<O>> {
+    get<O>(url: string, params?: P, headers?: OutGoingHeaders): Promise<Response.Response<O>> {
 
         return this.send<O>(url, new Methods.Get(params, headers));
 
     }
 
-    post<O>(url: string, params: P, headers?: OutGoingHeaders): Promise<Response<O>> {
+    post<O>(url: string, params: P, headers?: OutGoingHeaders): Promise<Response.Response<O>> {
 
         return this.send<O>(url, new Methods.Post(params, headers));
 
     }
 
-    put<O>(url: string, params: P, headers: OutGoingHeaders): Promise<Response<O>> {
+    put<O>(url: string, params: P, headers: OutGoingHeaders): Promise<Response.Response<O>> {
 
         return this.send<O>(url, new Methods.Put(params, headers));
 
     }
 
-    delete<O>(url: string, params?: P, headers?: OutGoingHeaders): Promise<Response<O>> {
+    delete<O>(url: string, params?: P, headers?: OutGoingHeaders): Promise<Response.Response<O>> {
 
         return this.send<O>(url, new Methods.Delete(params, headers));
 
     }
 
-    send<O>(url: string, req: Methods.Method<P>): Promise<Response<O>> {
+    send<O>(url: string, req: Methods.Method<P>): Promise<Response.Response<O>> {
 
         return this.newRequest(url, req).execute<O>();
     }
