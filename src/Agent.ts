@@ -142,9 +142,9 @@ export class Request<P> {
 
         return new Promise((resolve: (r: Response.Response<O>) => void, reject) => {
 
-            let payload = params ? agent.transform.parseRequestBody(params) : null;
+            let payload = read ? null : params ? agent.transform.parseRequestBody(params) : null;
 
-            xhr.open(method, Utils.urlFromString(url, read ? payload : null), true);
+            xhr.open(method, Utils.urlFromString(url, read ? params : null), true);
 
             xhr.onload = () => {
 
