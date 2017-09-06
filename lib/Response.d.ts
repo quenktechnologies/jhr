@@ -20,7 +20,7 @@ export declare class Ok<B> extends Response<B> {
 export declare class Accepted<B> extends Response<B> {
     status: number;
 }
-export declare class NoContent<B> extends Response<B> {
+export declare class NoContent extends Response<undefined> {
     status: number;
 }
 export declare class Created<B> extends Response<B> {

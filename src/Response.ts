@@ -26,7 +26,7 @@ export class Ok<B> extends Response<B> { status = Status.OK; }
 
 export class Accepted<B> extends Response<B> { status = Status.ACCEPTED; }
 
-export class NoContent<B> extends Response<B> { status = Status.NO_CONTENT; }
+export class NoContent extends Response<undefined> { status = Status.NO_CONTENT; }
 
 export class Created<B> extends Response<B> { status = Status.CREATED; }
 

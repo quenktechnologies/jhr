@@ -134,7 +134,7 @@ export class Request<P> {
     execute<O>(): Promise<Response.Response<O>> {
 
         let xhr = new XMLHttpRequest();
-        let { method, params, headers, ttl } = this.method;
+        let { method, params, options: { headers={}, ttl=0 } } = this.method;
         let { url, agent } = this;
 
         let read: boolean = (method.toUpperCase() === Methods.GET) ||

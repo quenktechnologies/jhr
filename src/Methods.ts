@@ -7,20 +7,50 @@ export const POST = 'POST';
 export const DELETE = 'DELETE';
 export const PATCH = 'PATCH';
 
+/**
+ * Options for a request method.
+ */
+export interface Options {
+
+    tags?: Tags,
+    ttl?: number,
+    headers?: OutGoingHeaders,
+    context?: Context
+
+}
+
+/**
+ * Tags for keeping track of requests
+ */
 export interface Tags {
 
     [key: string]: string
 
 }
 
+/**
+ * Context is an interface used for expanding uri templates.
+ */
+export interface Context {
+
+    [key: string]: string
+
+}
+
+export const defaultOptions = {
+
+  tags: {},
+  ttl:0,
+  context: {},
+  headers:{}
+
+}
+
 export class Method<P>{
 
     public method: string;
-    constructor(
-        public params?: P,
-        public headers: OutGoingHeaders = {},
-        public tags: Tags = {},
-        public ttl?: number) { }
+
+    constructor(public params?: P, public options: Options =defaultOptions) { }
 
 }
 
@@ -59,3 +89,5 @@ export class Delete<P> extends Method<P> {
     method = DELETE;
 
 }
+
+
