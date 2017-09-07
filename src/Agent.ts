@@ -1,4 +1,5 @@
 import * as Promise from 'bluebird';
+import { polate } from '@quenk/polate';
 import * as Status from './Status';
 import * as Headers from './Headers';
 import * as Methods from './Methods';
@@ -134,7 +135,7 @@ export class Request<P> {
     execute<O>(): Promise<Response.Response<O>> {
 
         let xhr = new XMLHttpRequest();
-        let { method, params, options: { headers={}, ttl=0 } } = this.method;
+        let { method, params, options: { headers = {}, ttl = 0, context = { } } } = this.method;
         let { url, agent } = this;
 
         let read: boolean = (method.toUpperCase() === Methods.GET) ||
@@ -144,7 +145,7 @@ export class Request<P> {
 
             let payload = read ? null : params ? agent.transform.parseRequestBody(params) : null;
 
-            xhr.open(method, Utils.urlFromString(url, read ? params : null), true);
+            xhr.open(method, Utils.urlFromString(polate(url, context), read ? params : null), true);
 
             xhr.onload = () => {
 
