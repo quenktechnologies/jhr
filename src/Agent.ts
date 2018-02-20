@@ -1,11 +1,11 @@
 import * as Promise from 'bluebird';
-import { polate } from '@quenk/polate';
 import * as Status from './Status';
 import * as Headers from './Headers';
 import * as Methods from './Methods';
 import * as Errors from './Errors';
 import * as Utils from './Utils';
 import * as Response from './Response';
+import { polate } from '@quenk/polate';
 import { Cookies } from './Cookies';
 
 export { Status, Headers, Methods, Errors };
@@ -135,7 +135,7 @@ export class Request<P> {
     execute<O>(): Promise<Response.Response<O>> {
 
         let xhr = new XMLHttpRequest();
-        let { method, params, options: { headers = {}, ttl = 0, context = { } } } = this.method;
+        let { method, params, options: { headers = {}, ttl = 0, context = {} } } = this.method;
         let { url, agent } = this;
 
         let read: boolean = (method.toUpperCase() === Methods.GET) ||
@@ -149,8 +149,11 @@ export class Request<P> {
 
             xhr.onload = () => {
 
-                return resolve(Response.create<O>(xhr,
-                    agent.transform.parseResponseBody<O>(xhr.response)));
+                return resolve(Response.create<O>(
+                    xhr,
+                    agent.transform.parseResponseBody<O>(xhr.response),
+                    this.method.options
+                ));
 
             };
 

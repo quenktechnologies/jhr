@@ -1,18 +1,21 @@
 import * as Headers from './Headers';
+import { Options } from './Methods';
 /**
  * Response
  */
 export declare class Response<B> {
     body: B;
     headers: Headers.Map;
+    options: Options;
     status: number;
-    constructor(body: B, headers: Headers.Map);
+    constructor(body: B, headers: Headers.Map, options: Options);
 }
 export declare class UnTyped<B> extends Response<B> {
     status: number;
     body: B;
     headers: Headers.Map;
-    constructor(status: number, body: B, headers: Headers.Map);
+    options: Options;
+    constructor(status: number, body: B, headers: Headers.Map, options: Options);
 }
 export declare class Ok<B> extends Response<B> {
     status: number;
@@ -47,4 +50,4 @@ export declare class InternalServerError<B> extends Response<B> {
 /**
  * create a new HTTPResponse
  */
-export declare const create: <B>(xhr: XMLHttpRequest, body: B) => Response<B>;
+export declare const create: <B>(xhr: XMLHttpRequest, body: B, options: Options) => Response<B>;
