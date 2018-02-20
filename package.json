@@ -1,6 +1,6 @@
 {
   "name": "jhr",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "Promise based XHR client wrapper for real SPAs.",
   "repository": "https://github.com/metasansana/jhr.git",
   "main": "lib/Agent.js",
