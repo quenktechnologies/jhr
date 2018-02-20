@@ -50,4 +50,4 @@ export declare class InternalServerError<B> extends Response<B> {
 /**
  * create a new HTTPResponse
  */
-export declare const create: <B>(xhr: XMLHttpRequest, body: B, options: Options) => Response<B>;
+export declare const create: <B>(xhr: XMLHttpRequest, body: B, options?: Options) => Response<B>;

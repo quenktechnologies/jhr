@@ -1,6 +1,6 @@
 import * as Headers from './Headers';
 import * as Status from './Status';
-import {Options} from './Methods';
+import { Options } from './Methods';
 
 /**
  * Response
@@ -9,15 +9,15 @@ export class Response<B> {
 
     status: number;
 
-    constructor(public body: B, public headers: Headers.Map, public options:Options) { }
+    constructor(public body: B, public headers: Headers.Map, public options: Options) { }
 
 }
 
 export class UnTyped<B> extends Response<B> {
 
-    constructor(public status: number, public body: B, public headers: Headers.Map, public options:Options) {
+    constructor(public status: number, public body: B, public headers: Headers.Map, public options: Options) {
 
-        super(body, headers,options);
+        super(body, headers, options);
 
     }
 
@@ -65,14 +65,14 @@ const statuses = {
 /**
  * create a new HTTPResponse
  */
-export const create = <B>(xhr: XMLHttpRequest, body: B, options:Options) => {
+export const create = <B>(xhr: XMLHttpRequest, body: B, options: Options = {}) => {
 
     let headers = Headers.parse(xhr.getAllResponseHeaders());
 
     if (statuses.hasOwnProperty(xhr.status)) {
 
         let R: new (...args: any[]) => Response<B> = statuses[xhr.status];
-        return new R(body, headers);
+        return new R(body, headers, options);
 
     }
 
