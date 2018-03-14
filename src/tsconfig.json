@@ -14,7 +14,7 @@
         "sourceMap": true,
         "declaration": true,
         "types": ["node"],
-        "typeRoots": ["node_modules/@types"]
+        "typeRoots": ["node_modules/@types", "node_modules/@quenk"]
     },
     "exclude": ["node_modules"]
 }
