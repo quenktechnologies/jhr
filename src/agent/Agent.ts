@@ -39,8 +39,8 @@ export class Agent<O, I> {
     constructor(
         public headers: OutgoingHeaders,
         public cookies: Jar,
-        public adapters: Adapter<O, I>[],
         public transform: Transform<O, I>,
+        public adapters: Adapter<O, I>[],
         public transport: Transport<O, I>) { }
 
     head<P extends QueryParameters, R>(
@@ -103,23 +103,23 @@ export class Agent<O, I> {
     send<B, R>(url: string, { method, body, headers, params, options }: Request<B>): Promise<Response<R>> {
 
         return this
-      .transform
-      .transformRequestBody<B>(body)
-      .then(body =>  adapters(this.adapters, {
+            .transform
+            .transformRequestBody<B>(body)
+            .then(body => adapters(this.adapters, {
 
-            url: util.urlFromString(polate(url, options.context || {}), params),
-            method,
-            body,
-            headers: merge<OutgoingHeaders, OutgoingHeaders>(
-                this.headers,
-                headers,
-                isRead(method) ?
-                    { [ACCEPTS]: this.transform.accepts } :
-                    { [CONTENT_TYPE]: this.transform.contentType }),
-            options,
-            agent: this
+                url: util.urlFromString(polate(url, options.context || {}), params),
+                method,
+                body,
+                headers: merge<OutgoingHeaders, OutgoingHeaders>(
+                    this.headers,
+                    headers,
+                    isRead(method) ?
+                        { [ACCEPTS]: this.transform.accepts } :
+                        { [CONTENT_TYPE]: this.transform.contentType }),
+                options,
+                agent: this
 
-        }))
+            }))
             .then(env => this.transport.send<R>(env));
 
     }
