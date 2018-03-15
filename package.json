@@ -1,5 +1,5 @@
 {
-  "name": "jhr",
+  "name": "@quenk/jhr",
   "version": "1.3.1",
   "description": "Promise based HTTP agent designed with message passing in mind.",
   "repository": "https://github.com/metasansana/jhr.git",
@@ -21,7 +21,7 @@
     "ajax",
     "xhr"
   ],
-  "author": "Lasana Murray <lmurray@quenk.com> (http://lasana.quenk.com/)",
+  "author": "Lasana Murray <info@quenk.com> (http://quenk.com)",
   "license": "Apache-2.0",
   "dependencies": {
     "@quenk/polate": "^1.2.0",
