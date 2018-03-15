@@ -6,16 +6,18 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "test": "npm -s run test:bundle && npm run -s test:server && npm run -s test:run",
-    "test:bundle": "./node_modules/.bin/browserify test/index_test.ts  -p [ tsify -p test ] > build.js",
+    "test": "npm run -s test:run-common && npm run -s test:run-browser",
     "test:copy": "rm -R test/build; cp -R test/src test/build",
-    "test:build": "./node_modules/.bin/tsc --project test/build",
+    "test:build": "npm run -s test:copy && ./node_modules/.bin/tsc --project test/build",
+    "test:server": "node test/build/fixtures/server.js",
     "test:run-common": "./node_modules/.bin/mocha --opts mocha.opts test/build/common",
-    "test:run": "./node_modules/.bin/karma start karma.conf.js",
-    "build": "rm -R lib; ./node_modules/.bin/tsc --project  src"
+    "test:run-browser": "./node_modules/.bin/karma start karma.conf.js",
+    "build": "rm -R lib; ./node_modules/.bin/tsc --project src"
+
   },
   "keywords": [
     "promise",
+    "http",
     "ajax",
     "xhr"
   ],
@@ -44,6 +46,7 @@
     "babelify": "^7.3.0",
     "body-parser": "^1.17.2",
     "cookie-parser": "^1.4.3",
+    "cors": "^2.8.4",
     "csurf": "^1.9.0",
     "express": "^4.15.4",
     "karma": "^2.0.0",

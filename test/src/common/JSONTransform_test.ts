@@ -1,6 +1,6 @@
 import * as assert from 'assert';
 import * as must from 'must';
-import { JSONTransform } from '../../../src/agent';
+import { JSONTransform } from '../../../lib/agent';
 
 var trn;
 
