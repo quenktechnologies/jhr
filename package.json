@@ -1,7 +1,7 @@
 {
   "name": "jhr",
   "version": "1.3.1",
-  "description": "Promise based XHR client wrapper for real SPAs.",
+  "description": "Promise based HTTP agent designed with message passing in mind.",
   "repository": "https://github.com/metasansana/jhr.git",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -13,7 +13,6 @@
     "test:run-common": "./node_modules/.bin/mocha --opts mocha.opts test/build/common",
     "test:run-browser": "./node_modules/.bin/karma start karma.conf.js",
     "build": "rm -R lib; ./node_modules/.bin/tsc --project src"
-
   },
   "keywords": [
     "promise",
@@ -24,26 +23,18 @@
   "author": "Lasana Murray <lmurray@quenk.com> (http://lasana.quenk.com/)",
   "license": "Apache-2.0",
   "dependencies": {
-    "@quenk/match": "^1.2.0",
     "@quenk/polate": "^1.2.0",
     "afpl": "^0.12.0",
-    "babel-preset-es2015": "^6.24.1",
     "bluebird": "^3.4.6",
-    "karma-browserify": "^5.2.0",
     "qs": "^6.3.0"
   },
   "devDependencies": {
     "@quenk/json": "^1.2.0",
+    "karma-browserify": "^5.2.0",
     "@types/bluebird": "^3.5.8",
     "@types/mocha": "^2.2.48",
     "@types/node": "^8.0.24",
     "@types/qs": "^6.5.0",
-    "babel-cli": "^6.9.0",
-    "babel-plugin-add-module-exports": "^0.2.1",
-    "babel-plugin-transform-export-extensions": "^6.8.0",
-    "babel-preset-es2015": "^6.9.0",
-    "babel-register": "^6.18.0",
-    "babelify": "^7.3.0",
     "body-parser": "^1.17.2",
     "cookie-parser": "^1.4.3",
     "cors": "^2.8.4",
@@ -52,13 +43,10 @@
     "karma": "^2.0.0",
     "karma-chrome-launcher": "^2.2.0",
     "karma-mocha": "^1.3.0",
-    "karma-typescript-preprocessor": "^0.3.1",
     "mocha": "^5.0.4",
     "must": "^0.13.4",
     "ts-node": "^5.0.1",
-    "tsify": "^3.0.4",
     "typedoc": "^0.11.1",
-    "typescript": "^2.7.2",
-    "zuul": "^3.11.1"
+    "typescript": "^2.7.2"
   }
 }
