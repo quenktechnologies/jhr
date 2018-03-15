@@ -6,7 +6,7 @@
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "scripts": {
-    "docs": "./node_modules/.bin/typedoc --out docs --tsconfig src/tsconfig.json",
+    "docs": "./node_modules/.bin/typedoc --out docs --tsconfig src/tsconfig.json && touch docs/.nojekyll",
     "test": "npm run -s test:run-common && npm run -s test:run-browser",
     "test:copy": "rm -R test/build; cp -R test/src test/build",
     "test:build": "npm run -s test:copy && ./node_modules/.bin/tsc --project test/build",
