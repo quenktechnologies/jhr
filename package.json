@@ -1,6 +1,6 @@
 {
   "name": "@quenk/jhr",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Promise based HTTP agent designed with message passing in mind.",
   "repository": "https://github.com/metasansana/jhr.git",
   "main": "lib/index.js",
