@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>jhr</title>
+	<title>@quenk/jhr</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="assets/css/main.css">
@@ -22,7 +22,7 @@
 						<li class="state loading">Preparing search index...</li>
 						<li class="state failure">The search index is not available</li>
 					</ul>
-					<a href="index.html" class="title">jhr</a>
+					<a href="index.html" class="title">@quenk/jhr</a>
 				</div>
 				<div class="table-cell" id="tsd-widgets">
 					<div id="tsd-filter">
@@ -56,7 +56,7 @@
 					<a href="globals.html">Globals</a>
 				</li>
 			</ul>
-			<h1> jhr</h1>
+			<h1> @quenk/jhr</h1>
 		</div>
 	</div>
 </header>
@@ -64,44 +64,42 @@
 	<div class="row">
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
-				<h1 id="npm-version-dependency-status"><a href="https://npmjs.org/package/jhr"><img src="https://badge.fury.io/js/jhr.svg" alt="NPM version"></a> <a href="https://david-dm.org/metasansana/jhr"><img src="https://david-dm.org/metasansana/jhr.svg?theme=shields.io" alt="Dependency Status"></a></h1>
 				<blockquote>
-					<p>Promise based XHR client with JSON as default.</p>
+					<p>Promise based HTTP agent designed with message passing in mind.</p>
 				</blockquote>
 				<h2 id="installation">Installation</h2>
-				<pre><code class="lang-sh">npm install --save-dev jhr
+				<pre><code class="lang-sh">npm install --save-dev @quenk/jhr
 </code></pre>
 				<h2 id="usage">Usage</h2>
-				<p>This module attempts to treat AJAX/XHR requests as a function of http.
-					Responses are typed for common http statuses (see the Response submodule)
-				un-supported ones have the type Response.Untyped.</p>
 				<pre><code class="lang-typescript">
-<span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> Agent <span class="hljs-keyword">from</span> <span class="hljs-string">'jhr'</span>;
+<span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> response <span class="hljs-keyword">from</span> <span class="hljs-string">'@quenk/jhr/lib/response'</span>;
+<span class="hljs-keyword">import</span> {createAgent} <span class="hljs-keyword">from</span> <span class="hljs-string">'@quenk/jhr/lib/browser'</span>;
 
-<span class="hljs-keyword">let</span> agent = <span class="hljs-keyword">new</span> jhr.Agent();
+<span class="hljs-keyword">let</span> agent = createAgent();
 
-agent.get(<span class="hljs-string">'http://example.com'</span>).
-then(<span class="hljs-function">(<span class="hljs-params">r:jhr.Response</span>)=&gt;</span> {
+agent
+.get(<span class="hljs-string">'http://example.com'</span>).
+then(<span class="hljs-function"><span class="hljs-params">r</span> =&gt;</span> {
 
-  <span class="hljs-keyword">if</span>(r <span class="hljs-keyword">instanceof</span> jhr.Response.Ok)
+  <span class="hljs-keyword">if</span>(r <span class="hljs-keyword">instanceof</span> response.Ok)
      <span class="hljs-comment">//it's ok</span>
-  <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(r <span class="hljs-keyword">instanceof</span> jhr.Response.Conflict)
+  <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(r <span class="hljs-keyword">instanceof</span> response.Conflict)
     <span class="hljs-comment">//it's a conflict</span>
-  <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(r <span class="hljs-keyword">instanceof</span> jhr.Response.InternalServerError)
+  <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(r <span class="hljs-keyword">instanceof</span> response.InternalServerError)
     <span class="hljs-comment">//it's serious</span>
   <span class="hljs-keyword">else</span>
-    <span class="hljs-comment">//it's a regular jhr.Response.Untyped</span>
+    <span class="hljs-comment">//it's a regular response.UntypedResponse</span>
 
 }).
 <span class="hljs-keyword">catch</span>(<span class="hljs-function"><span class="hljs-params">e</span>=&gt;</span>{
 
-  <span class="hljs-comment">//TransportError</span>
+ <span class="hljs-comment">//Transport error occured.</span>
 
 });
 
 </code></pre>
 				<h2 id="license">License</h2>
-				<p>Apache-2.0 © <a href="http://trinistorm.org">Lasana Murray</a></p>
+				<p>Apache-2.0 © Quenk Technologies Limited</p>
 			</div>
 		</div>
 		<div class="col-4 col-menu menu-sticky-wrap menu-highlight">
