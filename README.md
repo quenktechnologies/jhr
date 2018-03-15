@@ -1,42 +1,38 @@
-#  [![NPM version][npm-image]][npm-url] [![Dependency Status][daviddm-url]][daviddm-image]
 
-> Promise based XHR client with JSON as default.
+> Promise based HTTP agent designed with message passing in mind.
 
 ## Installation
 
 ```sh
-npm install --save-dev jhr
+npm install --save-dev @quenk/jhr
 ```
 
 ## Usage
 
-This module attempts to treat AJAX/XHR requests as a function of http.
-Responses are typed for common http statuses (see the Response submodule) 
-un-supported ones have the type Response.Untyped.
-
-
 ```typescript
 
-import * as Agent from 'jhr';
+import * as response from '@quenk/jhr/lib/response';
+import {createAgent} from '@quenk/jhr/lib/browser';
 
-let agent = new jhr.Agent();
+let agent = createAgent();
 
-agent.get('http://example.com').
-then((r:jhr.Response)=> {
+agent
+.get('http://example.com').
+then(r => {
 
-  if(r instanceof jhr.Response.Ok)
+  if(r instanceof response.Ok)
      //it's ok
-  else if(r instanceof jhr.Response.Conflict)
+  else if(r instanceof response.Conflict)
     //it's a conflict
-  else if(r instanceof jhr.Response.InternalServerError)
+  else if(r instanceof response.InternalServerError)
     //it's serious
   else
-    //it's a regular jhr.Response.Untyped
+    //it's a regular response.UntypedResponse
 
 }).
 catch(e=>{
 
-  //TransportError
+ //Transport error occured.
 
 });
 
@@ -44,10 +40,4 @@ catch(e=>{
 
 ## License
 
-Apache-2.0 © [Lasana Murray](http://trinistorm.org)
-
-
-[npm-url]: https://npmjs.org/package/jhr
-[npm-image]: https://badge.fury.io/js/jhr.svg
-[daviddm-url]: https://david-dm.org/metasansana/jhr.svg?theme=shields.io
-[daviddm-image]: https://david-dm.org/metasansana/jhr
+Apache-2.0 © Quenk Technologies Limited
