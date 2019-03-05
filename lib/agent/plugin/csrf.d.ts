@@ -1,6 +1,6 @@
 import { Future } from '@quenk/noni/lib/control/monad/future';
-import { TransportResponse } from '../transport';
 import { Context } from '../../request/context';
+import { Response } from '../../response';
 import { Plugin } from './';
 /**
  * CSRFProtectionPlugin
@@ -13,5 +13,5 @@ export declare class CSRFProtectionPlugin<ReqBody, ResParsed> implements Plugin<
     header: string;
     constructor(cookie: string, header: string);
     beforeRequest(ctx: Context<ReqBody>): Future<Context<ReqBody>>;
-    afterResponse(r: TransportResponse<ResParsed>): Future<TransportResponse<ResParsed>>;
+    afterResponse(r: Response<ResParsed>): Future<Response<ResParsed>>;
 }

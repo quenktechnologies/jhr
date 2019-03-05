@@ -62,12 +62,14 @@ export declare class Accepted<B> extends Success<B> {
 }
 /**
  * NoContent response.
+ *
+ * NOTE: In practice, the body here should always be undefined.
  */
-export declare class NoContent extends Success<undefined> {
+export declare class NoContent<B> extends Success<B> {
+    body: B;
     headers: IncommingHeaders;
     options: Options;
-    body: undefined;
-    constructor(headers: IncommingHeaders, options: Options);
+    constructor(body: B, headers: IncommingHeaders, options: Options);
 }
 /**
  * Created response.
@@ -148,4 +150,4 @@ export declare class InternalServerError<B> extends ServerError<B> {
  * createResponse creates a new typed Response or a GenericResponse if
  * unsupported.
  */
-export declare const createResponse: <B>(code: number, body: B, headers: IncommingHeaders, options: Options) => Response<B> | Response<undefined>;
+export declare const createResponse: <B>(code: number, body: B, headers: IncommingHeaders, options: Options) => Response<B>;

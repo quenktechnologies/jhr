@@ -6,7 +6,7 @@ import { Agent } from './agent';
 /**
  * createAgent produces a new default Agent for use in the browser.
  */
-export declare const createAgent: <B extends Object>(host: string) => Agent<object, BodyInit, B>;
+export declare const createAgent: <B extends Object>(host: string) => Agent<object, B>;
 /**
  * get shorthand helper.
  *

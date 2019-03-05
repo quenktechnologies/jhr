@@ -1,6 +1,6 @@
 import { Future } from '@quenk/noni/lib/control/monad/future';
 import { Context } from '../../request/context';
-import { TransportResponse } from '../transport';
+import { Response } from '../../response';
 /**
  * Plugin allow requests and responses to be modified before transfer.
  */
@@ -12,5 +12,5 @@ export interface Plugin<ReqBody, ResParsed> {
     /**
      * afterResponse
      */
-    afterResponse(r: TransportResponse<ResParsed>): Future<TransportResponse<ResParsed>>;
+    afterResponse(r: Response<ResParsed>): Future<Response<ResParsed>>;
 }
