@@ -1,11 +1,16 @@
+import * as status from './status';
 import { IncommingHeaders } from './header';
-import { Options } from './request';
+import { Options } from './request/options';
 /**
  * Response respresents the response from an HTTP requrest.
  *
  * @param <B> The body part of the response.
  */
 export interface Response<B> {
+    /**
+     * status code of a Response.
+     */
+    status: status.Code;
     /**
      * body of the Response.
      */
@@ -20,10 +25,10 @@ export interface Response<B> {
     options: Options;
 }
 /**
- * GeneralResponse response refers to response codes we don't have
+ * GenericResponse response refers to response codes we don't have
  * an explicit type for.
  */
-export declare class GeneralResponse<B> implements Response<B> {
+export declare class GenericResponse<B> implements Response<B> {
     status: number;
     body: B;
     headers: IncommingHeaders;
@@ -35,7 +40,7 @@ export declare class GeneralResponse<B> implements Response<B> {
  *
  * See (here)[http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml].
  */
-export declare class Success<B> extends GeneralResponse<B> {
+export declare class Success<B> extends GenericResponse<B> {
 }
 /**
  * Ok response.
@@ -59,10 +64,10 @@ export declare class Accepted<B> extends Success<B> {
  * NoContent response.
  */
 export declare class NoContent extends Success<undefined> {
-    body: undefined;
     headers: IncommingHeaders;
     options: Options;
-    constructor(body: undefined, headers: IncommingHeaders, options: Options);
+    body: undefined;
+    constructor(headers: IncommingHeaders, options: Options);
 }
 /**
  * Created response.
@@ -77,7 +82,7 @@ export declare class Created<B> extends Success<B> {
  * ClientError
  * See (here)[http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml].
  */
-export declare class ClientError<B> extends GeneralResponse<B> {
+export declare class ClientError<B> extends GenericResponse<B> {
 }
 /**
  * BadRequest response.
@@ -126,9 +131,8 @@ export declare class Conflict<B> extends ClientError<B> {
 }
 /**
  * ServerError
- * See (here)[http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml].
  */
-export declare class ServerError<B> extends GeneralResponse<B> {
+export declare class ServerError<B> extends GenericResponse<B> {
 }
 /**
  * InternalServerError response.
@@ -141,7 +145,7 @@ export declare class InternalServerError<B> extends ServerError<B> {
     constructor(body: B, headers: IncommingHeaders, options: Options);
 }
 /**
- * createResponse creates a new typed Response or a GeneralResponse if unsupported.
- * @param <B> - The type of the body.
+ * createResponse creates a new typed Response or a GenericResponse if
+ * unsupported.
  */
-export declare const createResponse: <B>(status: number, body: B, headers: IncommingHeaders, options?: Options) => Response<B>;
+export declare const createResponse: <B>(code: number, body: B, headers: IncommingHeaders, options: Options) => Response<B> | Response<undefined>;

@@ -1,9 +1,7 @@
-import * as Promise from 'bluebird';
-export { MemJar } from './MemJar';
 /**
  * CookieOptions used when creating cookies.
  */
-export interface CookieOptions {
+export interface Options {
     /**
      * expires datae.
      */
@@ -21,7 +19,8 @@ export interface CookieOptions {
      */
     secure?: boolean;
     /**
-     *httpOnly indicates whether the cookie can not be accessed by client-side scripts.
+     *httpOnly indicates whether the cookie can not be accessed by
+     *client-side scripts.
      */
     httpOnly?: boolean;
 }
@@ -30,28 +29,4 @@ export interface CookieOptions {
  */
 export interface Cookies {
     [key: string]: string;
-}
-/**
- * Jar provides a container for manipulating cookie values.
- *
- * Implementations may choose to store values in memory, on disk or
- * otherwise. Regardless, the API here assumes asynchrony.
- */
-export interface Jar {
-    /**
-     * set the value of a cookie within the Jar.
-     */
-    set(name: string, value: string, options: CookieOptions): Promise<Jar>;
-    /**
-     * get the value of a cookie within the Jar.
-     */
-    get(name: string): Promise<string>;
-    /**
-     * getAll the cookies in the Jar as a map.
-     */
-    getAll(): Promise<Cookies>;
-    /**
-     * update the value of the string used to store cookies.
-     */
-    update(cookies: string): Promise<Jar>;
 }
