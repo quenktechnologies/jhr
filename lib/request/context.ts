@@ -1,5 +1,4 @@
 import { Container } from '../cookie/container';
-import { Parser } from '../agent/parser';
 import { Host } from './host';
 import { Path } from './path';
 import { Method } from './method';
@@ -11,7 +10,7 @@ import { Options } from './options';
  *
  * Contains all the information needed to send a request.
  */
-export interface Context<ReqBody, ResRaw, ResParsed> {
+export interface Context<ReqBody> {
 
     /**
      * host the request is bound for.
@@ -38,7 +37,7 @@ export interface Context<ReqBody, ResRaw, ResParsed> {
      *
      * For reads (HEAD,GET,etc) use undefined.
      */
-    body: ReqBody|undefined,
+    body: ReqBody | undefined,
 
     /**
      * Options specified for the original Request.
@@ -49,10 +48,5 @@ export interface Context<ReqBody, ResRaw, ResParsed> {
      * cookies Container
      */
     cookies: Container,
-
-    /**
-     * parser that will parse response bodies.
-     */
-    parser: Parser<ResRaw, ResParsed>
 
 }

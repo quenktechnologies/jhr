@@ -5,7 +5,7 @@ import {Mime} from '../../mime';
  * Transform shapes a write request's body before sending it 
  * to the server.
  */
-export interface Transform<Raw, Trans> {
+export interface Transform<A, B> {
 
     /**
      * type of content being sent.
@@ -17,6 +17,6 @@ export interface Transform<Raw, Trans> {
     /**
      * apply the Transform to a raw request body.
      */
-  apply(raw: Raw): Except<Trans>
+  apply(raw: A): Except<B>
 
 }

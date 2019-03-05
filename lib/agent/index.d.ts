@@ -7,8 +7,6 @@ import { Path } from '../request/path';
 import { Parameters } from '../request/parameters';
 import { Options } from '../request/options';
 import { Response } from '../response';
-import { Transform } from './transform';
-import { Parser } from './parser';
 import { Transport } from './transport';
 import { Plugin } from './plugin';
 /**
@@ -17,16 +15,21 @@ import { Plugin } from './plugin';
  * An Agent instance uses its transport to send HTTP requests
  * and receive responses.
  */
-export declare class Agent<ReqRaw, ReqTrans, ResRaw, ResParsed> {
+export declare class Agent<ReqRaw, ResParsed> {
     host: Host;
     headers: OutgoingHeaders;
     cookies: Container;
     options: Options;
-    transform: Transform<ReqRaw, ReqTrans>;
-    parser: Parser<ResRaw, ResParsed>;
-    transport: Transport<ReqTrans, ResRaw, ResParsed>;
-    plugins: Plugin<ReqTrans, ResRaw, ResParsed>[];
-    constructor(host: Host, headers: OutgoingHeaders, cookies: Container, options: Options, transform: Transform<ReqRaw, ReqTrans>, parser: Parser<ResRaw, ResParsed>, transport: Transport<ReqTrans, ResRaw, ResParsed>, plugins: Plugin<ReqTrans, ResRaw, ResParsed>[]);
+    transport: Transport<ReqRaw, ResParsed>;
+    plugins: Plugin<ReqRaw, ResParsed>[];
+    constructor(host: Host, headers: OutgoingHeaders, cookies: Container, options: Options, transport: Transport<ReqRaw, ResParsed>, plugins: Plugin<ReqRaw, ResParsed>[]);
+    /**
+     * setTransport allows the transport to be changed (possibly to process
+     * a different type of response).
+     *
+     * A new Agent instance is created with NO plugins installed.
+     */
+    setTransport<Req, Res>(transport: Transport<Req, Res>, plugins?: Plugin<Req, Res>[]): Agent<Req, Res>;
     /**
      * head request shorthand.
      */

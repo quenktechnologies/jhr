@@ -1,7 +1,7 @@
 import { Future, pure } from '@quenk/noni/lib/control/monad/future';
 import { merge } from '@quenk/noni/lib/data/record';
-import { TransportResponse } from '../transport';
 import { Context } from '../../request/context';
+import {Response} from '../../response';
 import { Plugin } from './';
 
 /**
@@ -10,13 +10,12 @@ import { Plugin } from './';
  * This plugin updates the value of a CSRF token header
  * with the current value of a CSRF token cookie no each request.
  */
-export class CSRFProtectionPlugin<ReqBody, ResRaw, ResParsed>
-    implements Plugin<ReqBody, ResRaw, ResParsed> {
+export class CSRFProtectionPlugin<ReqBody, ResParsed>
+    implements Plugin<ReqBody, ResParsed> {
 
     constructor(public cookie: string, public header: string) { }
 
-    beforeRequest(ctx: Context<ReqBody, ResRaw, ResParsed>)
-        : Future<Context<ReqBody, ResRaw, ResParsed>> {
+    beforeRequest(ctx: Context<ReqBody>): Future<Context<ReqBody>> {
 
         return ctx
             .cookies
@@ -33,8 +32,7 @@ export class CSRFProtectionPlugin<ReqBody, ResRaw, ResParsed>
 
     }
 
-    afterResponse(r: TransportResponse<ResParsed>)
-        : Future<TransportResponse<ResParsed>> {
+    afterResponse(r: Response<ResParsed>)        : Future<Response<ResParsed>> {
 
         return pure(r);
 
