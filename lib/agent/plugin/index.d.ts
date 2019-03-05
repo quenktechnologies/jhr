@@ -4,11 +4,11 @@ import { TransportResponse } from '../transport';
 /**
  * Plugin allow requests and responses to be modified before transfer.
  */
-export interface Plugin<ReqBody, ResRaw, ResParsed> {
+export interface Plugin<ReqBody, ResParsed> {
     /**
      * beforeRequest
      */
-    beforeRequest(ctx: Context<ReqBody, ResRaw, ResParsed>): Future<Context<ReqBody, ResRaw, ResParsed>>;
+    beforeRequest(ctx: Context<ReqBody>): Future<Context<ReqBody>>;
     /**
      * afterResponse
      */

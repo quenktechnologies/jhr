@@ -2,7 +2,7 @@ import * as util from '../util';
 import { merge, merge3 } from '@quenk/noni/lib/data/record';
 import { Future, fromExcept, pure } from '@quenk/noni/lib/control/monad/future';
 import { polate } from '@quenk/polate';
-import { ACCEPTS, CONTENT_TYPE } from '../headers';
+import { CONTENT_TYPE } from '../headers';
 import { OutgoingHeaders } from '../header';
 import { Method } from '../request/method';
 import {
@@ -22,7 +22,6 @@ import { Options } from '../request/options';
 import { Context } from '../request/context';
 import { Response } from '../response';
 import { Transform } from './transform';
-import { Parser } from './parser';
 import { Transport, TransportResponse } from './transport';
 import { Plugin } from './plugin';
 
@@ -36,7 +35,7 @@ const isRead = (m: string) => (readMethods.indexOf(m.toUpperCase()) > -1);
  * An Agent instance uses its transport to send HTTP requests
  * and receive responses.
  */
-export class Agent<ReqRaw, ReqTrans, ResRaw, ResParsed> {
+export class Agent<ReqRaw, ReqTrans, ResParsed> {
 
     constructor(
         public host: Host,
@@ -44,9 +43,21 @@ export class Agent<ReqRaw, ReqTrans, ResRaw, ResParsed> {
         public cookies: Container,
         public options: Options,
         public transform: Transform<ReqRaw, ReqTrans>,
-        public parser: Parser<ResRaw, ResParsed>,
-        public transport: Transport<ReqTrans, ResRaw, ResParsed>,
-        public plugins: Plugin<ReqTrans, ResRaw, ResParsed>[]) { }
+        public transport: Transport<ReqTrans, ResParsed>,
+        public plugins: Plugin<ReqTrans, ResParsed>[]) { }
+
+  /*
+    setInbound<Raw, Parsed>(transport: Transport<ReqTrans, Raw, Parsed>)
+        : Agent<ReqRaw, ReqTrans, Raw, Parsed> {
+
+        let {
+            host, headers, cookies, options, transform, plugins
+        } = this;
+
+        return new Agent(host, headers, cookies, options,
+            transform, transport, plugins);
+
+    }*/
 
     /**
      * head request shorthand.
@@ -126,7 +137,7 @@ export class Agent<ReqRaw, ReqTrans, ResRaw, ResParsed> {
     send(req: Request<ReqRaw>): Future<Response<ResParsed>> {
 
         let { host, cookies, headers, options, transform,
-            transport, parser, plugins } = this;
+            transport, plugins } = this;
 
         let { method, params } = req;
         let tags = options.tags.concat(req.options.tags);
@@ -139,7 +150,7 @@ export class Agent<ReqRaw, ReqTrans, ResRaw, ResParsed> {
 
         headers = merge3(headers, req.headers,
             isRead(req.method) ?
-                { [ACCEPTS]: this.parser.accepts } :
+                {} :
                 { [CONTENT_TYPE]: this.transform.type });
 
         return (<any>ft)
@@ -152,15 +163,14 @@ export class Agent<ReqRaw, ReqTrans, ResRaw, ResParsed> {
                     body,
                     headers,
                     cookies,
-                    options: { ttl, tags, context },
-                    parser
+                    options: { ttl, tags, context }
                 };
 
                 return plugins.reduce((f, p) =>
                     f.chain(c => p.beforeRequest(c)), pure(ctx));
 
             })
-            .chain((ctx: Context<ReqTrans, ResRaw, ResParsed>) =>
+            .chain((ctx: Context<ReqTrans>) =>
                 transport.send(ctx))
             .chain((r: TransportResponse<ResParsed>) =>
                 plugins.reduce((f, p) =>

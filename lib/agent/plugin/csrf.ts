@@ -10,13 +10,12 @@ import { Plugin } from './';
  * This plugin updates the value of a CSRF token header
  * with the current value of a CSRF token cookie no each request.
  */
-export class CSRFProtectionPlugin<ReqBody, ResRaw, ResParsed>
-    implements Plugin<ReqBody, ResRaw, ResParsed> {
+export class CSRFProtectionPlugin<ReqBody, ResParsed>
+    implements Plugin<ReqBody,  ResParsed> {
 
     constructor(public cookie: string, public header: string) { }
 
-    beforeRequest(ctx: Context<ReqBody, ResRaw, ResParsed>)
-        : Future<Context<ReqBody, ResRaw, ResParsed>> {
+    beforeRequest(ctx: Context<ReqBody>): Future<Context<ReqBody>> {
 
         return ctx
             .cookies

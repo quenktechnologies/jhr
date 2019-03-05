@@ -8,7 +8,6 @@ import { Parameters } from '../request/parameters';
 import { Options } from '../request/options';
 import { Response } from '../response';
 import { Transform } from './transform';
-import { Parser } from './parser';
 import { Transport } from './transport';
 import { Plugin } from './plugin';
 /**
@@ -17,16 +16,15 @@ import { Plugin } from './plugin';
  * An Agent instance uses its transport to send HTTP requests
  * and receive responses.
  */
-export declare class Agent<ReqRaw, ReqTrans, ResRaw, ResParsed> {
+export declare class Agent<ReqRaw, ReqTrans, ResParsed> {
     host: Host;
     headers: OutgoingHeaders;
     cookies: Container;
     options: Options;
     transform: Transform<ReqRaw, ReqTrans>;
-    parser: Parser<ResRaw, ResParsed>;
-    transport: Transport<ReqTrans, ResRaw, ResParsed>;
-    plugins: Plugin<ReqTrans, ResRaw, ResParsed>[];
-    constructor(host: Host, headers: OutgoingHeaders, cookies: Container, options: Options, transform: Transform<ReqRaw, ReqTrans>, parser: Parser<ResRaw, ResParsed>, transport: Transport<ReqTrans, ResRaw, ResParsed>, plugins: Plugin<ReqTrans, ResRaw, ResParsed>[]);
+    transport: Transport<ReqTrans, ResParsed>;
+    plugins: Plugin<ReqTrans, ResParsed>[];
+    constructor(host: Host, headers: OutgoingHeaders, cookies: Container, options: Options, transform: Transform<ReqRaw, ReqTrans>, transport: Transport<ReqTrans, ResParsed>, plugins: Plugin<ReqTrans, ResParsed>[]);
     /**
      * head request shorthand.
      */
