@@ -57,3 +57,7 @@ export declare const INSUFFICIENT_STORAGE = 507;
 export declare const LOOP_DETECTED = 508;
 export declare const NOT_EXTENDED = 510;
 export declare const NETWORK_AUTHENTICATION_REQUIRED = 511;
+/**
+ * Code type
+ */
+export declare type Code = number;

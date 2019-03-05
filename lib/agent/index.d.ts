@@ -1,62 +1,58 @@
-import * as Promise from 'bluebird';
+import { Future } from '@quenk/noni/lib/control/monad/future';
+import { OutgoingHeaders } from '../header';
 import { Request } from '../request';
+import { Container } from '../cookie/container';
+import { Host } from '../request/host';
+import { Path } from '../request/path';
+import { Parameters } from '../request/parameters';
+import { Options } from '../request/options';
 import { Response } from '../response';
-import { Agent } from './Agent';
-export { JSONTransform } from './JSONTransform';
-export { Agent };
+import { Transform } from './transform';
+import { Parser } from './parser';
+import { Transport } from './transport';
+import { Plugin } from './plugin';
 /**
- * Envelope is passed to Transports to provide the info needed
- * to actually send a request on the wire.
- */
-export interface Envelope<O, I> extends Request<O> {
-    /**
-     * url the request is sent to.
-     */
-    url: string;
-    /**
-     * agent instance used to send the request.
-     */
-    agent: Agent<O, I>;
-}
-/**
- * Transport interface for sending off HTTP requests.
+ * Agent acts as an HTTP client.
  *
- * A Transport is expected to preform three specific side effects:
- * 1. Send the request to the server using whatever infrastructure exists.
- * 2. Update the Agent's Jar as appropiate.
- * 3. Generate a Response object.
+ * An Agent instance uses its transport to send HTTP requests
+ * and receive responses.
  */
-export interface Transport<O, I> {
+export declare class Agent<ReqRaw, ReqTrans, ResRaw, ResParsed> {
+    host: Host;
+    headers: OutgoingHeaders;
+    cookies: Container;
+    options: Options;
+    transform: Transform<ReqRaw, ReqTrans>;
+    parser: Parser<ResRaw, ResParsed>;
+    transport: Transport<ReqTrans, ResRaw, ResParsed>;
+    plugins: Plugin<ReqTrans, ResRaw, ResParsed>[];
+    constructor(host: Host, headers: OutgoingHeaders, cookies: Container, options: Options, transform: Transform<ReqRaw, ReqTrans>, parser: Parser<ResRaw, ResParsed>, transport: Transport<ReqTrans, ResRaw, ResParsed>, plugins: Plugin<ReqTrans, ResRaw, ResParsed>[]);
     /**
-     * send an enveloped request using this Transport.
+     * head request shorthand.
      */
-    send<R>(env: Envelope<O, I>): Promise<Response<R>>;
+    head(path: Path, params?: Parameters, headers?: OutgoingHeaders): Future<Response<ResParsed>>;
+    /**
+     * get request shorthand.
+     */
+    get(path: Path, params?: Parameters, headers?: OutgoingHeaders): Future<Response<ResParsed>>;
+    /**
+     * post request shorthand.
+     */
+    post(path: Path, body?: ReqRaw, headers?: OutgoingHeaders): Future<Response<ResParsed>>;
+    /**
+     * put request shorthand.
+     */
+    put(path: Path, body?: ReqRaw, headers?: OutgoingHeaders): Future<Response<ResParsed>>;
+    /**
+     * patch request shorthand.
+     */
+    patch(path: Path, body?: ReqRaw, headers?: OutgoingHeaders): Future<Response<ResParsed>>;
+    /**
+     * delete request shorthand.
+     */
+    delete(path: Path, body?: ReqRaw, headers?: OutgoingHeaders): Future<Response<ResParsed>>;
+    /**
+     * send a Request to the server.
+     */
+    send(req: Request<ReqRaw>): Future<Response<ResParsed>>;
 }
-/**
- * Transform is responsible for converting the request and response bodies into
- * the desired formats.
- * @param <O> - The type the request body is transformed to.
- * @param <I> - The type of the incomming response body before transformation.
- */
-export interface Transform<O, I> {
-    /**
-     * accepts provides the value used in the Accepts header.
-     */
-    accepts: string;
-    /**
-     * contentType provides the value used in the Content-Type header.
-     */
-    contentType: string;
-    /**
-     * transformRequestBody into the desired Request body.
-     */
-    transformRequestBody<B>(body: B): Promise<O>;
-    /**
-     * transformResponseBody into the desired Response body.
-     */
-    transformResponseBody<R>(body: I): Promise<R>;
-}
-/**
- * Adapter is allowed to shape the request before it is passed to the Transport.
- */
-export declare type Adapter<O, I> = (env: Envelope<O, I>) => Promise<Envelope<O, I>>;
