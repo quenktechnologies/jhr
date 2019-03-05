@@ -78,16 +78,18 @@ export class Accepted<B> extends Success<B> {
 
 /**
  * NoContent response.
+ *
+ * NOTE: In practice, the body here should always be undefined.
  */
-export class NoContent extends Success<undefined> {
+export class NoContent<B> extends Success<B> {
 
-    body = undefined;
 
     constructor(
+      public body: B,
         public headers: IncommingHeaders,
         public options: Options) {
 
-        super(status.NO_CONTENT, undefined, headers, options);
+        super(status.NO_CONTENT, body, headers, options);
 
     }
 
@@ -211,7 +213,7 @@ export const createResponse = <B>(
     code: status.Code,
     body: B,
     headers: IncommingHeaders,
-    options: Options): Response<B> | Response<undefined> => {
+    options: Options): Response<B>  => {
 
     switch (code) {
         case status.OK:
@@ -219,7 +221,7 @@ export const createResponse = <B>(
         case status.ACCEPTED:
             return new Accepted(body, headers, options);
         case status.NO_CONTENT:
-            return new NoContent(headers, options);
+            return new NoContent(body, headers, options);
         case status.CREATED:
             return new Created(body, headers, options);
         case status.BAD_REQUEST:

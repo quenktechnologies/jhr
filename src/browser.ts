@@ -1,9 +1,9 @@
 import { Object } from '@quenk/noni/lib/data/json';
 import { Future } from '@quenk/noni/lib/control/monad/future';
 import { MemoryContainer } from './cookie/container/memory';
-import {  JSONTransform } from './agent/transform/json';
+import { JSONTransform } from './agent/transform/json';
 import { JSONParser } from './agent/parser/json';
-import { RequestBody, XHRTransport } from './agent/transport/xhr';
+import {  XHRTransport } from './agent/transport/xhr';
 import { Parameters } from './request/parameters';
 import { Host } from './request/host';
 import { Path } from './request/path';
@@ -28,13 +28,12 @@ const splitUrl = (url: Url): [Host, Path] => {
  * createAgent produces a new default Agent for use in the browser.
  */
 export const createAgent = <B extends Object>
-    (host: Host): Agent<object, RequestBody, B> => new Agent(
+    (host: Host): Agent<object, B> => new Agent(
         host,
         {},
         new MemoryContainer(),
         { ttl: 0, tags: [], context: {} },
-        new JSONTransform(),
-        new XHRTransport('', new JSONParser()),
+        new XHRTransport('', new JSONTransform(), new JSONParser()),
         []);
 
 /**

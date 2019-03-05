@@ -5,11 +5,7 @@ var util = require("../util");
 var record_1 = require("@quenk/noni/lib/data/record");
 var future_1 = require("@quenk/noni/lib/control/monad/future");
 var polate_1 = require("@quenk/polate");
-var headers_1 = require("../headers");
-var method_1 = require("../request/method");
 var request_1 = require("../request");
-var readMethods = [method_1.Method.Get, method_1.Method.Head];
-var isRead = function (m) { return (readMethods.indexOf(m.toUpperCase()) > -1); };
 /**
  * Agent acts as an HTTP client.
  *
@@ -17,27 +13,25 @@ var isRead = function (m) { return (readMethods.indexOf(m.toUpperCase()) > -1); 
  * and receive responses.
  */
 var Agent = /** @class */ (function () {
-    function Agent(host, headers, cookies, options, transform, transport, plugins) {
+    function Agent(host, headers, cookies, options, transport, plugins) {
         this.host = host;
         this.headers = headers;
         this.cookies = cookies;
         this.options = options;
-        this.transform = transform;
         this.transport = transport;
         this.plugins = plugins;
     }
-    /*
-      setInbound<Raw, Parsed>(transport: Transport<ReqTrans, Raw, Parsed>)
-          : Agent<ReqRaw, ReqTrans, Raw, Parsed> {
-  
-          let {
-              host, headers, cookies, options, transform, plugins
-          } = this;
-  
-          return new Agent(host, headers, cookies, options,
-              transform, transport, plugins);
-  
-      }*/
+    /**
+     * setTransport allows the transport to be changed (possibly to process
+     * a different type of response).
+     *
+     * A new Agent instance is created with NO plugins installed.
+     */
+    Agent.prototype.setTransport = function (transport, plugins) {
+        if (plugins === void 0) { plugins = []; }
+        var _a = this, host = _a.host, headers = _a.headers, cookies = _a.cookies, options = _a.options;
+        return new Agent(host, headers, cookies, options, transport, plugins);
+    };
     /**
      * head request shorthand.
      */
@@ -85,35 +79,25 @@ var Agent = /** @class */ (function () {
      * send a Request to the server.
      */
     Agent.prototype.send = function (req) {
-        var _a;
-        var _b = this, host = _b.host, cookies = _b.cookies, headers = _b.headers, options = _b.options, transform = _b.transform, transport = _b.transport, plugins = _b.plugins;
-        var method = req.method, params = req.params;
+        var _a = this, host = _a.host, cookies = _a.cookies, headers = _a.headers, options = _a.options, transport = _a.transport, plugins = _a.plugins;
+        var method = req.method, params = req.params, body = req.body;
         var tags = options.tags.concat(req.options.tags);
         var context = record_1.merge(options.context, req.options.context);
         var ttl = req.options.ttl;
         var path = util.urlFromString(polate_1.polate(req.path, context), params);
-        var ft = (isRead(req.method) || (req.body == null)) ?
-            future_1.pure(undefined) : future_1.fromExcept(transform.apply(req.body));
-        headers = record_1.merge3(headers, req.headers, isRead(req.method) ?
-            {} : (_a = {}, _a[headers_1.CONTENT_TYPE] = this.transform.type, _a));
-        return ft
-            .chain(function (body) {
-            var ctx = {
-                host: host,
-                method: method,
-                path: path,
-                body: body,
-                headers: headers,
-                cookies: cookies,
-                options: { ttl: ttl, tags: tags, context: context }
-            };
-            return plugins.reduce(function (f, p) {
-                return f.chain(function (c) { return p.beforeRequest(c); });
-            }, future_1.pure(ctx));
-        })
-            .chain(function (ctx) {
-            return transport.send(ctx);
-        })
+        var ctx = {
+            host: host,
+            method: method,
+            path: path,
+            body: body,
+            headers: headers,
+            cookies: cookies,
+            options: { ttl: ttl, tags: tags, context: context }
+        };
+        var ft = plugins.reduce(function (f, p) {
+            return f.chain(function (c) { return p.beforeRequest(c); });
+        }, future_1.pure(ctx));
+        return ft.chain(function (ctx) { return transport.send(ctx); })
             .chain(function (r) {
             return plugins.reduce(function (f, p) {
                 return f.chain(function (res) { return p.afterResponse(res); });
@@ -124,7 +108,7 @@ var Agent = /** @class */ (function () {
 }());
 exports.Agent = Agent;
 
-},{"../headers":7,"../request":8,"../request/method":9,"../util":12,"@quenk/noni/lib/control/monad/future":14,"@quenk/noni/lib/data/record":20,"@quenk/polate":22}],2:[function(require,module,exports){
+},{"../request":8,"../util":12,"@quenk/noni/lib/control/monad/future":14,"@quenk/noni/lib/data/record":20,"@quenk/polate":22}],2:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var error_1 = require("@quenk/noni/lib/control/error");
@@ -183,18 +167,30 @@ var headers_1 = require("../../headers");
  * XHRTransport uses the browsers XMLHTTPRequest object as a transport engine.
  */
 var XHRTransport = /** @class */ (function () {
-    function XHRTransport(responseType, parser) {
+    function XHRTransport(responseType, transform, parser) {
         if (responseType === void 0) { responseType = ''; }
         this.responseType = responseType;
+        this.transform = transform;
         this.parser = parser;
     }
     XHRTransport.prototype.send = function (ctx) {
         var _this = this;
-        var parser = this.parser;
+        var _a = this, parser = _a.parser, transform = _a.transform;
         var host = ctx.host, path = ctx.path, method = ctx.method, body = ctx.body, headers = ctx.headers, options = ctx.options, cookies = ctx.cookies;
         var xhr = new XMLHttpRequest();
         var url = "" + host + (path[0] === '/' ? '' : '/') + path;
         return new future_1.Run(function (s) {
+            var transBody = undefined;
+            if (body != null) {
+                var exceptBody = transform.apply(body);
+                if (exceptBody.isLeft()) {
+                    s.onError(new Error(exceptBody.takeLeft().message));
+                    return function () { };
+                }
+                else {
+                    transBody = exceptBody.takeRight();
+                }
+            }
             xhr.open(method, url, true);
             xhr.onload = function () {
                 return cookies
@@ -212,9 +208,11 @@ var XHRTransport = /** @class */ (function () {
             Object
                 .keys(headers)
                 .forEach(function (k) { xhr.setRequestHeader(k, headers[k]); });
-            if (method === method_1.Method.Get)
-                xhr.setRequestHeader(headers_1.ACCEPTS, _this.parser.accepts);
-            xhr.send(body);
+            if ((method === method_1.Method.Get) || (method === method_1.Method.Head))
+                xhr.setRequestHeader(headers_1.ACCEPTS, parser.accepts);
+            else
+                xhr.setRequestHeader(headers_1.CONTENT_TYPE, transform.type);
+            xhr.send(transBody);
             return function () { return xhr.abort(); };
         });
     };
@@ -590,14 +588,16 @@ var Accepted = /** @class */ (function (_super) {
 exports.Accepted = Accepted;
 /**
  * NoContent response.
+ *
+ * NOTE: In practice, the body here should always be undefined.
  */
 var NoContent = /** @class */ (function (_super) {
     __extends(NoContent, _super);
-    function NoContent(headers, options) {
-        var _this = _super.call(this, status.NO_CONTENT, undefined, headers, options) || this;
+    function NoContent(body, headers, options) {
+        var _this = _super.call(this, status.NO_CONTENT, body, headers, options) || this;
+        _this.body = body;
         _this.headers = headers;
         _this.options = options;
-        _this.body = undefined;
         return _this;
     }
     return NoContent;
@@ -743,7 +743,7 @@ exports.createResponse = function (code, body, headers, options) {
         case status.ACCEPTED:
             return new Accepted(body, headers, options);
         case status.NO_CONTENT:
-            return new NoContent(headers, options);
+            return new NoContent(body, headers, options);
         case status.CREATED:
             return new Created(body, headers, options);
         case status.BAD_REQUEST:
@@ -3583,7 +3583,7 @@ var host = process.env.HOST || 'http://localhost';
 var port = process.env.PORT || '2407';
 var newAgent = function (h) {
     if (h === void 0) { h = host + ":" + port; }
-    return new agent_1.Agent(h, {}, new memory_1.MemoryContainer(), { ttl: 0, tags: [], context: {} }, new json_1.JSONTransform(), new xhr_1.XHRTransport('', new json_2.JSONParser()), []);
+    return new agent_1.Agent(h, {}, new memory_1.MemoryContainer(), { ttl: 0, tags: [], context: {} }, new xhr_1.XHRTransport('', new json_1.JSONTransform(), new json_2.JSONParser()), []);
 };
 describe('xhr', function () {
     it('should make successful requests ', function () {
