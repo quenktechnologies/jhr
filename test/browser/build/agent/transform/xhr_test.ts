@@ -12,8 +12,8 @@ const port = process.env.PORT || '2407';
 
 const newAgent = (h = `${host}:${port}`) =>
     new Agent(h, {}, new MemoryContainer(),
-        { ttl: 0, tags: [], context: {} }, new JSONTransform(), new JSONParser(),
-        new XHRTransport(), []);
+        { ttl: 0, tags: [], context: {} }, new JSONTransform(),
+        new XHRTransport('', new JSONParser()), []);
 
 describe('xhr', () => {
 
