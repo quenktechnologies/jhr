@@ -5,7 +5,7 @@ import { Parser } from './';
 /**
  * JSONParser
  */
-export class JSONParser<D extends json.Object>    implements Parser<string, D> {
+export class JSONParser<D extends json.Object> implements Parser<string, D> {
 
     responseType = '';
 
@@ -15,8 +15,14 @@ export class JSONParser<D extends json.Object>    implements Parser<string, D> {
 
     apply(body: string): Except<D> {
 
-        return attempt(() => JSON.parse(
-            body.replace(this.prefix, '').trim() || '{}'));
+        return attempt(() => {
+
+            if ((body == null) || (body.trim() == ''))
+                return <D>{}
+
+          return JSON.parse(body.replace(this.prefix, ''));
+
+        })
 
     }
 

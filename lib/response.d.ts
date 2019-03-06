@@ -8,9 +8,9 @@ import { Options } from './request/options';
  */
 export interface Response<B> {
     /**
-     * status code of a Response.
+     * code code of a Response.
      */
-    status: status.Code;
+    code: status.Code;
     /**
      * body of the Response.
      */
@@ -29,11 +29,11 @@ export interface Response<B> {
  * an explicit type for.
  */
 export declare class GenericResponse<B> implements Response<B> {
-    status: number;
+    code: number;
     body: B;
     headers: IncommingHeaders;
     options: Options;
-    constructor(status: number, body: B, headers: IncommingHeaders, options: Options);
+    constructor(code: number, body: B, headers: IncommingHeaders, options: Options);
 }
 /**
  * Success

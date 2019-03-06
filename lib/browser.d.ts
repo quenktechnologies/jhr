@@ -4,6 +4,10 @@ import { OutgoingHeaders } from './header';
 import { Response } from './response';
 import { Agent } from './agent';
 /**
+ * @private
+ */
+export declare const splitUrl: (url: string) => [string, string];
+/**
  * createAgent produces a new default Agent for use in the browser.
  */
 export declare const createAgent: <B extends Object>(host: string) => Agent<object, B>;
