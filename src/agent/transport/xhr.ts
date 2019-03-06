@@ -7,11 +7,11 @@ import { fromString } from '../../header';
 import { createResponse } from '../../response';
 import { Context } from '../../request/context';
 import { Method } from '../../request/method';
-import {Response} from '../../response';
+import { Response } from '../../response';
 import { ACCEPTS, CONTENT_TYPE } from '../../headers';
 import { Transform } from '../transform';
 import { Parser } from '../parser';
-import { Transport  } from './';
+import { Transport } from './';
 
 /**
  * RequestBody
@@ -94,9 +94,10 @@ export class XHRTransport<Raw, Res> implements Transport<Raw, Res> {
 
             if ((method === Method.Get) || (method === Method.Head))
                 xhr.setRequestHeader(ACCEPTS, parser.accepts);
-            else
+          else if(transform.type !== 'multipart/form-data')
                 xhr.setRequestHeader(CONTENT_TYPE, transform.type);
-
+          //^ multipart forms set a custom content type
+          
             xhr.send(transBody);
 
             return () => xhr.abort();
