@@ -108,7 +108,7 @@ var Agent = /** @class */ (function () {
 }());
 exports.Agent = Agent;
 
-},{"../request":8,"../util":12,"@quenk/noni/lib/control/monad/future":14,"@quenk/noni/lib/data/record":20,"@quenk/polate":22}],2:[function(require,module,exports){
+},{"../request":10,"../util":14,"@quenk/noni/lib/control/monad/future":16,"@quenk/noni/lib/data/record":22,"@quenk/polate":24}],2:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var error_1 = require("@quenk/noni/lib/control/error");
@@ -124,13 +124,17 @@ var JSONParser = /** @class */ (function () {
     }
     JSONParser.prototype.apply = function (body) {
         var _this = this;
-        return error_1.attempt(function () { return JSON.parse(body.replace(_this.prefix, '').trim() || '{}'); });
+        return error_1.attempt(function () {
+            if ((body == null) || (body.trim() == ''))
+                return {};
+            return JSON.parse(body.replace(_this.prefix, ''));
+        });
     };
     return JSONParser;
 }());
 exports.JSONParser = JSONParser;
 
-},{"@quenk/noni/lib/control/error":13}],3:[function(require,module,exports){
+},{"@quenk/noni/lib/control/error":15}],3:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var util = require("../../util");
@@ -155,7 +159,25 @@ var JSONTransform = /** @class */ (function () {
 }());
 exports.JSONTransform = JSONTransform;
 
-},{"../../util":12,"@quenk/noni/lib/control/error":13}],4:[function(require,module,exports){
+},{"../../util":14,"@quenk/noni/lib/control/error":15}],4:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var either_1 = require("@quenk/noni/lib/data/either");
+/**
+ * MultipartTransform
+ */
+var MultipartTransform = /** @class */ (function () {
+    function MultipartTransform() {
+        this.type = 'multipart/form-data';
+    }
+    MultipartTransform.prototype.apply = function (body) {
+        return either_1.right(body);
+    };
+    return MultipartTransform;
+}());
+exports.MultipartTransform = MultipartTransform;
+
+},{"@quenk/noni/lib/data/either":19}],5:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var future_1 = require("@quenk/noni/lib/control/monad/future");
@@ -210,8 +232,9 @@ var XHRTransport = /** @class */ (function () {
                 .forEach(function (k) { xhr.setRequestHeader(k, headers[k]); });
             if ((method === method_1.Method.Get) || (method === method_1.Method.Head))
                 xhr.setRequestHeader(headers_1.ACCEPTS, parser.accepts);
-            else
+            else if (transform.type !== 'multipart/form-data')
                 xhr.setRequestHeader(headers_1.CONTENT_TYPE, transform.type);
+            //^ multipart forms set a custom content type
             xhr.send(transBody);
             return function () { return xhr.abort(); };
         });
@@ -220,7 +243,44 @@ var XHRTransport = /** @class */ (function () {
 }());
 exports.XHRTransport = XHRTransport;
 
-},{"../../header":6,"../../headers":7,"../../request/method":9,"../../response":10,"@quenk/noni/lib/control/monad/future":14}],5:[function(require,module,exports){
+},{"../../header":8,"../../headers":9,"../../request/method":11,"../../response":12,"@quenk/noni/lib/control/monad/future":16}],6:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var memory_1 = require("./cookie/container/memory");
+var json_1 = require("./agent/transform/json");
+var json_2 = require("./agent/parser/json");
+var xhr_1 = require("./agent/transport/xhr");
+var request_1 = require("./request");
+var agent_1 = require("./agent");
+var HTTP = 'http://';
+var HTTPS = 'https://';
+/**
+ * @private
+ */
+exports.splitUrl = function (url) {
+    var split = url.split(HTTP).join('').split(HTTPS).join('').split('/');
+    if ((split.length === 1) || ((split.length === 2) && (split[1] === '')))
+        return [split[0], '/'];
+    return [split[0], '/' + split.slice(1).join('/')];
+};
+/**
+ * createAgent produces a new default Agent for use in the browser.
+ */
+exports.createAgent = function (host) { return new agent_1.Agent(host, {}, new memory_1.MemoryContainer(), { ttl: 0, tags: [], context: {} }, new xhr_1.XHRTransport('', new json_1.JSONTransform(), new json_2.JSONParser()), []); };
+/**
+ * get shorthand helper.
+ *
+ * Note that url should consist of the domain and path
+ * combined or the path alone.
+ */
+exports.get = function (url, params, headers) {
+    if (params === void 0) { params = {}; }
+    if (headers === void 0) { headers = {}; }
+    var _a = exports.splitUrl(url), host = _a[0], path = _a[1];
+    return exports.createAgent(host).send(new request_1.Get(path, params, headers));
+};
+
+},{"./agent":1,"./agent/parser/json":2,"./agent/transform/json":3,"./agent/transport/xhr":5,"./cookie/container/memory":7,"./request":10}],7:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var future_1 = require("@quenk/noni/lib/control/monad/future");
@@ -315,7 +375,7 @@ var MemoryContainer = /** @class */ (function () {
 }());
 exports.MemoryContainer = MemoryContainer;
 
-},{"@quenk/noni/lib/control/monad/future":14}],6:[function(require,module,exports){
+},{"@quenk/noni/lib/control/monad/future":16}],8:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
@@ -385,7 +445,7 @@ exports.set = function (xhr) {
                 });
 };
 
-},{}],7:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
@@ -394,7 +454,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CONTENT_TYPE = 'Content-Type';
 exports.ACCEPTS = 'Accept';
 
-},{}],8:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -496,7 +556,7 @@ var Delete = /** @class */ (function (_super) {
 }(Post));
 exports.Delete = Delete;
 
-},{"./method":9}],9:[function(require,module,exports){
+},{"./method":11}],11:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
@@ -512,7 +572,7 @@ var Method;
     Method["Patch"] = "PATCH";
 })(Method = exports.Method || (exports.Method = {}));
 
-},{}],10:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -534,8 +594,8 @@ var status = require("./status");
  * an explicit type for.
  */
 var GenericResponse = /** @class */ (function () {
-    function GenericResponse(status, body, headers, options) {
-        this.status = status;
+    function GenericResponse(code, body, headers, options) {
+        this.code = code;
         this.body = body;
         this.headers = headers;
         this.options = options;
@@ -770,7 +830,7 @@ exports.createResponse = function (code, body, headers, options) {
     }
 };
 
-},{"./status":11}],11:[function(require,module,exports){
+},{"./status":13}],13:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CONTINUE = 100;
@@ -833,7 +893,7 @@ exports.LOOP_DETECTED = 508;
 exports.NOT_EXTENDED = 510;
 exports.NETWORK_AUTHENTICATION_REQUIRED = 511;
 
-},{}],12:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var qs = require("qs");
@@ -871,7 +931,7 @@ exports.urlFromString = function (url, params) {
     return url + "?" + qs.stringify(params);
 };
 
-},{"qs":31}],13:[function(require,module,exports){
+},{"qs":33}],15:[function(require,module,exports){
 "use strict";
 /**
  * This module provides functions and types to make dealing with ES errors
@@ -912,7 +972,7 @@ exports.attempt = function (f) {
     }
 };
 
-},{"../data/either":17}],14:[function(require,module,exports){
+},{"../data/either":19}],16:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -1406,7 +1466,7 @@ exports.liftP = function (f) { return new Run(function (s) {
     return function_1.noop;
 }); };
 
-},{"../../data/function":18,"../error":13,"../timer":15}],15:[function(require,module,exports){
+},{"../../data/function":20,"../error":15,"../timer":17}],17:[function(require,module,exports){
 (function (process){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -1419,7 +1479,7 @@ exports.tick = function (f) { return (typeof window == 'undefined') ?
     process.nextTick(f); };
 
 }).call(this,require('_process'))
-},{"_process":28}],16:[function(require,module,exports){
+},{"_process":30}],18:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
@@ -1500,7 +1560,7 @@ exports.dedupe = function (list) {
     return list.filter(function (e, i, l) { return l.indexOf(e) === i; });
 };
 
-},{"../math":21,"./record":20}],17:[function(require,module,exports){
+},{"../math":23,"./record":22}],19:[function(require,module,exports){
 "use strict";
 /**
  * Either represents a value that may be one of two types.
@@ -1695,7 +1755,7 @@ exports.either = function (f) { return function (g) { return function (e) {
     return (e instanceof Right) ? g(e.takeRight()) : f(e.takeLeft());
 }; }; };
 
-},{"./maybe":19}],18:[function(require,module,exports){
+},{"./maybe":21}],20:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
@@ -1754,7 +1814,7 @@ exports.curry5 = function (f) {
  */
 exports.noop = function () { };
 
-},{}],19:[function(require,module,exports){
+},{}],21:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
@@ -1987,7 +2047,7 @@ exports.fromNaN = function (n) {
     return isNaN(n) ? new Nothing() : new Just(n);
 };
 
-},{}],20:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
@@ -2168,7 +2228,7 @@ var _clone = function (a) {
         return a;
 };
 
-},{"../array":16}],21:[function(require,module,exports){
+},{"../array":18}],23:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
@@ -2176,7 +2236,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 exports.isMultipleOf = function (x, y) { return ((y % x) === 0); };
 
-},{}],22:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var property_seek_1 = require("property-seek");
@@ -2208,7 +2268,7 @@ exports.polate = function (str, data, opts) {
 };
 exports.default = exports.polate;
 
-},{"property-seek":29}],23:[function(require,module,exports){
+},{"property-seek":31}],25:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -2386,7 +2446,7 @@ exports.toString = function (value) {
  */
 exports.assert = function (value) { return new Positive(value, true); };
 
-},{"deep-equal":24,"json-stringify-safe":27}],24:[function(require,module,exports){
+},{"deep-equal":26,"json-stringify-safe":29}],26:[function(require,module,exports){
 var pSlice = Array.prototype.slice;
 var objectKeys = require('./lib/keys.js');
 var isArguments = require('./lib/is_arguments.js');
@@ -2482,7 +2542,7 @@ function objEquiv(a, b, opts) {
   return typeof a === typeof b;
 }
 
-},{"./lib/is_arguments.js":25,"./lib/keys.js":26}],25:[function(require,module,exports){
+},{"./lib/is_arguments.js":27,"./lib/keys.js":28}],27:[function(require,module,exports){
 var supportsArgumentsClass = (function(){
   return Object.prototype.toString.call(arguments)
 })() == '[object Arguments]';
@@ -2504,7 +2564,7 @@ function unsupported(object){
     false;
 };
 
-},{}],26:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 exports = module.exports = typeof Object.keys === 'function'
   ? Object.keys : shim;
 
@@ -2515,7 +2575,7 @@ function shim (obj) {
   return keys;
 }
 
-},{}],27:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 exports = module.exports = stringify
 exports.getSerialize = serializer
 
@@ -2544,7 +2604,7 @@ function serializer(replacer, cycleReplacer) {
   }
 }
 
-},{}],28:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -2730,7 +2790,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],29:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var ESCAPED_SUBS = '@xR25$e!#fda8f623';
@@ -2832,7 +2892,7 @@ function default_1(k, v, o) {
 exports.default = default_1;
 ;
 
-},{}],30:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 'use strict';
 
 var replace = String.prototype.replace;
@@ -2852,7 +2912,7 @@ module.exports = {
     RFC3986: 'RFC3986'
 };
 
-},{}],31:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 'use strict';
 
 var stringify = require('./stringify');
@@ -2865,7 +2925,7 @@ module.exports = {
     stringify: stringify
 };
 
-},{"./formats":30,"./parse":32,"./stringify":33}],32:[function(require,module,exports){
+},{"./formats":32,"./parse":34,"./stringify":35}],34:[function(require,module,exports){
 'use strict';
 
 var utils = require('./utils');
@@ -3093,7 +3153,7 @@ module.exports = function (str, opts) {
     return utils.compact(obj);
 };
 
-},{"./utils":34}],33:[function(require,module,exports){
+},{"./utils":36}],35:[function(require,module,exports){
 'use strict';
 
 var utils = require('./utils');
@@ -3337,7 +3397,7 @@ module.exports = function (object, opts) {
     return joined.length > 0 ? prefix + joined : '';
 };
 
-},{"./formats":30,"./utils":34}],34:[function(require,module,exports){
+},{"./formats":32,"./utils":36}],36:[function(require,module,exports){
 'use strict';
 
 var has = Object.prototype.hasOwnProperty;
@@ -3567,7 +3627,7 @@ module.exports = {
     merge: merge
 };
 
-},{}],35:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 (function (process){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -3576,6 +3636,7 @@ var future_1 = require("@quenk/noni/lib/control/monad/future");
 var agent_1 = require("../../../../../lib/agent");
 var memory_1 = require("../../../../../lib/cookie/container/memory");
 var json_1 = require("../../../../../lib/agent/transform/json");
+var multipart_1 = require("../../../../../lib/agent/transform/multipart");
 var json_2 = require("../../../../../lib/agent/parser/json");
 var xhr_1 = require("../../../../../lib/agent/transport/xhr");
 var response_1 = require("../../../../../lib/response");
@@ -3608,7 +3669,7 @@ describe('xhr', function () {
         var body = { "email": "me@email.com", "password": "password" };
         return future_1.toPromise(newAgent().post('/login', body)).
             then(function (res) {
-            assert_1.assert(res.status).equal(200);
+            assert_1.assert(res.code).equal(200);
         });
     });
     it('should provide the correct body', function () {
@@ -3619,10 +3680,54 @@ describe('xhr', function () {
             });
         });
     });
+    it('should work with multiparts', function () {
+        var fd = new FormData();
+        var agent = newAgent()
+            .setTransport(new xhr_1.XHRTransport('', new multipart_1.MultipartTransform(), new json_2.JSONParser()));
+        fd.append('filename', 'somefile');
+        fd.append('file', new Blob(['some file']));
+        return future_1.toPromise(agent.post('/file', fd))
+            .then(function (res) {
+            assert_1.assert(res.code).equal(204);
+        });
+    });
 });
 
 }).call(this,require('_process'))
-},{"../../../../../lib/agent":1,"../../../../../lib/agent/parser/json":2,"../../../../../lib/agent/transform/json":3,"../../../../../lib/agent/transport/xhr":4,"../../../../../lib/cookie/container/memory":5,"../../../../../lib/response":10,"@quenk/noni/lib/control/monad/future":14,"@quenk/test/lib/assert":23,"_process":28}],36:[function(require,module,exports){
+},{"../../../../../lib/agent":1,"../../../../../lib/agent/parser/json":2,"../../../../../lib/agent/transform/json":3,"../../../../../lib/agent/transform/multipart":4,"../../../../../lib/agent/transport/xhr":5,"../../../../../lib/cookie/container/memory":7,"../../../../../lib/response":12,"@quenk/noni/lib/control/monad/future":16,"@quenk/test/lib/assert":25,"_process":30}],38:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var assert_1 = require("@quenk/test/lib/assert");
+var browser_1 = require("../../../lib/browser");
+describe('browser', function () {
+    describe('splitUrl', function () {
+        it('should work with domain alone', function () {
+            assert_1.assert(browser_1.splitUrl('localhost:8080')).equate([
+                'localhost:8080',
+                '/'
+            ]);
+        });
+        it('should work with domain and path', function () {
+            assert_1.assert(browser_1.splitUrl('localhost:8080/path/to')).equate([
+                'localhost:8080',
+                '/path/to'
+            ]);
+        });
+        it('should work when the protocol is present', function () {
+            assert_1.assert(browser_1.splitUrl('http://localhost/path/to')).equate([
+                'localhost',
+                '/path/to'
+            ]);
+            assert_1.assert(browser_1.splitUrl('http://localhost')).equate([
+                'localhost',
+                '/'
+            ]);
+        });
+    });
+});
+
+},{"../../../lib/browser":6,"@quenk/test/lib/assert":25}],39:[function(require,module,exports){
+require("./browser_test.js");
 require("./agent/transform/xhr_test.js");
 
-},{"./agent/transform/xhr_test.js":35}]},{},[36]);
+},{"./agent/transform/xhr_test.js":37,"./browser_test.js":38}]},{},[39]);

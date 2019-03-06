@@ -3,6 +3,7 @@ import { parallel, toPromise } from '@quenk/noni/lib/control/monad/future';
 import { Agent } from '../../../../../lib/agent';
 import { MemoryContainer } from '../../../../../lib/cookie/container/memory';
 import { JSONTransform } from '../../../../../lib/agent/transform/json';
+import { MultipartTransform } from '../../../../../lib/agent/transform/multipart';
 import { JSONParser } from '../../../../../lib/agent/parser/json';
 import { XHRTransport } from '../../../../../lib/agent/transport/xhr';
 import { Ok, Created, NoContent } from '../../../../../lib/response';
@@ -53,7 +54,7 @@ describe('xhr', () => {
         return toPromise(newAgent().post('/login', body)).
             then(function(res) {
 
-                assert(res.status).equal(200);
+                assert(res.code).equal(200);
 
             });
     });
@@ -65,6 +66,26 @@ describe('xhr', () => {
                 assert(res.body).equate({
                     "a": true, "b": false, "c": 1, "d": "1"
                 });
+            });
+
+    });
+
+    it('should work with multiparts', function() {
+
+        let fd = new FormData();
+
+        let agent = newAgent()
+            .setTransport(new XHRTransport('',
+                new MultipartTransform(), new JSONParser()));
+
+        fd.append('filename', 'somefile');
+        fd.append('file', new Blob(['some file']));
+
+        return toPromise(            agent                .post('/file', fd))
+            .then(function(res) {
+
+                assert(res.code).equal(204);
+
             });
 
     });

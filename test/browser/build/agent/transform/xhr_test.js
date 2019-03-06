@@ -5,6 +5,7 @@ var future_1 = require("@quenk/noni/lib/control/monad/future");
 var agent_1 = require("../../../../../lib/agent");
 var memory_1 = require("../../../../../lib/cookie/container/memory");
 var json_1 = require("../../../../../lib/agent/transform/json");
+var multipart_1 = require("../../../../../lib/agent/transform/multipart");
 var json_2 = require("../../../../../lib/agent/parser/json");
 var xhr_1 = require("../../../../../lib/agent/transport/xhr");
 var response_1 = require("../../../../../lib/response");
@@ -37,7 +38,7 @@ describe('xhr', function () {
         var body = { "email": "me@email.com", "password": "password" };
         return future_1.toPromise(newAgent().post('/login', body)).
             then(function (res) {
-            assert_1.assert(res.status).equal(200);
+            assert_1.assert(res.code).equal(200);
         });
     });
     it('should provide the correct body', function () {
@@ -46,6 +47,17 @@ describe('xhr', function () {
             assert_1.assert(res.body).equate({
                 "a": true, "b": false, "c": 1, "d": "1"
             });
+        });
+    });
+    it('should work with multiparts', function () {
+        var fd = new FormData();
+        var agent = newAgent()
+            .setTransport(new xhr_1.XHRTransport('', new multipart_1.MultipartTransform(), new json_2.JSONParser()));
+        fd.append('filename', 'somefile');
+        fd.append('file', new Blob(['some file']));
+        return future_1.toPromise(agent.post('/file', fd))
+            .then(function (res) {
+            assert_1.assert(res.code).equal(204);
         });
     });
 });
