@@ -4,7 +4,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var util = require("../util");
 var record_1 = require("@quenk/noni/lib/data/record");
 var future_1 = require("@quenk/noni/lib/control/monad/future");
-var polate_1 = require("@quenk/polate");
+var string_1 = require("@quenk/noni/lib/data/string");
 var request_1 = require("../request");
 /**
  * Agent acts as an HTTP client.
@@ -84,7 +84,7 @@ var Agent = /** @class */ (function () {
         var tags = options.tags.concat(req.options.tags);
         var context = record_1.merge(options.context, req.options.context);
         var ttl = req.options.ttl;
-        var path = util.urlFromString(polate_1.polate(req.path, context), params);
+        var path = util.urlFromString(string_1.interpolate(req.path, context), params);
         var ctx = {
             host: host,
             method: method,
@@ -108,7 +108,7 @@ var Agent = /** @class */ (function () {
 }());
 exports.Agent = Agent;
 
-},{"../request":10,"../util":14,"@quenk/noni/lib/control/monad/future":16,"@quenk/noni/lib/data/record":22,"@quenk/polate":24}],2:[function(require,module,exports){
+},{"../request":10,"../util":14,"@quenk/noni/lib/control/monad/future":16,"@quenk/noni/lib/data/record":22,"@quenk/noni/lib/data/string":24}],2:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var error_1 = require("@quenk/noni/lib/control/error");
@@ -1479,7 +1479,7 @@ exports.tick = function (f) { return (typeof window == 'undefined') ?
     process.nextTick(f); };
 
 }).call(this,require('_process'))
-},{"_process":30}],18:[function(require,module,exports){
+},{"_process":31}],18:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
@@ -1560,7 +1560,7 @@ exports.dedupe = function (list) {
     return list.filter(function (e, i, l) { return l.indexOf(e) === i; });
 };
 
-},{"../math":23,"./record":22}],19:[function(require,module,exports){
+},{"../math":25,"./record":22}],19:[function(require,module,exports){
 "use strict";
 /**
  * Either represents a value that may be one of two types.
@@ -2058,6 +2058,30 @@ Object.defineProperty(exports, "__esModule", { value: true });
  */
 var array_1 = require("../array");
 /**
+ * assign polyfill.
+ */
+function assign(target) {
+    var _varArgs = [];
+    for (var _i = 1; _i < arguments.length; _i++) {
+        _varArgs[_i - 1] = arguments[_i];
+    }
+    if (target == null)
+        throw new TypeError('Cannot convert undefined or null to object');
+    var to = Object(target);
+    for (var index = 1; index < arguments.length; index++) {
+        var nextSource = arguments[index];
+        if (nextSource != null) {
+            for (var nextKey in nextSource) {
+                // Avoid bugs when hasOwnProperty is shadowed
+                if (Object.prototype.hasOwnProperty.call(nextSource, nextKey))
+                    to[nextKey] = nextSource[nextKey];
+            }
+        }
+    }
+    return to;
+}
+exports.assign = assign;
+/**
  * isRecord tests whether a value is a record.
  *
  * This is a typeof check that excludes arrays.
@@ -2098,21 +2122,21 @@ exports.reduce = function (o, accum, f) {
  * The return value's type is the product of the two types supplied.
  * This function may be unsafe.
  */
-exports.merge = function (left, right) { return Object.assign({}, left, right); };
+exports.merge = function (left, right) { return assign({}, left, right); };
 /**
  * merge3 merges 3 records into one.
  */
-exports.merge3 = function (a, b, c) { return Object.assign({}, a, b, c); };
+exports.merge3 = function (a, b, c) { return assign({}, a, b, c); };
 /**
  * merge4 merges 4 records into one.
  */
 exports.merge4 = function (a, b, c, d) {
-    return Object.assign({}, a, b, c, d);
+    return assign({}, a, b, c, d);
 };
 /**
  * merge5 merges 5 records into one.
  */
-exports.merge5 = function (a, b, c, d, e) { return Object.assign({}, a, b, c, d, e); };
+exports.merge5 = function (a, b, c, d, e) { return assign({}, a, b, c, d, e); };
 /**
  * rmerge merges 2 records recursively.
  *
@@ -2232,43 +2256,347 @@ var _clone = function (a) {
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
- * isMultipleOf tests whether the Integer 'y' is a multiple of x.
+ * This module provides a syntax and associated functions for
+ * getting and setting values on ES objects easily.
+ *
+ * Given a path, a value can either be retrieved or set on an object.
+ *
+ * The path syntax follows typical ES dot notation, bracket notation or a mixture
+ * of both.
+ *
+ * Note that quotes are not used when describing a path via bracket notation.
+ *
+ * If you need to use a dot or square brackets in your paths, prefix them with
+ * the "\" (backslash) character.
  */
-exports.isMultipleOf = function (x, y) { return ((y % x) === 0); };
+/** imports **/
+var maybe_1 = require("../maybe");
+var _1 = require("./");
+var TOKEN_DOT = '.';
+var TOKEN_BRACKET_LEFT = '[';
+var TOKEN_BRACKET_RIGHT = ']';
+var TOKEN_ESCAPE = '\\';
+/**
+ * tokenize a path into a list of sequential property names.
+ */
+exports.tokenize = function (str) {
+    var i = 0;
+    var buf = '';
+    var curr = '';
+    var next = '';
+    var tokens = [];
+    while (i < str.length) {
+        curr = str[i];
+        next = str[i + 1];
+        if (curr === TOKEN_ESCAPE) {
+            //escape sequence
+            buf = "" + buf + next;
+            i++;
+        }
+        else if (curr === TOKEN_DOT) {
+            if (buf !== '')
+                tokens.push(buf); //recognize a path and push a new token
+            buf = '';
+        }
+        else if ((curr === TOKEN_BRACKET_LEFT) &&
+            next === TOKEN_BRACKET_RIGHT) {
+            //intercept empty bracket paths
+            i++;
+        }
+        else if (curr === TOKEN_BRACKET_LEFT) {
+            var bracketBuf = '';
+            var firstDot = -1;
+            var firstDotBuf = '';
+            i++;
+            while (true) {
+                //everything between brackets is treated as a path
+                //if no closing bracket is found, we back track to the first dot
+                //if there is no dot the whole buffer is treated as a path
+                curr = str[i];
+                next = str[i + 1];
+                if ((curr === TOKEN_BRACKET_RIGHT) &&
+                    (next === TOKEN_BRACKET_RIGHT)) {
+                    //escaped right bracket
+                    bracketBuf = "" + bracketBuf + TOKEN_BRACKET_RIGHT;
+                    i++;
+                }
+                else if (curr === TOKEN_BRACKET_RIGHT) {
+                    //successfully tokenized the path
+                    if (buf !== '')
+                        tokens.push(buf); //save the previous path
+                    tokens.push(bracketBuf); //save the current path
+                    buf = '';
+                    break;
+                }
+                else if (curr == null) {
+                    //no closing bracket found and we ran out of string to search
+                    if (firstDot !== -1) {
+                        //backtrack to the first dot encountered
+                        i = firstDot;
+                        //save the paths so far
+                        tokens.push("" + buf + TOKEN_BRACKET_LEFT + firstDotBuf);
+                        buf = '';
+                        break;
+                    }
+                    else {
+                        //else if no dots were found treat the current buffer
+                        // and rest of the string as part of one path.
+                        buf = "" + buf + TOKEN_BRACKET_LEFT + bracketBuf;
+                        break;
+                    }
+                }
+                if ((curr === TOKEN_DOT) && (firstDot === -1)) {
+                    //take note of the location and tokens between 
+                    //the opening bracket and first dot.
+                    //If there is no closing bracket, we use this info to
+                    //lex properly.
+                    firstDot = i;
+                    firstDotBuf = bracketBuf;
+                }
+                bracketBuf = "" + bracketBuf + curr;
+                i++;
+            }
+        }
+        else {
+            buf = "" + buf + curr;
+        }
+        i++;
+    }
+    if ((buf.length > 0))
+        tokens.push(buf);
+    return tokens;
+};
+/**
+ * unsafeGet retrieves a value at the specified path
+ * on any ES object.
+ *
+ * This function does not check if getting the value succeeded or not.
+ */
+exports.unsafeGet = function (path, src) {
+    var toks = exports.tokenize(path);
+    var head = src[toks.shift()];
+    return toks.reduce(function (p, c) { return (p == null) ? p : p[c]; }, head);
+};
+/**
+ * get a value from a Record given its path safely.
+ */
+exports.get = function (path, src) {
+    return maybe_1.fromNullable(exports.unsafeGet(path, src));
+};
+/**
+ * set sets a value on an object given a path.
+ */
+exports.set = function (p, v, r) {
+    var toks = exports.tokenize(p);
+    return _set(r, v, toks);
+};
+var _set = function (r, value, toks) {
+    var o;
+    if (toks.length === 0)
+        return value;
+    o = _1.isRecord(r) ? _1.clone(r) : {};
+    o[toks[0]] = _set(o[toks[0]], value, toks.slice(1));
+    return o;
+};
+/**
+ * escape a path so that occurences of dots are not interpreted as paths.
+ *
+ * This function escapes dots and dots only.
+ */
+exports.escape = function (p) {
+    var i = 0;
+    var buf = '';
+    var curr = '';
+    while (i < p.length) {
+        curr = p[i];
+        if ((curr === TOKEN_ESCAPE) || (curr === TOKEN_DOT))
+            buf = "" + buf + TOKEN_ESCAPE + curr;
+        else
+            buf = "" + buf + curr;
+        i++;
+    }
+    return buf;
+};
+/**
+ * unescape a path that has been previously escaped.
+ */
+exports.unescape = function (p) {
+    var i = 0;
+    var curr = '';
+    var next = '';
+    var buf = '';
+    while (i < p.length) {
+        curr = p[i];
+        next = p[i + 1];
+        if (curr === TOKEN_ESCAPE) {
+            buf = "" + buf + next;
+            i++;
+        }
+        else {
+            buf = "" + buf + curr;
+        }
+        i++;
+    }
+    return buf;
+};
+/**
+ * escapeRecord escapes each property of a record recursively.
+ */
+exports.escapeRecord = function (r) {
+    return _1.reduce(r, {}, function (p, c, k) {
+        if (typeof c === 'object')
+            p[exports.escape(k)] = exports.escapeRecord(c);
+        else
+            p[exports.escape(k)] = c;
+        return p;
+    });
+};
+/**
+ * unescapeRecord unescapes each property of a record recursively.
+ */
+exports.unescapeRecord = function (r) {
+    return _1.reduce(r, {}, function (p, c, k) {
+        if (_1.isRecord(c))
+            p[exports.unescape(k)] = exports.unescapeRecord(c);
+        else
+            p[exports.unescape(k)] = c;
+        return p;
+    });
+};
+/**
+ * flatten an object into a Record where each key is a path to a non-complex
+ * value or array.
+ *
+ * If any of the paths contain dots, they will be escaped.
+ */
+exports.flatten = function (r) {
+    return (flatImpl('')({})(r));
+};
+var flatImpl = function (pfix) { return function (prev) {
+    return function (r) {
+        return _1.reduce(r, prev, function (p, c, k) {
+            var _a;
+            return _1.isRecord(c) ?
+                (flatImpl(prefix(pfix, k))(p)(c)) :
+                _1.merge(p, (_a = {}, _a[prefix(pfix, k)] = c, _a));
+        });
+    };
+}; };
+var prefix = function (pfix, key) { return (pfix === '') ?
+    exports.escape(key) : pfix + "." + exports.escape(key); };
+/**
+ * unflatten a flattened Record so that any nested paths are expanded
+ * to their full representation.
+ */
+exports.unflatten = function (r) {
+    return _1.reduce(r, {}, function (p, c, k) { return exports.set(k, c, p); });
+};
 
-},{}],24:[function(require,module,exports){
+},{"../maybe":21,"./":22}],24:[function(require,module,exports){
 "use strict";
+/**
+ *  Common functions used to manipulate strings.
+ */
 Object.defineProperty(exports, "__esModule", { value: true });
-var property_seek_1 = require("property-seek");
+/** imports */
+var path_1 = require("./record/path");
+var record_1 = require("./record");
 ;
-var defaults = {
+/**
+ * startsWith polyfill.
+ */
+exports.startsWith = function (str, search, pos) {
+    if (pos === void 0) { pos = 0; }
+    return str.substr(!pos || pos < 0 ? 0 : +pos, search.length) === search;
+};
+/**
+ * endsWith polyfill.
+ */
+exports.endsWith = function (str, search, this_len) {
+    if (this_len === void 0) { this_len = str.length; }
+    return (this_len === undefined || this_len > str.length) ?
+        this_len = str.length :
+        str.substring(this_len - search.length, this_len) === search;
+};
+/**
+ * contains uses String#indexOf to determine if a substring occurs
+ * in a string.
+ */
+exports.contains = function (str, match) {
+    return (str.indexOf(match) > -1);
+};
+/**
+ * camelCase transforms a string into CamelCase.
+ */
+exports.camelCase = function (str) {
+    return [str[0].toUpperCase()]
+        .concat(str
+        .split(str[0])
+        .slice(1)
+        .join(str[0]))
+        .join('')
+        .replace(/(\-|_|\s)+(.)?/g, function (_, __, c) {
+        return (c ? c.toUpperCase() : '');
+    });
+};
+/**
+ * capitalize a string.
+ *
+ * Note: spaces are treated as part of the string.
+ */
+exports.capitalize = function (str) {
+    return "" + str[0].toUpperCase() + str.slice(1);
+};
+/**
+ * uncapitalize a string.
+ *
+ * Note: spaces are treated as part of the string.
+ */
+exports.uncapitalize = function (str) {
+    return "" + str[0].toLowerCase() + str.slice(1);
+};
+var interpolateDefaults = {
     start: '\{',
     end: '\}',
     regex: '([\\w\$\.\-]+)',
     leaveMissing: true,
     applyFunctions: false
 };
-var maybe = function (v, k, opts) {
-    return (typeof v === 'function') ?
-        opts.applyFunctions ?
-            v(k) : v : (v != null) ?
-        v : opts.leaveMissing ?
-        "" + opts.start + k + opts.end :
-        v;
-};
 /**
- * polate
+ * interpolate a template string replacing variable paths with values
+ * in the data object.
  */
-exports.polate = function (str, data, opts) {
+exports.interpolate = function (str, data, opts) {
     if (opts === void 0) { opts = {}; }
-    var options = Object.assign({}, defaults, opts);
-    return str.replace(new RegExp("" + options.start + options.regex + options.end, 'g'), function (_, k) {
-        return maybe(property_seek_1.default(k, data), k, options);
+    var options = record_1.assign({}, interpolateDefaults, opts);
+    var reg = new RegExp("" + options.start + options.regex + options.end, 'g');
+    return str.replace(reg, function (_, k) {
+        return path_1.get(k, data)
+            .map(function (v) {
+            if (typeof v === 'function')
+                return v(k);
+            else
+                return '' + v;
+        })
+            .orJust(function () {
+            if (opts.leaveMissing)
+                return k;
+            else
+                return '';
+        })
+            .get();
     });
 };
-exports.default = exports.polate;
 
-},{"property-seek":31}],25:[function(require,module,exports){
+},{"./record":22,"./record/path":23}],25:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+/**
+ * isMultipleOf tests whether the Integer 'y' is a multiple of x.
+ */
+exports.isMultipleOf = function (x, y) { return ((y % x) === 0); };
+
+},{}],26:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -2446,7 +2774,7 @@ exports.toString = function (value) {
  */
 exports.assert = function (value) { return new Positive(value, true); };
 
-},{"deep-equal":26,"json-stringify-safe":29}],26:[function(require,module,exports){
+},{"deep-equal":27,"json-stringify-safe":30}],27:[function(require,module,exports){
 var pSlice = Array.prototype.slice;
 var objectKeys = require('./lib/keys.js');
 var isArguments = require('./lib/is_arguments.js');
@@ -2542,7 +2870,7 @@ function objEquiv(a, b, opts) {
   return typeof a === typeof b;
 }
 
-},{"./lib/is_arguments.js":27,"./lib/keys.js":28}],27:[function(require,module,exports){
+},{"./lib/is_arguments.js":28,"./lib/keys.js":29}],28:[function(require,module,exports){
 var supportsArgumentsClass = (function(){
   return Object.prototype.toString.call(arguments)
 })() == '[object Arguments]';
@@ -2564,7 +2892,7 @@ function unsupported(object){
     false;
 };
 
-},{}],28:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 exports = module.exports = typeof Object.keys === 'function'
   ? Object.keys : shim;
 
@@ -2575,7 +2903,7 @@ function shim (obj) {
   return keys;
 }
 
-},{}],29:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 exports = module.exports = stringify
 exports.getSerialize = serializer
 
@@ -2604,7 +2932,7 @@ function serializer(replacer, cycleReplacer) {
   }
 }
 
-},{}],30:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -2789,108 +3117,6 @@ process.chdir = function (dir) {
     throw new Error('process.chdir is not supported');
 };
 process.umask = function() { return 0; };
-
-},{}],31:[function(require,module,exports){
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-var ESCAPED_SUBS = '@xR25$e!#fda8f623';
-function preserve_escaped(value) {
-    return value.split('..').join(ESCAPED_SUBS);
-}
-function unpreserve_escaped(value) {
-    return value.split(ESCAPED_SUBS).join('.');
-}
-function boundary_to_dot(value) {
-    return value.split('][').join('.').split('[').join('.');
-}
-function strip_braces(value) {
-    return value.split('[').join('.').split(']').join('');
-}
-function escape_dots(value) {
-    var val = value.split('\'');
-    return (val.length < 3) ? val.join('\'') : val.map(function (seg) {
-        if (seg.length < 3)
-            return seg;
-        if ((seg[0] === '.') || (seg[seg.length - 1] === '.'))
-            return seg;
-        return seg.split('.').join('&&');
-    }).join('');
-}
-function unescape_dots(value) {
-    return unpreserve_escaped(value.split('&&').join('.'));
-}
-function partify(value) {
-    if (!value)
-        return;
-    return escape_dots(strip_braces(boundary_to_dot(preserve_escaped('' + value)))).split('.');
-}
-function canClone(o) {
-    return (typeof o.__CLONE__ === 'function');
-}
-function clone(o) {
-    if ((typeof o !== 'object') || (o === null))
-        return o;
-    if (Array.isArray(o))
-        return o.map(clone);
-    return (canClone(o)) ?
-        o.__CLONE__(clone) : (o.constructor !== Object) ? o :
-        Object.keys(o).reduce(function (pre, k) {
-            pre[k] = (typeof o[k] === 'object') ?
-                clone(o[k]) : o[k];
-            return pre;
-        }, {});
-}
-function get(path, o) {
-    var parts = partify(path);
-    var first;
-    if (typeof o === 'object') {
-        if (parts.length === 1)
-            return o[unescape_dots(parts[0])];
-        if (parts.length === 0)
-            return;
-        first = o[parts.shift()];
-        return ((typeof o === 'object') && (o !== null)) ?
-            parts.reduce(function (target, prop) {
-                if (target == null)
-                    return target;
-                return target[unescape_dots(prop)];
-            }, first) : null;
-    }
-    else {
-        throw new TypeError('get(): expects an object got ' + typeof o);
-    }
-}
-exports.get = get;
-;
-function set(path, value, obj) {
-    var parts = partify(path);
-    if ((typeof obj !== 'object') || (obj == null)) {
-        return clone(obj);
-    }
-    else {
-        return _set(obj, value, parts);
-    }
-}
-exports.set = set;
-;
-function _set(obj, value, parts) {
-    var o;
-    var k;
-    if (parts.length === 0)
-        return value;
-    o = ((typeof obj !== 'object') || (obj === null)) ? {} : clone(obj);
-    k = unescape_dots(parts[0]);
-    o[k] = _set(o[k], value, parts.slice(1));
-    return o;
-}
-function default_1(k, v, o) {
-    if (o == null)
-        return get(k, v);
-    else
-        return set(k, v, o);
-}
-exports.default = default_1;
-;
 
 },{}],32:[function(require,module,exports){
 'use strict';
@@ -3694,7 +3920,7 @@ describe('xhr', function () {
 });
 
 }).call(this,require('_process'))
-},{"../../../../../lib/agent":1,"../../../../../lib/agent/parser/json":2,"../../../../../lib/agent/transform/json":3,"../../../../../lib/agent/transform/multipart":4,"../../../../../lib/agent/transport/xhr":5,"../../../../../lib/cookie/container/memory":7,"../../../../../lib/response":12,"@quenk/noni/lib/control/monad/future":16,"@quenk/test/lib/assert":25,"_process":30}],38:[function(require,module,exports){
+},{"../../../../../lib/agent":1,"../../../../../lib/agent/parser/json":2,"../../../../../lib/agent/transform/json":3,"../../../../../lib/agent/transform/multipart":4,"../../../../../lib/agent/transport/xhr":5,"../../../../../lib/cookie/container/memory":7,"../../../../../lib/response":12,"@quenk/noni/lib/control/monad/future":16,"@quenk/test/lib/assert":26,"_process":31}],38:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var assert_1 = require("@quenk/test/lib/assert");
@@ -3726,7 +3952,7 @@ describe('browser', function () {
     });
 });
 
-},{"../../../lib/browser":6,"@quenk/test/lib/assert":25}],39:[function(require,module,exports){
+},{"../../../lib/browser":6,"@quenk/test/lib/assert":26}],39:[function(require,module,exports){
 require("./browser_test.js");
 require("./agent/transform/xhr_test.js");
 

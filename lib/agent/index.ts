@@ -1,7 +1,7 @@
 import * as util from '../util';
 import { merge } from '@quenk/noni/lib/data/record';
 import { Future, pure } from '@quenk/noni/lib/control/monad/future';
-import { polate } from '@quenk/polate';
+import { interpolate } from '@quenk/noni/lib/data/string';
 import { OutgoingHeaders } from '../header';
 import {
     Request,
@@ -137,7 +137,7 @@ export class Agent<ReqRaw, ResParsed> {
         let tags = options.tags.concat(req.options.tags);
         let context = merge(options.context, req.options.context);
         let ttl = req.options.ttl;
-        let path = util.urlFromString(polate(req.path, context), params);
+        let path = util.urlFromString(interpolate(req.path, context), params);
 
         let ctx = {
             host,
