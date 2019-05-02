@@ -38,10 +38,6 @@
 							</div>
 							<input type="checkbox" id="tsd-filter-inherited" checked />
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
-							<input type="checkbox" id="tsd-filter-externals" checked />
-							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -65,39 +61,10 @@
 		<div class="col-8 col-content">
 			<div class="tsd-panel tsd-typography">
 				<blockquote>
-					<p>Promise based HTTP agent designed with message passing in mind.</p>
+					<p>HTTP agent library.</p>
 				</blockquote>
 				<h2 id="installation">Installation</h2>
-				<pre><code class="lang-sh">npm install --save-dev @quenk/jhr
-</code></pre>
-				<h2 id="usage">Usage</h2>
-				<pre><code class="lang-typescript">
-<span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> response <span class="hljs-keyword">from</span> <span class="hljs-string">'@quenk/jhr/lib/response'</span>;
-<span class="hljs-keyword">import</span> {createAgent} <span class="hljs-keyword">from</span> <span class="hljs-string">'@quenk/jhr/lib/browser'</span>;
-
-<span class="hljs-keyword">let</span> agent = createAgent();
-
-agent
-.get(<span class="hljs-string">'http://example.com'</span>).
-then(<span class="hljs-function"><span class="hljs-params">r</span> =&gt;</span> {
-
-  <span class="hljs-keyword">if</span>(r <span class="hljs-keyword">instanceof</span> response.Ok)
-     <span class="hljs-comment">//it's ok</span>
-  <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(r <span class="hljs-keyword">instanceof</span> response.Conflict)
-    <span class="hljs-comment">//it's a conflict</span>
-  <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(r <span class="hljs-keyword">instanceof</span> response.InternalServerError)
-    <span class="hljs-comment">//it's serious</span>
-  <span class="hljs-keyword">else</span>
-    <span class="hljs-comment">//it's a regular response.UntypedResponse</span>
-
-}).
-<span class="hljs-keyword">catch</span>(<span class="hljs-function"><span class="hljs-params">e</span>=&gt;</span>{
-
- <span class="hljs-comment">//Transport error occured.</span>
-
-});
-
-</code></pre>
+				<pre><code class="language-sh">npm install --save-dev @quenk/jhr</code></pre>
 				<h2 id="license">License</h2>
 				<p>Apache-2.0 © Quenk Technologies Limited</p>
 			</div>
@@ -109,22 +76,43 @@ then(<span class="hljs-function"><span class="hljs-params">r</span> =&gt;</span>
 						<a href="globals.html"><em>Globals</em></a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_agent_agent_.html">"agent/<wbr>Agent"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="modules/_agent_jsontransform_.html">"agent/JSONTransform"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
 						<a href="modules/_agent_index_.html">"agent/index"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_browser_xhrtransport_.html">"browser/XHRTransport"</a>
+						<a href="modules/_agent_parser_index_.html">"agent/parser/index"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_browser_index_.html">"browser/index"</a>
+						<a href="modules/_agent_parser_json_.html">"agent/parser/json"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_cookie_memjar_.html">"cookie/<wbr>Mem<wbr>Jar"</a>
+						<a href="modules/_agent_plugin_csrf_.html">"agent/plugin/csrf"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_agent_plugin_index_.html">"agent/plugin/index"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_agent_transform_index_.html">"agent/transform/index"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_agent_transform_json_.html">"agent/transform/json"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_agent_transform_multipart_.html">"agent/transform/multipart"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_agent_transport_index_.html">"agent/transport/index"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_agent_transport_xhr_.html">"agent/transport/xhr"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_browser_.html">"browser"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_cookie_container_index_.html">"cookie/container/index"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_cookie_container_memory_.html">"cookie/container/memory"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="modules/_cookie_index_.html">"cookie/index"</a>
@@ -136,19 +124,40 @@ then(<span class="hljs-function"><span class="hljs-params">r</span> =&gt;</span>
 						<a href="modules/_headers_.html">"headers"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_index_.html">"index"</a>
+						<a href="modules/_mime_.html">"mime"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_method_.html">"method"</a>
+						<a href="modules/_request_context_.html">"request/context"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
-						<a href="modules/_request_.html">"request"</a>
+						<a href="modules/_request_host_.html">"request/host"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_request_index_.html">"request/index"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_request_method_.html">"request/method"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_request_options_.html">"request/options"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_request_parameters_.html">"request/parameters"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_request_path_.html">"request/path"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_request_tag_.html">"request/tag"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="modules/_response_.html">"response"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="modules/_status_.html">"status"</a>
+					</li>
+					<li class=" tsd-kind-external-module">
+						<a href="modules/_url_.html">"url"</a>
 					</li>
 					<li class=" tsd-kind-external-module">
 						<a href="modules/_util_.html">"util"</a>

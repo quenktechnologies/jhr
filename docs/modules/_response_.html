@@ -38,10 +38,6 @@
 							</div>
 							<input type="checkbox" id="tsd-filter-inherited" checked />
 							<label class="tsd-widget" for="tsd-filter-inherited">Inherited</label>
-							<input type="checkbox" id="tsd-filter-externals" checked />
-							<label class="tsd-widget" for="tsd-filter-externals">Externals</label>
-							<input type="checkbox" id="tsd-filter-only-exported" />
-							<label class="tsd-widget" for="tsd-filter-only-exported">Only exported</label>
 						</div>
 					</div>
 					<a href="#" class="tsd-widget menu no-caption" data-toggle="menu">Menu</a>
@@ -75,14 +71,17 @@
 							<ul class="tsd-index-list">
 								<li class="tsd-kind-class tsd-parent-kind-external-module tsd-has-type-parameter"><a href="../classes/_response_.accepted.html" class="tsd-kind-icon">Accepted</a></li>
 								<li class="tsd-kind-class tsd-parent-kind-external-module tsd-has-type-parameter"><a href="../classes/_response_.badrequest.html" class="tsd-kind-icon">Bad<wbr>Request</a></li>
+								<li class="tsd-kind-class tsd-parent-kind-external-module tsd-has-type-parameter"><a href="../classes/_response_.clienterror.html" class="tsd-kind-icon">Client<wbr>Error</a></li>
 								<li class="tsd-kind-class tsd-parent-kind-external-module tsd-has-type-parameter"><a href="../classes/_response_.conflict.html" class="tsd-kind-icon">Conflict</a></li>
 								<li class="tsd-kind-class tsd-parent-kind-external-module tsd-has-type-parameter"><a href="../classes/_response_.created.html" class="tsd-kind-icon">Created</a></li>
 								<li class="tsd-kind-class tsd-parent-kind-external-module tsd-has-type-parameter"><a href="../classes/_response_.forbidden.html" class="tsd-kind-icon">Forbidden</a></li>
-								<li class="tsd-kind-class tsd-parent-kind-external-module tsd-has-type-parameter"><a href="../classes/_response_.generalresponse.html" class="tsd-kind-icon">General<wbr>Response</a></li>
+								<li class="tsd-kind-class tsd-parent-kind-external-module tsd-has-type-parameter"><a href="../classes/_response_.genericresponse.html" class="tsd-kind-icon">Generic<wbr>Response</a></li>
 								<li class="tsd-kind-class tsd-parent-kind-external-module tsd-has-type-parameter"><a href="../classes/_response_.internalservererror.html" class="tsd-kind-icon">Internal<wbr>Server<wbr>Error</a></li>
-								<li class="tsd-kind-class tsd-parent-kind-external-module"><a href="../classes/_response_.nocontent.html" class="tsd-kind-icon">No<wbr>Content</a></li>
+								<li class="tsd-kind-class tsd-parent-kind-external-module tsd-has-type-parameter"><a href="../classes/_response_.nocontent.html" class="tsd-kind-icon">No<wbr>Content</a></li>
 								<li class="tsd-kind-class tsd-parent-kind-external-module tsd-has-type-parameter"><a href="../classes/_response_.notfound.html" class="tsd-kind-icon">Not<wbr>Found</a></li>
 								<li class="tsd-kind-class tsd-parent-kind-external-module tsd-has-type-parameter"><a href="../classes/_response_.ok.html" class="tsd-kind-icon">Ok</a></li>
+								<li class="tsd-kind-class tsd-parent-kind-external-module tsd-has-type-parameter"><a href="../classes/_response_.servererror.html" class="tsd-kind-icon">Server<wbr>Error</a></li>
+								<li class="tsd-kind-class tsd-parent-kind-external-module tsd-has-type-parameter"><a href="../classes/_response_.success.html" class="tsd-kind-icon">Success</a></li>
 								<li class="tsd-kind-class tsd-parent-kind-external-module tsd-has-type-parameter"><a href="../classes/_response_.unauthorized.html" class="tsd-kind-icon">Unauthorized</a></li>
 							</ul>
 						</section>
@@ -98,12 +97,6 @@
 								<li class="tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter"><a href="_response_.html#createresponse" class="tsd-kind-icon">create<wbr>Response</a></li>
 							</ul>
 						</section>
-						<section class="tsd-index-section tsd-is-not-exported">
-							<h3>Object literals</h3>
-							<ul class="tsd-index-list">
-								<li class="tsd-kind-object-literal tsd-parent-kind-external-module tsd-is-not-exported"><a href="_response_.html#statuses" class="tsd-kind-icon">statuses</a></li>
-							</ul>
-						</section>
 					</div>
 				</section>
 			</section>
@@ -113,79 +106,45 @@
 					<a name="createresponse" class="tsd-anchor"></a>
 					<h3><span class="tsd-flag ts-flagConst">Const</span> create<wbr>Response</h3>
 					<ul class="tsd-signatures tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter">
-						<li class="tsd-signature tsd-kind-icon">create<wbr>Response&lt;R&gt;<span class="tsd-signature-symbol">(</span>status<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">number</span>, body<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">R</span>, headers<span class="tsd-signature-symbol">: </span><a href="../interfaces/_header_.incommingheaders.html" class="tsd-signature-type">IncommingHeaders</a>, options<span class="tsd-signature-symbol">?: </span><a href="../interfaces/_request_.options.html" class="tsd-signature-type">Options</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/_response_.response.html" class="tsd-signature-type">Response</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">R</span><span class="tsd-signature-symbol">&gt;</span></li>
+						<li class="tsd-signature tsd-kind-icon">create<wbr>Response&lt;B&gt;<span class="tsd-signature-symbol">(</span>code<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">status.Code</span>, body<span class="tsd-signature-symbol">: </span><span class="tsd-signature-type">B</span>, headers<span class="tsd-signature-symbol">: </span><a href="../interfaces/_header_.incommingheaders.html" class="tsd-signature-type">IncommingHeaders</a>, options<span class="tsd-signature-symbol">: </span><a href="../interfaces/_request_options_.options.html" class="tsd-signature-type">Options</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="../interfaces/_response_.response.html" class="tsd-signature-type">Response</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">B</span><span class="tsd-signature-symbol">&gt;</span></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/quenktechnologies/jhr/blob/6093c44/src/response.ts#L202">response.ts:202</a></li>
+									<li>Defined in <a href="https://github.com/quenktechnologies/jhr/blob/626d9c2/src/response.ts#L212">response.ts:212</a></li>
 								</ul>
 							</aside>
 							<div class="tsd-comment tsd-typography">
 								<div class="lead">
-									<p>createResponse creates a new typed Response or a GeneralResponse if unsupported.</p>
+									<p>createResponse creates a new typed Response or a GenericResponse if
+									unsupported.</p>
 								</div>
 							</div>
 							<h4 class="tsd-type-parameters-title">Type parameters</h4>
 							<ul class="tsd-type-parameters">
 								<li>
-									<h4>R</h4>
-									<div class="tsd-comment tsd-typography">
-										<p>The type of the body.</p>
-									</div>
+									<h4>B</h4>
 								</li>
 							</ul>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5>status: <span class="tsd-signature-type">number</span></h5>
+									<h5>code: <span class="tsd-signature-type">status.Code</span></h5>
 								</li>
 								<li>
-									<h5>body: <span class="tsd-signature-type">R</span></h5>
+									<h5>body: <span class="tsd-signature-type">B</span></h5>
 								</li>
 								<li>
 									<h5>headers: <a href="../interfaces/_header_.incommingheaders.html" class="tsd-signature-type">IncommingHeaders</a></h5>
 								</li>
 								<li>
-									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> options: <a href="../interfaces/_request_.options.html" class="tsd-signature-type">Options</a><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
+									<h5>options: <a href="../interfaces/_request_options_.options.html" class="tsd-signature-type">Options</a></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="../interfaces/_response_.response.html" class="tsd-signature-type">Response</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">R</span><span class="tsd-signature-symbol">&gt;</span></h4>
+							<h4 class="tsd-returns-title">Returns <a href="../interfaces/_response_.response.html" class="tsd-signature-type">Response</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">B</span><span class="tsd-signature-symbol">&gt;</span></h4>
 						</li>
 					</ul>
-				</section>
-			</section>
-			<section class="tsd-panel-group tsd-member-group tsd-is-not-exported">
-				<h2>Object literals</h2>
-				<section class="tsd-panel tsd-member tsd-kind-object-literal tsd-parent-kind-external-module tsd-is-not-exported">
-					<a name="statuses" class="tsd-anchor"></a>
-					<h3><span class="tsd-flag ts-flagConst">Const</span> statuses</h3>
-					<div class="tsd-signature tsd-kind-icon">statuses<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">object</span></div>
-					<aside class="tsd-sources">
-						<ul>
-							<li>Defined in <a href="https://github.com/quenktechnologies/jhr/blob/6093c44/src/response.ts#L183">response.ts:183</a></li>
-						</ul>
-					</aside>
-					<section class="tsd-panel tsd-member tsd-kind-variable tsd-parent-kind-object-literal tsd-is-not-exported">
-						<a name="statuses.__computed" class="tsd-anchor"></a>
-						<h3>__computed</h3>
-						<div class="tsd-signature tsd-kind-icon">__computed<span class="tsd-signature-symbol">:</span> <a href="../classes/_response_.internalservererror.html" class="tsd-signature-type">InternalServerError</a><span class="tsd-signature-symbol"> =&nbsp;InternalServerError</span></div>
-						<aside class="tsd-sources">
-							<ul>
-								<li>Defined in <a href="https://github.com/quenktechnologies/jhr/blob/6093c44/src/response.ts#L185">response.ts:185</a></li>
-								<li>Defined in <a href="https://github.com/quenktechnologies/jhr/blob/6093c44/src/response.ts#L186">response.ts:186</a></li>
-								<li>Defined in <a href="https://github.com/quenktechnologies/jhr/blob/6093c44/src/response.ts#L187">response.ts:187</a></li>
-								<li>Defined in <a href="https://github.com/quenktechnologies/jhr/blob/6093c44/src/response.ts#L188">response.ts:188</a></li>
-								<li>Defined in <a href="https://github.com/quenktechnologies/jhr/blob/6093c44/src/response.ts#L189">response.ts:189</a></li>
-								<li>Defined in <a href="https://github.com/quenktechnologies/jhr/blob/6093c44/src/response.ts#L190">response.ts:190</a></li>
-								<li>Defined in <a href="https://github.com/quenktechnologies/jhr/blob/6093c44/src/response.ts#L191">response.ts:191</a></li>
-								<li>Defined in <a href="https://github.com/quenktechnologies/jhr/blob/6093c44/src/response.ts#L192">response.ts:192</a></li>
-								<li>Defined in <a href="https://github.com/quenktechnologies/jhr/blob/6093c44/src/response.ts#L193">response.ts:193</a></li>
-								<li>Defined in <a href="https://github.com/quenktechnologies/jhr/blob/6093c44/src/response.ts#L194">response.ts:194</a></li>
-							</ul>
-						</aside>
-					</section>
 				</section>
 			</section>
 		</div>
@@ -195,50 +154,8 @@
 					<li class="globals  ">
 						<a href="../globals.html"><em>Globals</em></a>
 					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_agent_agent_.html">"agent/<wbr>Agent"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_agent_jsontransform_.html">"agent/JSONTransform"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_agent_index_.html">"agent/index"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_browser_xhrtransport_.html">"browser/XHRTransport"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_browser_index_.html">"browser/index"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_cookie_memjar_.html">"cookie/<wbr>Mem<wbr>Jar"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_cookie_index_.html">"cookie/index"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_header_.html">"header"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_headers_.html">"headers"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_index_.html">"index"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_method_.html">"method"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_request_.html">"request"</a>
-					</li>
 					<li class="current tsd-kind-external-module">
 						<a href="_response_.html">"response"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_status_.html">"status"</a>
-					</li>
-					<li class=" tsd-kind-external-module">
-						<a href="_util_.html">"util"</a>
 					</li>
 				</ul>
 			</nav>
@@ -251,6 +168,9 @@
 						<a href="../classes/_response_.badrequest.html" class="tsd-kind-icon">Bad<wbr>Request</a>
 					</li>
 					<li class=" tsd-kind-class tsd-parent-kind-external-module tsd-has-type-parameter">
+						<a href="../classes/_response_.clienterror.html" class="tsd-kind-icon">Client<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class tsd-parent-kind-external-module tsd-has-type-parameter">
 						<a href="../classes/_response_.conflict.html" class="tsd-kind-icon">Conflict</a>
 					</li>
 					<li class=" tsd-kind-class tsd-parent-kind-external-module tsd-has-type-parameter">
@@ -260,12 +180,12 @@
 						<a href="../classes/_response_.forbidden.html" class="tsd-kind-icon">Forbidden</a>
 					</li>
 					<li class=" tsd-kind-class tsd-parent-kind-external-module tsd-has-type-parameter">
-						<a href="../classes/_response_.generalresponse.html" class="tsd-kind-icon">General<wbr>Response</a>
+						<a href="../classes/_response_.genericresponse.html" class="tsd-kind-icon">Generic<wbr>Response</a>
 					</li>
 					<li class=" tsd-kind-class tsd-parent-kind-external-module tsd-has-type-parameter">
 						<a href="../classes/_response_.internalservererror.html" class="tsd-kind-icon">Internal<wbr>Server<wbr>Error</a>
 					</li>
-					<li class=" tsd-kind-class tsd-parent-kind-external-module">
+					<li class=" tsd-kind-class tsd-parent-kind-external-module tsd-has-type-parameter">
 						<a href="../classes/_response_.nocontent.html" class="tsd-kind-icon">No<wbr>Content</a>
 					</li>
 					<li class=" tsd-kind-class tsd-parent-kind-external-module tsd-has-type-parameter">
@@ -275,6 +195,12 @@
 						<a href="../classes/_response_.ok.html" class="tsd-kind-icon">Ok</a>
 					</li>
 					<li class=" tsd-kind-class tsd-parent-kind-external-module tsd-has-type-parameter">
+						<a href="../classes/_response_.servererror.html" class="tsd-kind-icon">Server<wbr>Error</a>
+					</li>
+					<li class=" tsd-kind-class tsd-parent-kind-external-module tsd-has-type-parameter">
+						<a href="../classes/_response_.success.html" class="tsd-kind-icon">Success</a>
+					</li>
+					<li class=" tsd-kind-class tsd-parent-kind-external-module tsd-has-type-parameter">
 						<a href="../classes/_response_.unauthorized.html" class="tsd-kind-icon">Unauthorized</a>
 					</li>
 					<li class=" tsd-kind-interface tsd-parent-kind-external-module tsd-has-type-parameter">
@@ -282,9 +208,6 @@
 					</li>
 					<li class=" tsd-kind-function tsd-parent-kind-external-module tsd-has-type-parameter">
 						<a href="_response_.html#createresponse" class="tsd-kind-icon">create<wbr>Response</a>
-					</li>
-					<li class=" tsd-kind-object-literal tsd-parent-kind-external-module tsd-is-not-exported">
-						<a href="_response_.html#statuses" class="tsd-kind-icon">statuses</a>
 					</li>
 				</ul>
 			</nav>

@@ -26,7 +26,7 @@ test/browser/build/run.js: $(shell find test/browser/suite -type f) lib
 
 .PHONY: docs
 docs: src
-	$(TYPEDOC) --out docs \
+	./node_modules/.bin/typedoc --out docs \
 	  --excludeExternals \
 	  --excludeNotExported \
 	  --tsconfig src/tsconfig.json
