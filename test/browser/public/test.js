@@ -81,7 +81,7 @@ var Agent = /** @class */ (function () {
     Agent.prototype.send = function (req) {
         var _a = this, host = _a.host, cookies = _a.cookies, headers = _a.headers, options = _a.options, transport = _a.transport, plugins = _a.plugins;
         var method = req.method, params = req.params, body = req.body;
-        var tags = options.tags.concat(req.options.tags);
+        var tags = record_1.merge(options.tags, req.options.tags);
         var context = record_1.merge(options.context, req.options.context);
         var ttl = req.options.ttl;
         var path = util.urlFromString(string_1.interpolate(req.path, context), params);
@@ -266,7 +266,7 @@ exports.splitUrl = function (url) {
 /**
  * createAgent produces a new default Agent for use in the browser.
  */
-exports.createAgent = function (host) { return new agent_1.Agent(host, {}, new memory_1.MemoryContainer(), { ttl: 0, tags: [], context: {} }, new xhr_1.XHRTransport('', new json_1.JSONTransform(), new json_2.JSONParser()), []); };
+exports.createAgent = function (host) { return new agent_1.Agent(host, {}, new memory_1.MemoryContainer(), { ttl: 0, tags: {}, context: {} }, new xhr_1.XHRTransport('', new json_1.JSONTransform(), new json_2.JSONParser()), []); };
 /**
  * get shorthand helper.
  *
@@ -477,7 +477,7 @@ var method_1 = require("./method");
 var Head = /** @class */ (function () {
     function Head(path, params, headers, options) {
         if (headers === void 0) { headers = {}; }
-        if (options === void 0) { options = { ttl: 0, tags: [], context: {} }; }
+        if (options === void 0) { options = { ttl: 0, tags: {}, context: {} }; }
         this.path = path;
         this.params = params;
         this.headers = headers;
@@ -506,7 +506,7 @@ exports.Get = Get;
 var Post = /** @class */ (function () {
     function Post(path, body, headers, options) {
         if (headers === void 0) { headers = {}; }
-        if (options === void 0) { options = { ttl: 0, tags: [], context: {} }; }
+        if (options === void 0) { options = { ttl: 0, tags: {}, context: {} }; }
         this.path = path;
         this.body = body;
         this.headers = headers;
@@ -3867,10 +3867,10 @@ var json_2 = require("../../../../../lib/agent/parser/json");
 var xhr_1 = require("../../../../../lib/agent/transport/xhr");
 var response_1 = require("../../../../../lib/response");
 var host = process.env.HOST || 'http://localhost';
-var port = process.env.PORT || '2407';
+var port = process.env.PORT || '9999';
 var newAgent = function (h) {
     if (h === void 0) { h = host + ":" + port; }
-    return new agent_1.Agent(h, {}, new memory_1.MemoryContainer(), { ttl: 0, tags: [], context: {} }, new xhr_1.XHRTransport('', new json_1.JSONTransform(), new json_2.JSONParser()), []);
+    return new agent_1.Agent(h, {}, new memory_1.MemoryContainer(), { ttl: 0, tags: {}, context: {} }, new xhr_1.XHRTransport('', new json_1.JSONTransform(), new json_2.JSONParser()), []);
 };
 describe('xhr', function () {
     it('should make successful requests ', function () {

@@ -38,7 +38,7 @@ export const createAgent = <B extends Object>
         host,
         {},
         new MemoryContainer(),
-        { ttl: 0, tags: [], context: {} },
+      { ttl: 0, tags: {}, context: {} },
         new XHRTransport('', new JSONTransform(), new JSONParser()),
         []);
 

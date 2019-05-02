@@ -1,4 +1,19 @@
-import { Tag } from './tag';
+
+/**
+ * Tag type.
+ */
+export type Tag = string | number;
+
+/**
+ * Tags can be used to store information in a request.
+ *
+ * Tags are reproduced in the response object.
+ */
+export interface Tags {
+
+  [key:string]: Tag 
+
+}
 
 /**
  * Options for a Request.
@@ -15,7 +30,7 @@ export interface Options {
     /**
      * tags can be used to distinguish between multiple requests.
      */
-    tags: Tag[],
+    tags: Tags,
 
     /**
      * context is used in the expansion of template variables in the Request's

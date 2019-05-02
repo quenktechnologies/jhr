@@ -9,11 +9,11 @@ import { XHRTransport } from '../../../../../lib/agent/transport/xhr';
 import { Ok, Created, NoContent } from '../../../../../lib/response';
 
 const host = process.env.HOST || 'http://localhost';
-const port = process.env.PORT || '2407';
+const port = process.env.PORT || '9999';
 
 const newAgent = (h = `${host}:${port}`) =>
     new Agent(h, {}, new MemoryContainer(),
-        { ttl: 0, tags: [], context: {} },
+        { ttl: 0, tags: {}, context: {} },
         new XHRTransport('', new JSONTransform(), new JSONParser()), []);
 
 describe('xhr', () => {
@@ -81,7 +81,7 @@ describe('xhr', () => {
         fd.append('filename', 'somefile');
         fd.append('file', new Blob(['some file']));
 
-        return toPromise(            agent                .post('/file', fd))
+        return toPromise(agent.post('/file', fd))
             .then(function(res) {
 
                 assert(res.code).equal(204);
