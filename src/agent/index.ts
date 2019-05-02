@@ -38,17 +38,17 @@ export class Agent<ReqRaw, ResParsed> {
         public transport: Transport<ReqRaw, ResParsed>,
         public plugins: Plugin<ReqRaw, ResParsed>[]) { }
 
-  /**
-   * setTransport allows the transport to be changed (possibly to process
-   * a different type of response).
-   *
-   * A new Agent instance is created with NO plugins installed.
-   */
-  setTransport<Req, Res>(
-    transport: Transport<Req, Res>,
-    plugins:Plugin<Req, Res>[]=[])    : Agent<Req, Res> {
+    /**
+     * setTransport allows the transport to be changed (possibly to process
+     * a different type of response).
+     *
+     * A new Agent instance is created with NO plugins installed.
+     */
+    setTransport<Req, Res>(
+        transport: Transport<Req, Res>,
+        plugins: Plugin<Req, Res>[] = []): Agent<Req, Res> {
 
-        let {            host, headers, cookies, options         } = this;
+        let { host, headers, cookies, options } = this;
 
         return new Agent(host, headers, cookies, options, transport, plugins);
 
@@ -134,7 +134,7 @@ export class Agent<ReqRaw, ResParsed> {
         let { host, cookies, headers, options, transport, plugins } = this;
 
         let { method, params, body } = req;
-        let tags = options.tags.concat(req.options.tags);
+        let tags = merge(options.tags, req.options.tags);
         let context = merge(options.context, req.options.context);
         let ttl = req.options.ttl;
         let path = util.urlFromString(interpolate(req.path, context), params);
