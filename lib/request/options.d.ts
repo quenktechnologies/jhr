@@ -16,6 +16,7 @@ export interface Tags {
  * These options are used mostly to affect how the library treats with a Request.
  */
 export interface Options {
+    [key: string]: number | Tags | object;
     /**
      * ttl specifies how long to wait on the Request to complete.
      */

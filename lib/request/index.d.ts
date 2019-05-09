@@ -49,7 +49,7 @@ export interface Request<B> {
     /**
      * options for the Request
      */
-    options: Options;
+    options: Partial<Options>;
 }
 /**
  * Head request.
@@ -58,9 +58,9 @@ export declare class Head implements Request<undefined> {
     path: Path;
     params: Parameters;
     headers: OutgoingHeaders;
-    options: Options;
+    options: Partial<Options>;
     method: Method;
-    constructor(path: Path, params: Parameters, headers?: OutgoingHeaders, options?: Options);
+    constructor(path: Path, params: Parameters, headers?: OutgoingHeaders, options?: Partial<Options>);
 }
 /**
  * Get request.
@@ -75,9 +75,9 @@ export declare class Post<B> implements Request<B> {
     path: Path;
     body: B;
     headers: OutgoingHeaders;
-    options: Options;
+    options: Partial<Options>;
     method: Method;
-    constructor(path: Path, body: B, headers?: OutgoingHeaders, options?: Options);
+    constructor(path: Path, body: B, headers?: OutgoingHeaders, options?: Partial<Options>);
 }
 /**
  * Put request.

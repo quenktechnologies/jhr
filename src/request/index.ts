@@ -62,7 +62,7 @@ export interface Request<B> {
     /**
      * options for the Request
      */
-    options: Options
+    options: Partial<Options>
 
 }
 
@@ -77,7 +77,7 @@ export class Head implements Request<undefined> {
         public path: Path,
         public params: Parameters,
         public headers: OutgoingHeaders = {},
-      public options: Options = { ttl: 0, tags: {}, context: {} }) { }
+        public options: Partial<Options> = { ttl: 0, tags: {}, context: {} }) { }
 
 }
 
@@ -101,7 +101,7 @@ export class Post<B> implements Request<B> {
         public path: Path,
         public body: B,
         public headers: OutgoingHeaders = {},
-      public options: Options = { ttl: 0, tags: {}, context: {} }) { }
+        public options: Partial<Options> = { ttl: 0, tags: {}, context: {} }) { }
 
 }
 

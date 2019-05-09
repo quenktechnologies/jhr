@@ -1,5 +1,5 @@
 import * as util from '../util';
-import { merge } from '@quenk/noni/lib/data/record';
+import { rmerge3 } from '@quenk/noni/lib/data/record';
 import { Future, pure } from '@quenk/noni/lib/control/monad/future';
 import { interpolate } from '@quenk/noni/lib/data/string';
 import { OutgoingHeaders } from '../header';
@@ -21,6 +21,8 @@ import { Context } from '../request/context';
 import { Response } from '../response';
 import { Transport } from './transport';
 import { Plugin } from './plugin';
+
+const defaultOptions = { ttl: 0, tags: {}, context: {} };
 
 /**
  * Agent acts as an HTTP client.
@@ -131,12 +133,10 @@ export class Agent<ReqRaw, ResParsed> {
      */
     send(req: Request<ReqRaw>): Future<Response<ResParsed>> {
 
-        let { host, cookies, headers, options, transport, plugins } = this;
-
+        let { host, cookies, headers, transport, plugins } = this;
+        let options = rmerge3(defaultOptions, this.options, <Options>req.options);
         let { method, params, body } = req;
-        let tags = merge(options.tags, req.options.tags);
-        let context = merge(options.context, req.options.context);
-        let ttl = req.options.ttl;
+        let { tags, context, ttl } = options;
         let path = util.urlFromString(interpolate(req.path, context), params);
 
         let ctx = {
