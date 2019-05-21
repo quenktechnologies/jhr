@@ -5,10 +5,19 @@ import { Container } from '../cookie/container';
 import { Host } from '../request/host';
 import { Path } from '../request/path';
 import { Parameters } from '../request/parameters';
-import { Options } from '../request/options';
+import { Options as RequestOptions } from '../request/options';
 import { Response } from '../response';
 import { Transport } from './transport';
 import { Plugin } from './plugin';
+/**
+ * Options for configuring the agent.
+ */
+export interface Options extends RequestOptions {
+    /**
+     * port requests will be made one.
+     */
+    port: number;
+}
 /**
  * Agent acts as an HTTP client.
  *

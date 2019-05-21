@@ -1,4 +1,8 @@
 /**
+ * Value type.
+ */
+export declare type Value = string;
+/**
  * CookieOptions used when creating cookies.
  */
 export interface Options {
@@ -28,5 +32,5 @@ export interface Options {
  * Cookies is a map of key cookie values.
  */
 export interface Cookies {
-    [key: string]: string;
+    [key: string]: Value;
 }

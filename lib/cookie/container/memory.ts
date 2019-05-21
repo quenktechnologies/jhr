@@ -1,5 +1,5 @@
 import { Future, pure } from '@quenk/noni/lib/control/monad/future';
-import { Options, Cookies } from '../';
+import { Options, Value, Cookies } from '../';
 import { Container } from './';
 
 const _defaults = {
@@ -21,7 +21,7 @@ export class MemoryContainer implements Container {
         public cookies: string = '',
         public defaults: Options = _defaults) { }
 
-    set(name: string, value: string, opts: Options = {}): Future<Container> {
+    set(name: string, value: Value, opts: Options = {}): Future<Container> {
 
         let defaults = this.defaults;
 
@@ -53,30 +53,7 @@ export class MemoryContainer implements Container {
             (secure ? ';secure' : '') +
             (httpOnly ? ';httponly' : '');
 
-      return pure(<Container>this);
-
-    }
-
-    get(name: string): Future<string> {
-
-        return pure(this.getCookie(name));
-
-    }
-
-    /**
-     * getAll the cookies as a map.
-     */
-    getAll(): Future<Cookies> {
-
-        let o: Cookies = {};
-
-        this
-            .cookies
-            .replace(/((?:^|\s*;)[^\=]+)(?=;|$)|^\s*|\s*(?:\=[^;]*)?(?:\1|$)/g, "")
-            .split(/\s*(?:\=[^;]*)?;\s*/)
-            .forEach(k => { o[k] = this.getCookie(k) });
-
-        return pure(o);
+        return pure(<Container>this);
 
     }
 
@@ -90,7 +67,14 @@ export class MemoryContainer implements Container {
 
     }
 
-    getCookie(name: string): string {
+
+    get(name: string): Future<Value> {
+
+        return pure(this.getCookie(name));
+
+    }
+
+    getCookie(name: string): Value {
 
         let cookies = this.cookies.split(';');
 
@@ -117,6 +101,23 @@ export class MemoryContainer implements Container {
         }
 
         return '';
+    }
+
+    /**
+     * getAll the cookies as a map.
+     */
+    getAll(): Future<Cookies> {
+
+        let o: Cookies = {};
+
+        this
+            .cookies
+            .replace(/((?:^|\s*;)[^\=]+)(?=;|$)|^\s*|\s*(?:\=[^;]*)?(?:\1|$)/g, "")
+            .split(/\s*(?:\=[^;]*)?;\s*/)
+            .forEach(k => { o[k] = this.getCookie(k) });
+
+        return pure(o);
+
     }
 
 }
