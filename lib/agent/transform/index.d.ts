@@ -21,7 +21,7 @@ export interface Transform<A, B> {
  *
  * Defaults to text/html mime type.
  */
-export declare class JSONTransform<A> implements Transform<A, A> {
+export declare class NoTransform<A> implements Transform<A, A> {
     type: string;
     constructor(type?: string);
     apply(body: A): Except<A>;

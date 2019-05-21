@@ -27,7 +27,7 @@ export interface Transform<A, B> {
  *
  * Defaults to text/html mime type.
  */
-export class JSONTransform<A> implements Transform<A, A> {
+export class NoTransform<A> implements Transform<A, A> {
 
     constructor(public type = 'text/html; charset=utf-8') { }
 
