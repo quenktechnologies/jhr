@@ -1,4 +1,3 @@
-import { Future } from '@quenk/noni/lib/control/monad/future';
 import { Options, Value, Cookies } from '../';
 import { Container } from './';
 /**
@@ -8,15 +7,16 @@ export declare class MemoryContainer implements Container {
     cookies: string;
     defaults: Options;
     constructor(cookies?: string, defaults?: Options);
-    set(name: string, value: Value, opts?: Options): Future<Container>;
+    set(name: string, value: Value, opts?: Options): Container;
     /**
      * update the internal cookie string representation.
      */
-    update(cookies: string): Future<Container>;
-    get(name: string): Future<Value>;
+    update(cookies: string): Container;
+    get(name: string): Value;
     getCookie(name: string): Value;
     /**
      * getAll the cookies as a map.
      */
-    getAll(): Future<Cookies>;
+    getAll(): Cookies;
+    getString(): string;
 }

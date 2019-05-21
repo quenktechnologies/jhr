@@ -1,7 +1,7 @@
 import { Future, pure } from '@quenk/noni/lib/control/monad/future';
 import { merge } from '@quenk/noni/lib/data/record';
 import { Context } from '../../request/context';
-import {Response} from '../../response';
+import { Response } from '../../response';
 import { Plugin } from './';
 
 /**
@@ -17,22 +17,17 @@ export class CSRFProtectionPlugin<ReqBody, ResParsed>
 
     beforeRequest(ctx: Context<ReqBody>): Future<Context<ReqBody>> {
 
-        return ctx
-            .cookies
-            .get(this.cookie)
-            .chain((value: string) => {
+        let value = ctx.cookies.get(this.cookie);
 
-                ctx.headers = merge(ctx.headers, {
-                    [this.header]: value
-                });
+        ctx.headers = merge(ctx.headers, {
+            [this.header]: value
+        });
 
-                return pure(ctx);
-
-            });
+        return pure(ctx);
 
     }
 
-    afterResponse(r: Response<ResParsed>)        : Future<Response<ResParsed>> {
+    afterResponse(r: Response<ResParsed>): Future<Response<ResParsed>> {
 
         return pure(r);
 
