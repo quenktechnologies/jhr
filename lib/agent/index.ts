@@ -22,7 +22,10 @@ import { Response } from '../response';
 import { Transport } from './transport';
 import { Plugin } from './plugin';
 
-const defaultOptions = { ttl: 0, tags: {}, context: {}, port: 80 };
+/**
+ * defaultOptions
+ */
+export const defaultOptions = { ttl: 0, tags: {}, context: {}, port: 80 };
 
 /**
  * Options for configuring the agent.

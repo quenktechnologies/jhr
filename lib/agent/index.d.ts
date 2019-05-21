@@ -10,6 +10,15 @@ import { Response } from '../response';
 import { Transport } from './transport';
 import { Plugin } from './plugin';
 /**
+ * defaultOptions
+ */
+export declare const defaultOptions: {
+    ttl: number;
+    tags: {};
+    context: {};
+    port: number;
+};
+/**
  * Options for configuring the agent.
  */
 export interface Options extends RequestOptions {
