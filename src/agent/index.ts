@@ -16,13 +16,25 @@ import { Container } from '../cookie/container';
 import { Host } from '../request/host';
 import { Path } from '../request/path';
 import { Parameters } from '../request/parameters';
-import { Options } from '../request/options';
+import { Options as RequestOptions } from '../request/options';
 import { Context } from '../request/context';
 import { Response } from '../response';
 import { Transport } from './transport';
 import { Plugin } from './plugin';
 
-const defaultOptions = { ttl: 0, tags: {}, context: {} };
+const defaultOptions = { ttl: 0, tags: {}, context: {}, port: 80 };
+
+/**
+ * Options for configuring the agent.
+ */
+export interface Options extends RequestOptions {
+
+    /**
+     * port requests will be made one.
+     */
+    port: number
+
+}
 
 /**
  * Agent acts as an HTTP client.
@@ -134,13 +146,18 @@ export class Agent<ReqRaw, ResParsed> {
     send(req: Request<ReqRaw>): Future<Response<ResParsed>> {
 
         let { host, cookies, headers, transport, plugins } = this;
-        let options = rmerge3(defaultOptions, this.options, <Options>req.options);
+
+        let options = rmerge3(defaultOptions, <Options>this.options,
+            <Options>req.options);
+
+        let port = options.port;
         let { method, params, body } = req;
         let { tags, context, ttl } = options;
         let path = util.urlFromString(interpolate(req.path, context), params);
 
         let ctx = {
             host,
+            port,
             method,
             path,
             body,

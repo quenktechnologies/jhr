@@ -13,7 +13,7 @@ var host = process.env.HOST || 'http://localhost';
 var port = process.env.PORT || '9999';
 var newAgent = function (h) {
     if (h === void 0) { h = host + ":" + port; }
-    return new agent_1.Agent(h, {}, new memory_1.MemoryContainer(), { ttl: 0, tags: {}, context: {} }, new xhr_1.XHRTransport('', new json_1.JSONTransform(), new json_2.JSONParser()), []);
+    return new agent_1.Agent(h, {}, new memory_1.MemoryContainer(), { ttl: 0, tags: {}, context: {}, port: 80 }, new xhr_1.XHRTransport('', new json_1.JSONTransform(), new json_2.JSONParser()), []);
 };
 describe('xhr', function () {
     it('should make successful requests ', function () {

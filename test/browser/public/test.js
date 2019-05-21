@@ -6,7 +6,7 @@ var record_1 = require("@quenk/noni/lib/data/record");
 var future_1 = require("@quenk/noni/lib/control/monad/future");
 var string_1 = require("@quenk/noni/lib/data/string");
 var request_1 = require("../request");
-var defaultOptions = { ttl: 0, tags: {}, context: {} };
+var defaultOptions = { ttl: 0, tags: {}, context: {}, port: 80 };
 /**
  * Agent acts as an HTTP client.
  *
@@ -82,11 +82,13 @@ var Agent = /** @class */ (function () {
     Agent.prototype.send = function (req) {
         var _a = this, host = _a.host, cookies = _a.cookies, headers = _a.headers, transport = _a.transport, plugins = _a.plugins;
         var options = record_1.rmerge3(defaultOptions, this.options, req.options);
+        var port = options.port;
         var method = req.method, params = req.params, body = req.body;
         var tags = options.tags, context = options.context, ttl = options.ttl;
         var path = util.urlFromString(string_1.interpolate(req.path, context), params);
         var ctx = {
             host: host,
+            port: port,
             method: method,
             path: path,
             body: body,
@@ -266,7 +268,10 @@ exports.splitUrl = function (url) {
 /**
  * createAgent produces a new default Agent for use in the browser.
  */
-exports.createAgent = function (host) { return new agent_1.Agent(host, {}, new memory_1.MemoryContainer(), { ttl: 0, tags: {}, context: {} }, new xhr_1.XHRTransport('', new json_1.JSONTransform(), new json_2.JSONParser()), []); };
+exports.createAgent = function (host, port) {
+    if (port === void 0) { port = 80; }
+    return new agent_1.Agent(host, {}, new memory_1.MemoryContainer(), { ttl: 0, tags: {}, context: {}, port: port }, new xhr_1.XHRTransport('', new json_1.JSONTransform(), new json_2.JSONParser()), []);
+};
 /**
  * get shorthand helper.
  *
@@ -329,28 +334,15 @@ var MemoryContainer = /** @class */ (function () {
             (httpOnly ? ';httponly' : '');
         return future_1.pure(this);
     };
-    MemoryContainer.prototype.get = function (name) {
-        return future_1.pure(this.getCookie(name));
-    };
-    /**
-     * getAll the cookies as a map.
-     */
-    MemoryContainer.prototype.getAll = function () {
-        var _this = this;
-        var o = {};
-        this
-            .cookies
-            .replace(/((?:^|\s*;)[^\=]+)(?=;|$)|^\s*|\s*(?:\=[^;]*)?(?:\1|$)/g, "")
-            .split(/\s*(?:\=[^;]*)?;\s*/)
-            .forEach(function (k) { o[k] = _this.getCookie(k); });
-        return future_1.pure(o);
-    };
     /**
      * update the internal cookie string representation.
      */
     MemoryContainer.prototype.update = function (cookies) {
         this.cookies = cookies;
         return future_1.pure(this);
+    };
+    MemoryContainer.prototype.get = function (name) {
+        return future_1.pure(this.getCookie(name));
     };
     MemoryContainer.prototype.getCookie = function (name) {
         var cookies = this.cookies.split(';');
@@ -370,6 +362,19 @@ var MemoryContainer = /** @class */ (function () {
             }
         }
         return '';
+    };
+    /**
+     * getAll the cookies as a map.
+     */
+    MemoryContainer.prototype.getAll = function () {
+        var _this = this;
+        var o = {};
+        this
+            .cookies
+            .replace(/((?:^|\s*;)[^\=]+)(?=;|$)|^\s*|\s*(?:\=[^;]*)?(?:\1|$)/g, "")
+            .split(/\s*(?:\=[^;]*)?;\s*/)
+            .forEach(function (k) { o[k] = _this.getCookie(k); });
+        return future_1.pure(o);
     };
     return MemoryContainer;
 }());
@@ -3870,7 +3875,7 @@ var host = process.env.HOST || 'http://localhost';
 var port = process.env.PORT || '9999';
 var newAgent = function (h) {
     if (h === void 0) { h = host + ":" + port; }
-    return new agent_1.Agent(h, {}, new memory_1.MemoryContainer(), { ttl: 0, tags: {}, context: {} }, new xhr_1.XHRTransport('', new json_1.JSONTransform(), new json_2.JSONParser()), []);
+    return new agent_1.Agent(h, {}, new memory_1.MemoryContainer(), { ttl: 0, tags: {}, context: {}, port: 80 }, new xhr_1.XHRTransport('', new json_1.JSONTransform(), new json_2.JSONParser()), []);
 };
 describe('xhr', function () {
     it('should make successful requests ', function () {
@@ -3954,6 +3959,6 @@ describe('browser', function () {
 
 },{"../../../lib/browser":6,"@quenk/test/lib/assert":26}],39:[function(require,module,exports){
 require("./browser_test.js");
-require("./agent/transform/xhr_test.js");
+require("./agent/transport/xhr_test.js");
 
-},{"./agent/transform/xhr_test.js":37,"./browser_test.js":38}]},{},[39]);
+},{"./agent/transport/xhr_test.js":37,"./browser_test.js":38}]},{},[39]);

@@ -1,5 +1,5 @@
-import {Except} from '@quenk/noni/lib/control/error';
-import {Mime} from '../../mime';
+import { Except } from '@quenk/noni/lib/control/error';
+import { Mime } from '../../mime';
 
 /**
  * Transform shapes a write request's body before sending it 
@@ -17,6 +17,6 @@ export interface Transform<A, B> {
     /**
      * apply the Transform to a raw request body.
      */
-  apply(raw: A): Except<B>
+    apply(raw: A): Except<B>
 
 }

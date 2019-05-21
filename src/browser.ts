@@ -14,7 +14,7 @@ import { Url } from './url';
 import { Agent } from './agent';
 
 const HTTP = 'http://';
-const HTTPS= 'https://';
+const HTTPS = 'https://';
 
 /**
  * @private
@@ -34,11 +34,11 @@ export const splitUrl = (url: Url): [Host, Path] => {
  * createAgent produces a new default Agent for use in the browser.
  */
 export const createAgent = <B extends Object>
-    (host: Host): Agent<object, B> => new Agent(
+    (host: Host, port = 80): Agent<object, B> => new Agent(
         host,
         {},
         new MemoryContainer(),
-      { ttl: 0, tags: {}, context: {} },
+        { ttl: 0, tags: {}, context: {}, port },
         new XHRTransport('', new JSONTransform(), new JSONParser()),
         []);
 

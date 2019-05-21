@@ -1,22 +1,36 @@
+import * as http from 'http';
+import * as express from 'express';
+import { start } from '../../../../fixtures/server';
 import { assert } from '@quenk/test/lib/assert';
 import { parallel, toPromise } from '@quenk/noni/lib/control/monad/future';
 import { Agent } from '../../../../../lib/agent';
 import { MemoryContainer } from '../../../../../lib/cookie/container/memory';
 import { JSONTransform } from '../../../../../lib/agent/transform/json';
-import { MultipartTransform } from '../../../../../lib/agent/transform/multipart';
 import { JSONParser } from '../../../../../lib/agent/parser/json';
-import { XHRTransport } from '../../../../../lib/agent/transport/xhr';
+import {
+    StringBufferAdapterParser
+} from '../../../../../lib/agent/transport/node/parser';
+import { NodeHTTPTransport } from '../../../../../lib/agent/transport/node/http';
 import { Ok, Created, NoContent } from '../../../../../lib/response';
 
-const host = process.env.HOST || 'http://localhost';
+const host = process.env.HOST || 'localhost';
 const port = process.env.PORT || '9999';
 
-const newAgent = (h = `${host}:${port}`) =>
+const newAgent = (h = host) =>
     new Agent(h, {}, new MemoryContainer(),
-        { ttl: 0, tags: {}, context: {} },
-        new XHRTransport('', new JSONTransform(), new JSONParser()), []);
+        { ttl: 0, tags: {}, context: {}, port: Number(port) },
+        new NodeHTTPTransport(
+            new JSONTransform(),
+            new StringBufferAdapterParser(new JSONParser()),
+            new http.Agent()), []);
 
-describe('xhr', () => {
+let app: express.App;
+
+describe('http', () => {
+
+    before(cb => { app = start(p => { console.error(`testing on ${p}.`); cb(); }); })
+
+    after(cb => { app.close(() => cb()); })
 
     it('should make successful requests ', function() {
 
@@ -35,18 +49,6 @@ describe('xhr', () => {
 
     });
 
-    it('should detect transport errors', function() {
-
-        return toPromise(newAgent('hddp://example.com').get('/'))
-            .catch(function(e) {
-
-                assert(e).be.instance.of(Error);
-                assert(e.message).equal('TransportError');
-
-            });
-
-    });
-
     it('should send the correct body', function() {
 
         var body = { "email": "me@email.com", "password": "password" };
@@ -57,6 +59,7 @@ describe('xhr', () => {
                 assert(res.code).equal(200);
 
             });
+
     });
 
     it('should provide the correct body', function() {
@@ -66,26 +69,6 @@ describe('xhr', () => {
                 assert(res.body).equate({
                     "a": true, "b": false, "c": 1, "d": "1"
                 });
-            });
-
-    });
-
-    it('should work with multiparts', function() {
-
-        let fd = new FormData();
-
-        let agent = newAgent()
-            .setTransport(new XHRTransport('',
-                new MultipartTransform(), new JSONParser()));
-
-        fd.append('filename', 'somefile');
-        fd.append('file', new Blob(['some file']));
-
-        return toPromise(agent.post('/file', fd))
-            .then(function(res) {
-
-                assert(res.code).equal(204);
-
             });
 
     });

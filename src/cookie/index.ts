@@ -1,3 +1,9 @@
+
+/**
+ * Value type.
+ */
+export type Value = string;
+
 /**
  * CookieOptions used when creating cookies.
  */
@@ -36,6 +42,6 @@ export interface Options {
  */
 export interface Cookies {
 
-    [key: string]: string
+    [key: string]: Value
 
 }

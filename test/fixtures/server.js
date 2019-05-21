@@ -4,9 +4,12 @@ const cors = require('cors');
 const multer = require('multer');
 
 const port = process.env.PORT || 9999;
-const app = express();
 
 process.env.PORT = port;
+
+module.exports.start = function(cb) {
+
+const app = express();
 
 app.use(function(_, res, next) {
     res.set('Cache-Control', 'no-cache, no-store');
@@ -63,4 +66,6 @@ app.post('/file', multer({storage: multer.memoryStorage()}).single('file'),
 
     });
 
-app.listen(port, () => console.log(`Started test server on port ${port}`));
+return app.listen(port, () => cb(port));
+
+}

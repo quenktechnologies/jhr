@@ -18,6 +18,11 @@ export interface Context<ReqBody> {
     host: Host
 
     /**
+     * port
+     */
+    port: number,
+
+    /**
      * method request type.
      */
     method: Method,

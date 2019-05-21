@@ -94,10 +94,10 @@ export class XHRTransport<Raw, Res> implements Transport<Raw, Res> {
 
             if ((method === Method.Get) || (method === Method.Head))
                 xhr.setRequestHeader(ACCEPTS, parser.accepts);
-          else if(transform.type !== 'multipart/form-data')
+            else if (transform.type !== 'multipart/form-data')
                 xhr.setRequestHeader(CONTENT_TYPE, transform.type);
-          //^ multipart forms set a custom content type
-          
+            //^ multipart forms set a custom content type
+
             xhr.send(transBody);
 
             return () => xhr.abort();
