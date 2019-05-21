@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>&quot;agent/index&quot; | @quenk/jhr</title>
+	<title>&quot;agent/transport/node/index&quot; | @quenk/jhr</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -52,10 +52,10 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="_agent_index_.html">&quot;agent/index&quot;</a>
+					<a href="_agent_transport_node_index_.html">&quot;agent/transport/node/index&quot;</a>
 				</li>
 			</ul>
-			<h1>External module &quot;agent/index&quot;</h1>
+			<h1>External module &quot;agent/transport/node/index&quot;</h1>
 		</div>
 	</div>
 </header>
@@ -69,15 +69,82 @@
 						<section class="tsd-index-section ">
 							<h3>Classes</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-class tsd-parent-kind-external-module tsd-has-type-parameter"><a href="../classes/_agent_index_.agent.html" class="tsd-kind-icon">Agent</a></li>
+								<li class="tsd-kind-class tsd-parent-kind-external-module"><a href="../classes/_agent_transport_node_index_.abortederror.html" class="tsd-kind-icon">Aborted<wbr>Error</a></li>
+								<li class="tsd-kind-class tsd-parent-kind-external-module tsd-has-type-parameter"><a href="../classes/_agent_transport_node_index_.nodehttptransport.html" class="tsd-kind-icon">NodeHTTPTransport</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
-							<h3>Interfaces</h3>
+							<h3>Type aliases</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-interface tsd-parent-kind-external-module"><a href="../interfaces/_agent_index_.options.html" class="tsd-kind-icon">Options</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-external-module"><a href="_agent_transport_node_index_.html#nodeagent" class="tsd-kind-icon">Node<wbr>Agent</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-external-module"><a href="_agent_transport_node_index_.html#nodeoptions" class="tsd-kind-icon">Node<wbr>Options</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-external-module"><a href="_agent_transport_node_index_.html#requestbody" class="tsd-kind-icon">Request<wbr>Body</a></li>
+								<li class="tsd-kind-type-alias tsd-parent-kind-external-module"><a href="_agent_transport_node_index_.html#responsebody" class="tsd-kind-icon">Response<wbr>Body</a></li>
 							</ul>
 						</section>
+					</div>
+				</section>
+			</section>
+			<section class="tsd-panel-group tsd-member-group ">
+				<h2>Type aliases</h2>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-external-module">
+					<a name="nodeagent" class="tsd-anchor"></a>
+					<h3>Node<wbr>Agent</h3>
+					<div class="tsd-signature tsd-kind-icon">Node<wbr>Agent<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">Agent</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Agent</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/quenktechnologies/jhr/blob/3b6a75e/src/agent/transport/node/index.ts#L35">agent/transport/node/index.ts:35</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>NodeAgent</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-external-module">
+					<a name="nodeoptions" class="tsd-anchor"></a>
+					<h3>Node<wbr>Options</h3>
+					<div class="tsd-signature tsd-kind-icon">Node<wbr>Options<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">RequestOptions</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">https.RequestOptions</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/quenktechnologies/jhr/blob/3b6a75e/src/agent/transport/node/index.ts#L40">agent/transport/node/index.ts:40</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>NodeOptions</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-external-module">
+					<a name="requestbody" class="tsd-anchor"></a>
+					<h3>Request<wbr>Body</h3>
+					<div class="tsd-signature tsd-kind-icon">Request<wbr>Body<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Buffer</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/quenktechnologies/jhr/blob/3b6a75e/src/agent/transport/node/index.ts#L19">agent/transport/node/index.ts:19</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>RequestBody</p>
+						</div>
+					</div>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-type-alias tsd-parent-kind-external-module">
+					<a name="responsebody" class="tsd-anchor"></a>
+					<h3>Response<wbr>Body</h3>
+					<div class="tsd-signature tsd-kind-icon">Response<wbr>Body<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">string</span><span class="tsd-signature-symbol"> | </span><span class="tsd-signature-type">Buffer</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/quenktechnologies/jhr/blob/3b6a75e/src/agent/transport/node/index.ts#L27">agent/transport/node/index.ts:27</a></li>
+						</ul>
+					</aside>
+					<div class="tsd-comment tsd-typography">
+						<div class="lead">
+							<p>ResponseBody</p>
+						</div>
 					</div>
 				</section>
 			</section>
@@ -89,17 +156,29 @@
 						<a href="../globals.html"><em>Globals</em></a>
 					</li>
 					<li class="current tsd-kind-external-module">
-						<a href="_agent_index_.html">"agent/index"</a>
+						<a href="_agent_transport_node_index_.html">"agent/transport/node/index"</a>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
-					<li class=" tsd-kind-class tsd-parent-kind-external-module tsd-has-type-parameter">
-						<a href="../classes/_agent_index_.agent.html" class="tsd-kind-icon">Agent</a>
+					<li class=" tsd-kind-class tsd-parent-kind-external-module">
+						<a href="../classes/_agent_transport_node_index_.abortederror.html" class="tsd-kind-icon">Aborted<wbr>Error</a>
 					</li>
-					<li class=" tsd-kind-interface tsd-parent-kind-external-module">
-						<a href="../interfaces/_agent_index_.options.html" class="tsd-kind-icon">Options</a>
+					<li class=" tsd-kind-class tsd-parent-kind-external-module tsd-has-type-parameter">
+						<a href="../classes/_agent_transport_node_index_.nodehttptransport.html" class="tsd-kind-icon">NodeHTTPTransport</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-external-module">
+						<a href="_agent_transport_node_index_.html#nodeagent" class="tsd-kind-icon">Node<wbr>Agent</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-external-module">
+						<a href="_agent_transport_node_index_.html#nodeoptions" class="tsd-kind-icon">Node<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-external-module">
+						<a href="_agent_transport_node_index_.html#requestbody" class="tsd-kind-icon">Request<wbr>Body</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-external-module">
+						<a href="_agent_transport_node_index_.html#responsebody" class="tsd-kind-icon">Response<wbr>Body</a>
 					</li>
 				</ul>
 			</nav>

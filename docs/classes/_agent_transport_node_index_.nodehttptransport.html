@@ -3,7 +3,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<title>XHRTransport | @quenk/jhr</title>
+	<title>NodeHTTPTransport | @quenk/jhr</title>
 	<meta name="description" content="">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<link rel="stylesheet" href="../assets/css/main.css">
@@ -52,13 +52,13 @@
 					<a href="../globals.html">Globals</a>
 				</li>
 				<li>
-					<a href="../modules/_agent_transport_xhr_.html">&quot;agent/transport/xhr&quot;</a>
+					<a href="../modules/_agent_transport_node_index_.html">&quot;agent/transport/node/index&quot;</a>
 				</li>
 				<li>
-					<a href="_agent_transport_xhr_.xhrtransport.html">XHRTransport</a>
+					<a href="_agent_transport_node_index_.nodehttptransport.html">NodeHTTPTransport</a>
 				</li>
 			</ul>
-			<h1>Class XHRTransport&lt;Raw, Res&gt;</h1>
+			<h1>Class NodeHTTPTransport&lt;Raw, Res&gt;</h1>
 		</div>
 	</div>
 </header>
@@ -68,8 +68,15 @@
 			<section class="tsd-panel tsd-comment">
 				<div class="tsd-comment tsd-typography">
 					<div class="lead">
-						<p>XHRTransport uses the browsers XMLHTTPRequest object as a transport engine.</p>
+						<p>NodeHTTPTransport uses the native http and https modules to
+						provide an http transport for server side use.</p>
 					</div>
+					<p>This transport abstracts the streaming nature of the http and https
+						modules support streaming. Instead in queues up &#39;data&#39; events
+					into an array that is passed to its parser.</p>
+					<p>Parsers for this transport must be able to handle Buffer[].
+						There is an adapter parser for converting those to strings
+					in the parser submodule.</p>
 				</div>
 			</section>
 			<section class="tsd-panel tsd-type-parameters">
@@ -87,7 +94,7 @@
 				<h3>Hierarchy</h3>
 				<ul class="tsd-hierarchy">
 					<li>
-						<span class="target">XHRTransport</span>
+						<span class="target">NodeHTTPTransport</span>
 					</li>
 				</ul>
 			</section>
@@ -104,21 +111,22 @@
 						<section class="tsd-index-section ">
 							<h3>Constructors</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="_agent_transport_xhr_.xhrtransport.html#constructor" class="tsd-kind-icon">constructor</a></li>
+								<li class="tsd-kind-constructor tsd-parent-kind-class"><a href="_agent_transport_node_index_.nodehttptransport.html#constructor" class="tsd-kind-icon">constructor</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Properties</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_agent_transport_xhr_.xhrtransport.html#parser" class="tsd-kind-icon">parser</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_agent_transport_xhr_.xhrtransport.html#responsetype" class="tsd-kind-icon">response<wbr>Type</a></li>
-								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_agent_transport_xhr_.xhrtransport.html#transform" class="tsd-kind-icon">transform</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_agent_transport_node_index_.nodehttptransport.html#agent" class="tsd-kind-icon">agent</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_agent_transport_node_index_.nodehttptransport.html#options" class="tsd-kind-icon">options</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_agent_transport_node_index_.nodehttptransport.html#parser" class="tsd-kind-icon">parser</a></li>
+								<li class="tsd-kind-property tsd-parent-kind-class"><a href="_agent_transport_node_index_.nodehttptransport.html#transform" class="tsd-kind-icon">transform</a></li>
 							</ul>
 						</section>
 						<section class="tsd-index-section ">
 							<h3>Methods</h3>
 							<ul class="tsd-index-list">
-								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_agent_transport_xhr_.xhrtransport.html#send" class="tsd-kind-icon">send</a></li>
+								<li class="tsd-kind-method tsd-parent-kind-class"><a href="_agent_transport_node_index_.nodehttptransport.html#send" class="tsd-kind-icon">send</a></li>
 							</ul>
 						</section>
 					</div>
@@ -130,28 +138,31 @@
 					<a name="constructor" class="tsd-anchor"></a>
 					<h3>constructor</h3>
 					<ul class="tsd-signatures tsd-kind-constructor tsd-parent-kind-class">
-						<li class="tsd-signature tsd-kind-icon">new XHRTransport<span class="tsd-signature-symbol">(</span>responseType<span class="tsd-signature-symbol">?: </span><span class="tsd-signature-type">XMLHttpRequestResponseType</span>, transform<span class="tsd-signature-symbol">: </span><a href="../interfaces/_agent_transform_index_.transform.html" class="tsd-signature-type">Transform</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Raw</span><span class="tsd-signature-symbol">, </span><a href="../modules/_agent_transport_xhr_.html#requestbody" class="tsd-signature-type">RequestBody</a><span class="tsd-signature-symbol">&gt;</span>, parser<span class="tsd-signature-symbol">: </span><a href="../interfaces/_agent_parser_index_.parser.html" class="tsd-signature-type">Parser</a><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_agent_transport_xhr_.html#responsebody" class="tsd-signature-type">ResponseBody</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Res</span><span class="tsd-signature-symbol">&gt;</span><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_agent_transport_xhr_.xhrtransport.html" class="tsd-signature-type">XHRTransport</a></li>
+						<li class="tsd-signature tsd-kind-icon">new <wbr>NodeHTTPTransport<span class="tsd-signature-symbol">(</span>transform<span class="tsd-signature-symbol">: </span><a href="../interfaces/_agent_transform_index_.transform.html" class="tsd-signature-type">Transform</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Raw</span><span class="tsd-signature-symbol">, </span><a href="../modules/_agent_transport_node_index_.html#requestbody" class="tsd-signature-type">RequestBody</a><span class="tsd-signature-symbol">&gt;</span>, parser<span class="tsd-signature-symbol">: </span><a href="../interfaces/_agent_parser_index_.parser.html" class="tsd-signature-type">Parser</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Buffer</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Res</span><span class="tsd-signature-symbol">&gt;</span>, agent<span class="tsd-signature-symbol">: </span><a href="../modules/_agent_transport_node_index_.html#nodeagent" class="tsd-signature-type">NodeAgent</a>, options<span class="tsd-signature-symbol">?: </span><a href="../modules/_agent_transport_node_index_.html#nodeoptions" class="tsd-signature-type">NodeOptions</a><span class="tsd-signature-symbol">)</span><span class="tsd-signature-symbol">: </span><a href="_agent_transport_node_index_.nodehttptransport.html" class="tsd-signature-type">NodeHTTPTransport</a></li>
 					</ul>
 					<ul class="tsd-descriptions">
 						<li class="tsd-description">
 							<aside class="tsd-sources">
 								<ul>
-									<li>Defined in <a href="https://github.com/quenktechnologies/jhr/blob/3b6a75e/src/agent/transport/xhr.ts#L33">agent/transport/xhr.ts:33</a></li>
+									<li>Defined in <a href="https://github.com/quenktechnologies/jhr/blob/3b6a75e/src/agent/transport/node/index.ts#L59">agent/transport/node/index.ts:59</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
 							<ul class="tsd-parameters">
 								<li>
-									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> responseType: <span class="tsd-signature-type">XMLHttpRequestResponseType</span><span class="tsd-signature-symbol"> =&nbsp;&quot;&quot;</span></h5>
+									<h5>transform: <a href="../interfaces/_agent_transform_index_.transform.html" class="tsd-signature-type">Transform</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Raw</span><span class="tsd-signature-symbol">, </span><a href="../modules/_agent_transport_node_index_.html#requestbody" class="tsd-signature-type">RequestBody</a><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 								<li>
-									<h5>transform: <a href="../interfaces/_agent_transform_index_.transform.html" class="tsd-signature-type">Transform</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Raw</span><span class="tsd-signature-symbol">, </span><a href="../modules/_agent_transport_xhr_.html#requestbody" class="tsd-signature-type">RequestBody</a><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>parser: <a href="../interfaces/_agent_parser_index_.parser.html" class="tsd-signature-type">Parser</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Buffer</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Res</span><span class="tsd-signature-symbol">&gt;</span></h5>
 								</li>
 								<li>
-									<h5>parser: <a href="../interfaces/_agent_parser_index_.parser.html" class="tsd-signature-type">Parser</a><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_agent_transport_xhr_.html#responsebody" class="tsd-signature-type">ResponseBody</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Res</span><span class="tsd-signature-symbol">&gt;</span></h5>
+									<h5>agent: <a href="../modules/_agent_transport_node_index_.html#nodeagent" class="tsd-signature-type">NodeAgent</a></h5>
+								</li>
+								<li>
+									<h5><span class="tsd-flag ts-flagDefault value">Default value</span> options: <a href="../modules/_agent_transport_node_index_.html#nodeoptions" class="tsd-signature-type">NodeOptions</a><span class="tsd-signature-symbol"> =&nbsp;{}</span></h5>
 								</li>
 							</ul>
-							<h4 class="tsd-returns-title">Returns <a href="_agent_transport_xhr_.xhrtransport.html" class="tsd-signature-type">XHRTransport</a></h4>
+							<h4 class="tsd-returns-title">Returns <a href="_agent_transport_node_index_.nodehttptransport.html" class="tsd-signature-type">NodeHTTPTransport</a></h4>
 						</li>
 					</ul>
 				</section>
@@ -159,32 +170,42 @@
 			<section class="tsd-panel-group tsd-member-group ">
 				<h2>Properties</h2>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="parser" class="tsd-anchor"></a>
-					<h3>parser</h3>
-					<div class="tsd-signature tsd-kind-icon">parser<span class="tsd-signature-symbol">:</span> <a href="../interfaces/_agent_parser_index_.parser.html" class="tsd-signature-type">Parser</a><span class="tsd-signature-symbol">&lt;</span><a href="../modules/_agent_transport_xhr_.html#responsebody" class="tsd-signature-type">ResponseBody</a><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Res</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<a name="agent" class="tsd-anchor"></a>
+					<h3>agent</h3>
+					<div class="tsd-signature tsd-kind-icon">agent<span class="tsd-signature-symbol">:</span> <a href="../modules/_agent_transport_node_index_.html#nodeagent" class="tsd-signature-type">NodeAgent</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/quenktechnologies/jhr/blob/3b6a75e/src/agent/transport/xhr.ts#L38">agent/transport/xhr.ts:38</a></li>
+							<li>Defined in <a href="https://github.com/quenktechnologies/jhr/blob/3b6a75e/src/agent/transport/node/index.ts#L64">agent/transport/node/index.ts:64</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
-					<a name="responsetype" class="tsd-anchor"></a>
-					<h3>response<wbr>Type</h3>
-					<div class="tsd-signature tsd-kind-icon">response<wbr>Type<span class="tsd-signature-symbol">:</span> <span class="tsd-signature-type">XMLHttpRequestResponseType</span></div>
+					<a name="options" class="tsd-anchor"></a>
+					<h3>options</h3>
+					<div class="tsd-signature tsd-kind-icon">options<span class="tsd-signature-symbol">:</span> <a href="../modules/_agent_transport_node_index_.html#nodeoptions" class="tsd-signature-type">NodeOptions</a></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/quenktechnologies/jhr/blob/3b6a75e/src/agent/transport/xhr.ts#L36">agent/transport/xhr.ts:36</a></li>
+							<li>Defined in <a href="https://github.com/quenktechnologies/jhr/blob/3b6a75e/src/agent/transport/node/index.ts#L65">agent/transport/node/index.ts:65</a></li>
+						</ul>
+					</aside>
+				</section>
+				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
+					<a name="parser" class="tsd-anchor"></a>
+					<h3>parser</h3>
+					<div class="tsd-signature tsd-kind-icon">parser<span class="tsd-signature-symbol">:</span> <a href="../interfaces/_agent_parser_index_.parser.html" class="tsd-signature-type">Parser</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Buffer</span><span class="tsd-signature-symbol">[]</span><span class="tsd-signature-symbol">, </span><span class="tsd-signature-type">Res</span><span class="tsd-signature-symbol">&gt;</span></div>
+					<aside class="tsd-sources">
+						<ul>
+							<li>Defined in <a href="https://github.com/quenktechnologies/jhr/blob/3b6a75e/src/agent/transport/node/index.ts#L63">agent/transport/node/index.ts:63</a></li>
 						</ul>
 					</aside>
 				</section>
 				<section class="tsd-panel tsd-member tsd-kind-property tsd-parent-kind-class">
 					<a name="transform" class="tsd-anchor"></a>
 					<h3>transform</h3>
-					<div class="tsd-signature tsd-kind-icon">transform<span class="tsd-signature-symbol">:</span> <a href="../interfaces/_agent_transform_index_.transform.html" class="tsd-signature-type">Transform</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Raw</span><span class="tsd-signature-symbol">, </span><a href="../modules/_agent_transport_xhr_.html#requestbody" class="tsd-signature-type">RequestBody</a><span class="tsd-signature-symbol">&gt;</span></div>
+					<div class="tsd-signature tsd-kind-icon">transform<span class="tsd-signature-symbol">:</span> <a href="../interfaces/_agent_transform_index_.transform.html" class="tsd-signature-type">Transform</a><span class="tsd-signature-symbol">&lt;</span><span class="tsd-signature-type">Raw</span><span class="tsd-signature-symbol">, </span><a href="../modules/_agent_transport_node_index_.html#requestbody" class="tsd-signature-type">RequestBody</a><span class="tsd-signature-symbol">&gt;</span></div>
 					<aside class="tsd-sources">
 						<ul>
-							<li>Defined in <a href="https://github.com/quenktechnologies/jhr/blob/3b6a75e/src/agent/transport/xhr.ts#L37">agent/transport/xhr.ts:37</a></li>
+							<li>Defined in <a href="https://github.com/quenktechnologies/jhr/blob/3b6a75e/src/agent/transport/node/index.ts#L62">agent/transport/node/index.ts:62</a></li>
 						</ul>
 					</aside>
 				</section>
@@ -202,7 +223,7 @@
 							<aside class="tsd-sources">
 								<p>Implementation of <a href="../interfaces/_agent_transport_index_.transport.html">Transport</a>.<a href="../interfaces/_agent_transport_index_.transport.html#send">send</a></p>
 								<ul>
-									<li>Defined in <a href="https://github.com/quenktechnologies/jhr/blob/3b6a75e/src/agent/transport/xhr.ts#L40">agent/transport/xhr.ts:40</a></li>
+									<li>Defined in <a href="https://github.com/quenktechnologies/jhr/blob/3b6a75e/src/agent/transport/node/index.ts#L67">agent/transport/node/index.ts:67</a></li>
 								</ul>
 							</aside>
 							<h4 class="tsd-parameters-title">Parameters</h4>
@@ -224,41 +245,53 @@
 						<a href="../globals.html"><em>Globals</em></a>
 					</li>
 					<li class="current tsd-kind-external-module">
-						<a href="../modules/_agent_transport_xhr_.html">"agent/transport/xhr"</a>
+						<a href="../modules/_agent_transport_node_index_.html">"agent/transport/node/index"</a>
 					</li>
 				</ul>
 			</nav>
 			<nav class="tsd-navigation secondary menu-sticky">
 				<ul class="before-current">
+					<li class=" tsd-kind-class tsd-parent-kind-external-module">
+						<a href="_agent_transport_node_index_.abortederror.html" class="tsd-kind-icon">Aborted<wbr>Error</a>
+					</li>
 				</ul>
 				<ul class="current">
 					<li class="current tsd-kind-class tsd-parent-kind-external-module tsd-has-type-parameter">
-						<a href="_agent_transport_xhr_.xhrtransport.html" class="tsd-kind-icon">XHRTransport</a>
+						<a href="_agent_transport_node_index_.nodehttptransport.html" class="tsd-kind-icon">NodeHTTPTransport</a>
 						<ul>
 							<li class=" tsd-kind-constructor tsd-parent-kind-class">
-								<a href="_agent_transport_xhr_.xhrtransport.html#constructor" class="tsd-kind-icon">constructor</a>
+								<a href="_agent_transport_node_index_.nodehttptransport.html#constructor" class="tsd-kind-icon">constructor</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="_agent_transport_xhr_.xhrtransport.html#parser" class="tsd-kind-icon">parser</a>
+								<a href="_agent_transport_node_index_.nodehttptransport.html#agent" class="tsd-kind-icon">agent</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="_agent_transport_xhr_.xhrtransport.html#responsetype" class="tsd-kind-icon">response<wbr>Type</a>
+								<a href="_agent_transport_node_index_.nodehttptransport.html#options" class="tsd-kind-icon">options</a>
 							</li>
 							<li class=" tsd-kind-property tsd-parent-kind-class">
-								<a href="_agent_transport_xhr_.xhrtransport.html#transform" class="tsd-kind-icon">transform</a>
+								<a href="_agent_transport_node_index_.nodehttptransport.html#parser" class="tsd-kind-icon">parser</a>
+							</li>
+							<li class=" tsd-kind-property tsd-parent-kind-class">
+								<a href="_agent_transport_node_index_.nodehttptransport.html#transform" class="tsd-kind-icon">transform</a>
 							</li>
 							<li class=" tsd-kind-method tsd-parent-kind-class">
-								<a href="_agent_transport_xhr_.xhrtransport.html#send" class="tsd-kind-icon">send</a>
+								<a href="_agent_transport_node_index_.nodehttptransport.html#send" class="tsd-kind-icon">send</a>
 							</li>
 						</ul>
 					</li>
 				</ul>
 				<ul class="after-current">
 					<li class=" tsd-kind-type-alias tsd-parent-kind-external-module">
-						<a href="../modules/_agent_transport_xhr_.html#requestbody" class="tsd-kind-icon">Request<wbr>Body</a>
+						<a href="../modules/_agent_transport_node_index_.html#nodeagent" class="tsd-kind-icon">Node<wbr>Agent</a>
 					</li>
 					<li class=" tsd-kind-type-alias tsd-parent-kind-external-module">
-						<a href="../modules/_agent_transport_xhr_.html#responsebody" class="tsd-kind-icon">Response<wbr>Body</a>
+						<a href="../modules/_agent_transport_node_index_.html#nodeoptions" class="tsd-kind-icon">Node<wbr>Options</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-external-module">
+						<a href="../modules/_agent_transport_node_index_.html#requestbody" class="tsd-kind-icon">Request<wbr>Body</a>
+					</li>
+					<li class=" tsd-kind-type-alias tsd-parent-kind-external-module">
+						<a href="../modules/_agent_transport_node_index_.html#responsebody" class="tsd-kind-icon">Response<wbr>Body</a>
 					</li>
 				</ul>
 			</nav>
