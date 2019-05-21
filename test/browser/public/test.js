@@ -217,13 +217,15 @@ var XHRTransport = /** @class */ (function () {
             }
             xhr.open(method, url, true);
             xhr.onload = function () {
-                return cookies
-                    .update(document.cookie)
-                    .chain(function () { return future_1.fromExcept(parser.apply(xhr.response)); })
-                    .fork(function (e) { s.onError(e); }, function (res) {
-                    var r = response_1.createResponse(xhr.status, res, header_1.fromString(xhr.getAllResponseHeaders()), options);
+                cookies.update(document.cookie);
+                var exceptRes = parser.apply(xhr.response);
+                if (exceptRes.isLeft()) {
+                    s.onError(new Error(exceptRes.takeLeft().message));
+                }
+                else {
+                    var r = response_1.createResponse(xhr.status, exceptRes.takeRight(), header_1.fromString(xhr.getAllResponseHeaders()), options);
                     s.onSuccess(r);
-                });
+                }
             };
             xhr.timeout = options.ttl;
             xhr.responseType = _this.responseType;
@@ -288,7 +290,6 @@ exports.get = function (url, params, headers) {
 },{"./agent":1,"./agent/parser/json":2,"./agent/transform/json":3,"./agent/transport/xhr":5,"./cookie/container/memory":7,"./request":10}],7:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var future_1 = require("@quenk/noni/lib/control/monad/future");
 var _defaults = {
     expires: 365, domain: '', path: '/', secure: true, httpOnly: false
 };
@@ -332,17 +333,17 @@ var MemoryContainer = /** @class */ (function () {
             (path ? ';path=' + path : '') +
             (secure ? ';secure' : '') +
             (httpOnly ? ';httponly' : '');
-        return future_1.pure(this);
+        return this;
     };
     /**
      * update the internal cookie string representation.
      */
     MemoryContainer.prototype.update = function (cookies) {
         this.cookies = cookies;
-        return future_1.pure(this);
+        return this;
     };
     MemoryContainer.prototype.get = function (name) {
-        return future_1.pure(this.getCookie(name));
+        return (this.getCookie(name));
     };
     MemoryContainer.prototype.getCookie = function (name) {
         var cookies = this.cookies.split(';');
@@ -374,13 +375,16 @@ var MemoryContainer = /** @class */ (function () {
             .replace(/((?:^|\s*;)[^\=]+)(?=;|$)|^\s*|\s*(?:\=[^;]*)?(?:\1|$)/g, "")
             .split(/\s*(?:\=[^;]*)?;\s*/)
             .forEach(function (k) { o[k] = _this.getCookie(k); });
-        return future_1.pure(o);
+        return (o);
+    };
+    MemoryContainer.prototype.getString = function () {
+        return this.cookies;
     };
     return MemoryContainer;
 }());
 exports.MemoryContainer = MemoryContainer;
 
-},{"@quenk/noni/lib/control/monad/future":16}],8:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 /**

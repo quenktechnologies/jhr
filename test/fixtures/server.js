@@ -47,6 +47,24 @@ app.get('/status/:status', function(req, res) {
 
 });
 
+app.get('/cookie', function(req, res) {
+
+    res.cookie('first', 'ignore');
+    res.cookie('test', 'passed');
+    res.cookie('last', 'ignore');
+    res.status(200).send({});
+
+});
+
+app.post('/cookie', function(req, res) {
+
+    if(req.cookies['test'] === 'passed')
+        res.status(200).send({});
+    else
+      res.status(409).send({});
+
+});
+
 app.post('/file', multer({storage: multer.memoryStorage()}).single('file'),
     function(req, res) {
 

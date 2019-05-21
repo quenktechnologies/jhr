@@ -1,5 +1,4 @@
-import { Future } from '@quenk/noni/lib/control/monad/future';
-import {Cookies, Options} from '../';
+import { Value, Cookies, Options } from '../';
 
 /**
  * Container for cookies received.
@@ -12,22 +11,27 @@ export interface Container {
     /**
      * set the value of a cookie.
      */
-    set(name: string, value: string, options: Options): Future<Container>
+    set(name: string, value: string, options: Options): Container
 
     /**
      * get the value of a cookie within the Container.
      */
-    get(name: string): Future<string>
+    get(name: string): Value
 
     /**
      * getAll the cookies in the Container as a map.
      */
-    getAll(): Future<Cookies>
+    getAll(): Cookies
+
+    /**
+     * getString provides the unparsed cookie string.
+     */
+    getString(): string
 
     /**
      * update the value of the string used to store cookies.
      */
-    update(cookies: string): Future<Container>
+    update(cookies: string): Container
 
 }
 

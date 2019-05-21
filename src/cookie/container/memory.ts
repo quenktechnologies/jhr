@@ -1,4 +1,3 @@
-import { Future, pure } from '@quenk/noni/lib/control/monad/future';
 import { Options, Value, Cookies } from '../';
 import { Container } from './';
 
@@ -21,7 +20,7 @@ export class MemoryContainer implements Container {
         public cookies: string = '',
         public defaults: Options = _defaults) { }
 
-    set(name: string, value: Value, opts: Options = {}): Future<Container> {
+    set(name: string, value: Value, opts: Options = {}): Container {
 
         let defaults = this.defaults;
 
@@ -53,24 +52,24 @@ export class MemoryContainer implements Container {
             (secure ? ';secure' : '') +
             (httpOnly ? ';httponly' : '');
 
-        return pure(<Container>this);
+        return <Container>this;
 
     }
 
     /**
      * update the internal cookie string representation.
      */
-    update(cookies: string): Future<Container> {
+    update(cookies: string): Container {
 
         this.cookies = cookies;
-        return pure(<Container>this);
+        return (<Container>this);
 
     }
 
 
-    get(name: string): Future<Value> {
+    get(name: string): Value {
 
-        return pure(this.getCookie(name));
+        return (this.getCookie(name));
 
     }
 
@@ -106,7 +105,7 @@ export class MemoryContainer implements Container {
     /**
      * getAll the cookies as a map.
      */
-    getAll(): Future<Cookies> {
+    getAll(): Cookies {
 
         let o: Cookies = {};
 
@@ -116,7 +115,13 @@ export class MemoryContainer implements Container {
             .split(/\s*(?:\=[^;]*)?;\s*/)
             .forEach(k => { o[k] = this.getCookie(k) });
 
-        return pure(o);
+        return (o);
+
+    }
+
+    getString(): string {
+
+        return this.cookies;
 
     }
 

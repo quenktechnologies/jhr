@@ -10,7 +10,7 @@ import { JSONParser } from '../../../../../lib/agent/parser/json';
 import {
     StringBufferAdapterParser
 } from '../../../../../lib/agent/transport/node/parser';
-import { NodeHTTPTransport } from '../../../../../lib/agent/transport/node/http';
+import { NodeHTTPTransport } from '../../../../../lib/agent/transport/node';
 import { Ok, Created, NoContent } from '../../../../../lib/response';
 
 const host = process.env.HOST || 'localhost';
@@ -69,6 +69,22 @@ describe('http', () => {
                 assert(res.body).equate({
                     "a": true, "b": false, "c": 1, "d": "1"
                 });
+            });
+
+    });
+
+    it('should maintain cookies', function() {
+
+        let agent = newAgent();
+
+        return toPromise(
+            agent
+                .get('/cookie')
+                .chain(() => agent.post('/cookie', {})))
+            .then(function(res) {
+
+                assert(res.code).equal(200);
+
             });
 
     });

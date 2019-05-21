@@ -67,13 +67,17 @@ export class NodeHTTPTransport<Raw, Res> implements Transport<Raw, Res> {
     send(ctx: Context<Raw>): Future<Response<Res>> {
 
         let { parser, transform, agent } = this;
-        let { host, port, path, method, body, headers, options } = ctx;
+        let { host, port, path, method, body, headers, cookies, options } = ctx;
         let head = merge({}, headers);
+        let cooks = cookies.getString();
 
         if ((method === Method.Get) || (method === Method.Head))
             head[ACCEPTS] = parser.accepts;
         else if (transform.type !== 'multipart/form-data')
             head[CONTENT_TYPE] = transform.type;
+
+        if (cooks !== '')
+            head['Cookie'] = cooks;
 
         let opts = merge(this.options, {
 
@@ -103,15 +107,23 @@ export class NodeHTTPTransport<Raw, Res> implements Transport<Raw, Res> {
 
                         let exceptParsed = parser.apply(data);
 
-                        if (exceptParsed.isLeft())
-                            s.onError(new Error(exceptParsed.takeLeft().message))
-                        else
+                        if (exceptParsed.isLeft()) {
+
+                            s.onError(new Error(exceptParsed.takeLeft().message));
+
+                        } else {
+
+                            if (Array.isArray(res.headers['set-cookie']))
+                                cookies.update(res.headers['set-cookie'].join(';'));
+
                             s.onSuccess(createResponse(
                                 <number>res.statusCode,
                                 exceptParsed.takeRight(),
                                 <{ [key: string]: string }>res.headers,
                                 options
                             ));
+
+                        }
 
                     }
 

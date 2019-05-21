@@ -1,7 +1,6 @@
 import {
     Future,
-    Run,
-    fromExcept
+    Run
 } from '@quenk/noni/lib/control/monad/future';
 import { fromString } from '../../header';
 import { createResponse } from '../../response';
@@ -68,20 +67,26 @@ export class XHRTransport<Raw, Res> implements Transport<Raw, Res> {
 
             xhr.open(method, url, true);
 
-            xhr.onload = () =>
-                cookies
-                    .update(document.cookie)
-                    .chain(() => fromExcept(parser.apply(xhr.response)))
-                    .fork(
-                        e => { s.onError(e); },
-                        res => {
+            xhr.onload = () => {
 
-                            let r = createResponse(xhr.status, res,
-                                fromString(xhr.getAllResponseHeaders()), options);
+                cookies.update(document.cookie);
 
-                            s.onSuccess(r);
+                let exceptRes = parser.apply(xhr.response);
 
-                        })
+                if (exceptRes.isLeft()) {
+
+                    s.onError(new Error(exceptRes.takeLeft().message));
+
+                } else {
+
+                    let r = createResponse(xhr.status, exceptRes.takeRight(),
+                        fromString(xhr.getAllResponseHeaders()), options);
+
+                    s.onSuccess(r);
+
+                }
+
+            }
 
             xhr.timeout = options.ttl;
             xhr.responseType = this.responseType;
