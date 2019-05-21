@@ -77,7 +77,7 @@ export class NodeHTTPTransport<Raw, Res> implements Transport<Raw, Res> {
             head[CONTENT_TYPE] = transform.type;
 
         if (cooks !== '')
-            head['cookie'] = cooks;
+            head['Cookie'] = cooks;
 
         let opts = merge(this.options, {
 
@@ -89,7 +89,7 @@ export class NodeHTTPTransport<Raw, Res> implements Transport<Raw, Res> {
             path
 
         });
-        console.error('headers look like ', head);
+
         let request = (this.agent instanceof https.Agent) ?
             https.request : http.request;
 
@@ -97,7 +97,6 @@ export class NodeHTTPTransport<Raw, Res> implements Transport<Raw, Res> {
 
             let req = request(opts, res => {
 
-                console.error('req cookie header ', req.getHeader('cookie'));
                 let data: Buffer[] = [];
 
                 res.on('data', chunk => data.push(chunk));

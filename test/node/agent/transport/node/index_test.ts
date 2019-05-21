@@ -8,7 +8,7 @@ import { MemoryContainer } from '../../../../../lib/cookie/container/memory';
 import { JSONTransform } from '../../../../../lib/agent/transform/json';
 import { JSONParser } from '../../../../../lib/agent/parser/json';
 import {
-    StringBufferAdapterParser
+    BufferToStringAdapter
 } from '../../../../../lib/agent/transport/node/parser';
 import { NodeHTTPTransport } from '../../../../../lib/agent/transport/node';
 import { Ok, Created, NoContent } from '../../../../../lib/response';
@@ -21,7 +21,7 @@ const newAgent = (h = host) =>
         { ttl: 0, tags: {}, context: {}, port: Number(port) },
         new NodeHTTPTransport(
             new JSONTransform(),
-            new StringBufferAdapterParser(new JSONParser()),
+            new BufferToStringAdapter(new JSONParser()),
             new http.Agent()), []);
 
 let app: express.App;

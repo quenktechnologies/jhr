@@ -2,11 +2,11 @@ import { Except } from '@quenk/noni/lib/control/error';
 import { Parser } from '../../parser';
 
 /**
- * StringBufferAdapterParser adapts the buffer list 
+ * BufferToStringAdapter adapts the buffer list 
  * of the NodeHTTPTransport to a string that is passed
  * to another parser for final parsing.
  */
-export class StringBufferAdapterParser<Parsed>
+export class BufferToStringAdapter<Parsed>
     implements
     Parser<Buffer[], Parsed> {
 
