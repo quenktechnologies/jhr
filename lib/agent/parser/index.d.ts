@@ -13,3 +13,12 @@ export interface Parser<Raw, Parsed> {
      */
     apply(raw: Raw): Except<Parsed>;
 }
+/**
+ * NoParser does no actual parsing instead just
+ * yielding the data as given.
+ */
+export declare class NoParser<A> implements Parser<A, A> {
+    accepts: string;
+    constructor(accepts?: string);
+    apply(raw: A): Except<A>;
+}

@@ -1,4 +1,5 @@
 import { Except } from '@quenk/noni/lib/control/error';
+import { right } from '@quenk/noni/lib/data/either';
 import { Mime } from '../../mime';
 
 /**
@@ -18,3 +19,18 @@ export interface Parser<Raw, Parsed> {
 
 }
 
+/**
+ * NoParser does no actual parsing instead just
+ * yielding the data as given.
+ */
+export class NoParser<A> implements Parser<A, A> {
+
+    constructor(public accepts = '*/*') { }
+
+    apply(raw: A): Except<A> {
+
+        return right(raw);
+
+    }
+
+}

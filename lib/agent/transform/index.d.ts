@@ -16,3 +16,13 @@ export interface Transform<A, B> {
      */
     apply(raw: A): Except<B>;
 }
+/**
+ * NoTransform does not modifiy the data in any way.
+ *
+ * Defaults to text/html mime type.
+ */
+export declare class JSONTransform<A> implements Transform<A, A> {
+    type: string;
+    constructor(type?: string);
+    apply(body: A): Except<A>;
+}
