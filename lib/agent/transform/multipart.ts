@@ -8,7 +8,7 @@ import { Transform } from './';
 export type Part = string | Blob | FormData;
 
 /**
- * MultipartTransform
+ * MultipartTransform transforms data into the multi part format.
  */
 export class MultipartTransform implements Transform<Part, Part> {
 

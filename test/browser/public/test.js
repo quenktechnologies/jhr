@@ -169,7 +169,7 @@ exports.JSONTransform = JSONTransform;
 Object.defineProperty(exports, "__esModule", { value: true });
 var either_1 = require("@quenk/noni/lib/data/either");
 /**
- * MultipartTransform
+ * MultipartTransform transforms data into the multi part format.
  */
 var MultipartTransform = /** @class */ (function () {
     function MultipartTransform() {
