@@ -9,7 +9,7 @@ import { Transform } from './';
  */
 export class FormTransform implements Transform<object, string> {
 
-    type = 'multipart/form-data';
+    type = 'application/x-www-form-urlencoded';
 
     apply(body: object): Except<string> {
 
