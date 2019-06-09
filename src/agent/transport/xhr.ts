@@ -40,9 +40,9 @@ export class XHRTransport<Raw, Res> implements Transport<Raw, Res> {
     send(ctx: Context<Raw>): Future<Response<Res>> {
 
         let { parser, transform } = this;
-        let { host, path, method, body, headers, options, cookies } = ctx;
+        let { host, port, path, method, body, headers, options, cookies } = ctx;
         let xhr = new XMLHttpRequest();
-        let url = `${host}${path[0] === '/' ? '' : '/'}${path}`;
+        let url = `${host}:${port}${path[0] === '/' ? '' : '/'}${path}`;
 
         return new Run(s => {
 

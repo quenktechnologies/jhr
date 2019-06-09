@@ -11,9 +11,9 @@ import { Ok, Created, NoContent } from '../../../../../lib/response';
 const host = process.env.HOST || 'http://localhost';
 const port = process.env.PORT || '9999';
 
-const newAgent = (h = `${host}:${port}`) =>
+const newAgent = (h = host) =>
     new Agent(h, {}, new MemoryContainer(),
-        { ttl: 0, tags: {}, context: {}, port: 80 },
+        { ttl: 0, tags: {}, context: {}, port: Number(port) },
         new XHRTransport('', new JSONTransform(), new JSONParser()), []);
 
 describe('xhr', () => {

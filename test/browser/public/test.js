@@ -203,9 +203,9 @@ var XHRTransport = /** @class */ (function () {
     XHRTransport.prototype.send = function (ctx) {
         var _this = this;
         var _a = this, parser = _a.parser, transform = _a.transform;
-        var host = ctx.host, path = ctx.path, method = ctx.method, body = ctx.body, headers = ctx.headers, options = ctx.options, cookies = ctx.cookies;
+        var host = ctx.host, port = ctx.port, path = ctx.path, method = ctx.method, body = ctx.body, headers = ctx.headers, options = ctx.options, cookies = ctx.cookies;
         var xhr = new XMLHttpRequest();
-        var url = "" + host + (path[0] === '/' ? '' : '/') + path;
+        var url = host + ":" + port + (path[0] === '/' ? '' : '/') + path;
         return new future_1.Run(function (s) {
             var transBody = undefined;
             if (body != null) {
@@ -1322,7 +1322,9 @@ exports.delay = function (f) { return new Run(function (s) {
  * Note: The function used here is not called in the "next tick".
  */
 exports.fromAbortable = function (abort) { return function (f) { return new Run(function (s) {
-    f(function (err, a) { return (err != null) ? s.onError(err) : s.onSuccess(a); });
+    f(function (err, a) {
+        return (err != null) ? s.onError(err) : s.onSuccess(a);
+    });
     return abort;
 }); }; };
 /**
@@ -1498,8 +1500,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * The array module provides helper functions
  * for working with JS arrays.
  */
-var record_1 = require("./record");
-var math_1 = require("../math");
+var record_1 = require("../record");
+var math_1 = require("../../math");
 /**
  * head returns the item at index 0 of an array
  */
@@ -1539,8 +1541,8 @@ exports.partition = function (list) { return function (f) { return exports.empty
             [yes, exports.concat(no, c)]);
     }, [[], []]); }; };
 /**
- * group the properties of a Record into another Record using a grouping
- * function.
+ * group the elements of an array into a Record where each property
+ * is an array of elements assigned to it's property name.
  */
 exports.group = function (list) { return function (f) {
     return list.reduce(function (p, c, i) {
@@ -1572,7 +1574,7 @@ exports.dedupe = function (list) {
     return list.filter(function (e, i, l) { return l.indexOf(e) === i; });
 };
 
-},{"../math":25,"./record":22}],19:[function(require,module,exports){
+},{"../../math":25,"../record":22}],19:[function(require,module,exports){
 "use strict";
 /**
  * Either represents a value that may be one of two types.
@@ -2129,6 +2131,15 @@ exports.reduce = function (o, accum, f) {
     return exports.keys(o).reduce(function (p, k) { return f(p, o[k], k); }, accum);
 };
 /**
+ * filter the keys of a record using a filter function.
+ */
+exports.filter = function (o, f) {
+    return exports.keys(o).reduce(function (p, k) {
+        var _a;
+        return f(o[k], k, o) ? exports.merge(p, (_a = {}, _a[k] = o[k], _a)) : p;
+    }, {});
+};
+/**
  * merge two objects into one.
  *
  * The return value's type is the product of the two types supplied.
@@ -2212,8 +2223,8 @@ exports.exclude = function (o, keys) {
  */
 exports.partition = function (r, f) {
     return exports.reduce(r, [{}, {}], function (_a, c, k) {
-        var yes = _a[0], no = _a[1];
         var _b, _c;
+        var yes = _a[0], no = _a[1];
         return f(c, k, r) ?
             [exports.merge(yes, (_b = {}, _b[k] = c, _b)), no] :
             [yes, exports.merge(no, (_c = {}, _c[k] = c, _c))];
@@ -2385,6 +2396,8 @@ exports.tokenize = function (str) {
  * This function does not check if getting the value succeeded or not.
  */
 exports.unsafeGet = function (path, src) {
+    if (src == null)
+        return undefined;
     var toks = exports.tokenize(path);
     var head = src[toks.shift()];
     return toks.reduce(function (p, c) { return (p == null) ? p : p[c]; }, head);
@@ -2394,6 +2407,21 @@ exports.unsafeGet = function (path, src) {
  */
 exports.get = function (path, src) {
     return maybe_1.fromNullable(exports.unsafeGet(path, src));
+};
+/**
+ * getDefault is like get but takes a default value to return if
+ * the path is not found.
+ */
+exports.getDefault = function (path, src, def) {
+    return exports.get(path, src).orJust(function () { return def; }).get();
+};
+/**
+ * getString casts the resulting value to a string.
+ *
+ * An empty string is provided if the path is not found.
+ */
+exports.getString = function (path, src) {
+    return exports.get(path, src).map(function (v) { return String(v); }).orJust(function () { return ''; }).get();
 };
 /**
  * set sets a value on an object given a path.
@@ -2502,6 +2530,41 @@ var prefix = function (pfix, key) { return (pfix === '') ?
  */
 exports.unflatten = function (r) {
     return _1.reduce(r, {}, function (p, c, k) { return exports.set(k, c, p); });
+};
+/**
+ * intersect set operation between the keys of two records.
+ *
+ * All the properties of the left record that have matching property
+ * names in the right are retained.
+ */
+exports.intersect = function (a, b) {
+    return _1.reduce(a, {}, function (p, c, k) {
+        if (b.hasOwnProperty(k))
+            p[k] = c;
+        return p;
+    });
+};
+/**
+ * difference set operation between the keys of two records.
+ *
+ * All the properties on the left record that do not have matching
+ * property names in the right are retained.
+ */
+exports.difference = function (a, b) {
+    return _1.reduce(a, {}, function (p, c, k) {
+        if (!b.hasOwnProperty(k))
+            p[k] = c;
+        return p;
+    });
+};
+/**
+ * map over the property names of a record.
+ */
+exports.map = function (a, f) {
+    return _1.reduce(a, {}, function (p, c, k) {
+        p[f(k)] = c;
+        return p;
+    });
 };
 
 },{"../maybe":21,"./":22}],24:[function(require,module,exports){
@@ -2616,7 +2679,7 @@ var __extends = (this && this.__extends) || (function () {
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
             function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
         return extendStatics(d, b);
-    }
+    };
     return function (d, b) {
         extendStatics(d, b);
         function __() { this.constructor = d; }
@@ -3881,8 +3944,8 @@ var response_1 = require("../../../../../lib/response");
 var host = process.env.HOST || 'http://localhost';
 var port = process.env.PORT || '9999';
 var newAgent = function (h) {
-    if (h === void 0) { h = host + ":" + port; }
-    return new agent_1.Agent(h, {}, new memory_1.MemoryContainer(), { ttl: 0, tags: {}, context: {}, port: 80 }, new xhr_1.XHRTransport('', new json_1.JSONTransform(), new json_2.JSONParser()), []);
+    if (h === void 0) { h = host; }
+    return new agent_1.Agent(h, {}, new memory_1.MemoryContainer(), { ttl: 0, tags: {}, context: {}, port: Number(port) }, new xhr_1.XHRTransport('', new json_1.JSONTransform(), new json_2.JSONParser()), []);
 };
 describe('xhr', function () {
     it('should make successful requests ', function () {

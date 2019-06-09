@@ -13,10 +13,10 @@
   "author": "Quenk Technologies<info@quenk.com> (https://quenk.com)",
   "license": "Apache-2.0",
   "dependencies": {
-    "@quenk/noni": "^1.18.0"
+    "@quenk/noni": "^1.24.0"
   },
   "devDependencies": {
-    "@quenk/test": "^2.1.0",
+    "@quenk/test": "^2.1.1",
     "@types/deep-equal": "^1.0.1",
     "@types/json-stringify-safe": "^5.0.0",
     "@types/mocha": "^5.2.6",
@@ -32,6 +32,6 @@
     "qs": "^6.6.0",
     "ts-node": "^8.0.2",
     "typedoc": "^0.14.2",
-    "typescript": "^3.3.3333"
+    "typescript": "^3.5.1"
   }
 }
