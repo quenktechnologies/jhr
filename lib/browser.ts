@@ -34,7 +34,7 @@ export const splitUrl = (url: Url): [Host, Path] => {
  * createAgent produces a new default Agent for use in the browser.
  */
 export const createAgent = <B extends Object>
-    (host: Host = window.location.hostname, port = 80): Agent<object, B> =>
+    (host: Host = getHost(), port = getPort()): Agent<object, B> =>
     new Agent(
         host,
         {},
@@ -42,6 +42,16 @@ export const createAgent = <B extends Object>
         { ttl: 0, tags: {}, context: {}, port },
         new XHRTransport('', new JSONTransform(), new JSONParser()),
         []);
+
+const getHost = () => window.location.hostname;
+
+const getPort = () => {
+
+    let port = window.location.port;
+
+    return Number(((port === '') || (port == null)) ? 80 : port);
+
+}
 
 /**
  * get shorthand helper.

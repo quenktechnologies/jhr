@@ -274,9 +274,14 @@ exports.splitUrl = function (url) {
  * createAgent produces a new default Agent for use in the browser.
  */
 exports.createAgent = function (host, port) {
-    if (host === void 0) { host = window.location.hostname; }
-    if (port === void 0) { port = 80; }
+    if (host === void 0) { host = getHost(); }
+    if (port === void 0) { port = getPort(); }
     return new agent_1.Agent(host, {}, new memory_1.MemoryContainer(), { ttl: 0, tags: {}, context: {}, port: port }, new xhr_1.XHRTransport('', new json_1.JSONTransform(), new json_2.JSONParser()), []);
+};
+var getHost = function () { return window.location.hostname; };
+var getPort = function () {
+    var port = window.location.port;
+    return Number(((port === '') || (port == null)) ? 80 : port);
 };
 /**
  * get shorthand helper.
