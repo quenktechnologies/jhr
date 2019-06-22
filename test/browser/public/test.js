@@ -278,7 +278,9 @@ exports.createAgent = function (host, port) {
     if (port === void 0) { port = getPort(); }
     return new agent_1.Agent(host, {}, new memory_1.MemoryContainer(), { ttl: 0, tags: {}, context: {}, port: port }, new xhr_1.XHRTransport('', new json_1.JSONTransform(), new json_2.JSONParser()), []);
 };
-var getHost = function () { return window.location.hostname; };
+var getHost = function () {
+    return window.location.protocol + "//" + window.location.hostname;
+};
 var getPort = function () {
     var port = window.location.port;
     return Number(((port === '') || (port == null)) ? 80 : port);

@@ -43,7 +43,8 @@ export const createAgent = <B extends Object>
         new XHRTransport('', new JSONTransform(), new JSONParser()),
         []);
 
-const getHost = () => window.location.hostname;
+const getHost = () =>
+    `${window.location.protocol}//${window.location.hostname}`;
 
 const getPort = () => {
 
