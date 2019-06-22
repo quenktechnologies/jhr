@@ -16,7 +16,6 @@ export declare const defaultOptions: {
     ttl: number;
     tags: {};
     context: {};
-    port: number;
 };
 /**
  * Options for configuring the agent.
@@ -37,10 +36,10 @@ export declare class Agent<ReqRaw, ResParsed> {
     host: Host;
     headers: OutgoingHeaders;
     cookies: Container;
-    options: Options;
+    options: Partial<Options>;
     transport: Transport<ReqRaw, ResParsed>;
     plugins: Plugin<ReqRaw, ResParsed>[];
-    constructor(host: Host, headers: OutgoingHeaders, cookies: Container, options: Options, transport: Transport<ReqRaw, ResParsed>, plugins: Plugin<ReqRaw, ResParsed>[]);
+    constructor(host: Host, headers: OutgoingHeaders, cookies: Container, options: Partial<Options>, transport: Transport<ReqRaw, ResParsed>, plugins: Plugin<ReqRaw, ResParsed>[]);
     /**
      * setTransport allows the transport to be changed (possibly to process
      * a different type of response).

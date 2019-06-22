@@ -34,7 +34,8 @@ export const splitUrl = (url: Url): [Host, Path] => {
  * createAgent produces a new default Agent for use in the browser.
  */
 export const createAgent = <B extends Object>
-    (host: Host, port = 80): Agent<object, B> => new Agent(
+    (host: Host = window.location.hostname, port = 80): Agent<object, B> =>
+    new Agent(
         host,
         {},
         new MemoryContainer(),

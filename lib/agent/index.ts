@@ -25,7 +25,7 @@ import { Plugin } from './plugin';
 /**
  * defaultOptions
  */
-export const defaultOptions = { ttl: 0, tags: {}, context: {}, port: 80 };
+export const defaultOptions = { ttl: 0, tags: {}, context: {} };
 
 /**
  * Options for configuring the agent.
@@ -51,7 +51,7 @@ export class Agent<ReqRaw, ResParsed> {
         public host: Host,
         public headers: OutgoingHeaders,
         public cookies: Container,
-        public options: Options,
+        public options: Partial<Options>,
         public transport: Transport<ReqRaw, ResParsed>,
         public plugins: Plugin<ReqRaw, ResParsed>[]) { }
 

@@ -9,7 +9,7 @@ var request_1 = require("../request");
 /**
  * defaultOptions
  */
-exports.defaultOptions = { ttl: 0, tags: {}, context: {}, port: 80 };
+exports.defaultOptions = { ttl: 0, tags: {}, context: {} };
 /**
  * Agent acts as an HTTP client.
  *
@@ -274,6 +274,7 @@ exports.splitUrl = function (url) {
  * createAgent produces a new default Agent for use in the browser.
  */
 exports.createAgent = function (host, port) {
+    if (host === void 0) { host = window.location.hostname; }
     if (port === void 0) { port = 80; }
     return new agent_1.Agent(host, {}, new memory_1.MemoryContainer(), { ttl: 0, tags: {}, context: {}, port: port }, new xhr_1.XHRTransport('', new json_1.JSONTransform(), new json_2.JSONParser()), []);
 };
