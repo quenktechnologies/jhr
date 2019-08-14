@@ -16,7 +16,8 @@
   "author": "Quenk Technologies<info@quenk.com> (https://quenk.com)",
   "license": "Apache-2.0",
   "dependencies": {
-    "@quenk/noni": "^1.30.0"
+    "@quenk/noni": "^1.30.0",
+    "qs": "^6.7.0"
   },
   "devDependencies": {
     "@quenk/test": "^2.1.1",
@@ -32,7 +33,6 @@
     "express": "^4.17.1",
     "mocha": "^6.2.0",
     "multer": "^1.4.2",
-    "qs": "^6.7.0",
     "ts-node": "^8.3.0",
     "typedoc": "^0.14.2",
     "typescript": "^3.5.3"
