@@ -43,7 +43,7 @@ export class XHRTransport<Raw, Res> implements Transport<Raw, Res> {
         let { host, port, path, method, body, headers, options, cookies } = ctx;
         let xhr = new XMLHttpRequest();
         let portNumer = (port && (port !== 80) && (port !== 443)) ? `:${port}` : '';
-        let url = `${host}:${portNumer}${path[0] === '/' ? '' : '/'}${path}`;
+        let url = `${host}${portNumer}${path[0] === '/' ? '' : '/'}${path}`;
 
         return new Run(s => {
 

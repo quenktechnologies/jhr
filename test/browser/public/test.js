@@ -206,7 +206,7 @@ var XHRTransport = /** @class */ (function () {
         var host = ctx.host, port = ctx.port, path = ctx.path, method = ctx.method, body = ctx.body, headers = ctx.headers, options = ctx.options, cookies = ctx.cookies;
         var xhr = new XMLHttpRequest();
         var portNumer = (port && (port !== 80) && (port !== 443)) ? ":" + port : '';
-        var url = host + ":" + portNumer + (path[0] === '/' ? '' : '/') + path;
+        var url = "" + host + portNumer + (path[0] === '/' ? '' : '/') + path;
         return new future_1.Run(function (s) {
             var transBody = undefined;
             if (body != null) {
