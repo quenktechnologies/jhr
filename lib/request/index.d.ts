@@ -4,12 +4,6 @@ import { Method } from './method';
 import { Parameters } from './parameters';
 import { Options } from './options';
 /**
- * OutgoingHeaders included in requests.
- */
-export interface OutgoingHeaders {
-    [key: string]: string;
-}
-/**
  * URIContext is an interface used for expanding uri templates.
  */
 export interface URIContext {
