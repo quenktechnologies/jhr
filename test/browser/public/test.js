@@ -952,7 +952,7 @@ exports.urlFromString = function (url, params) {
     return url + "?" + qs.stringify(params);
 };
 
-},{"qs":42}],15:[function(require,module,exports){
+},{"qs":47}],15:[function(require,module,exports){
 "use strict";
 /**
  * This module provides functions and types to make dealing with ES errors
@@ -1326,19 +1326,30 @@ exports.attempt = function (f) { return new Run(function (s) {
     return function_1.noop;
 }); };
 /**
- * delay executes a function f after n milliseconds have passed.
+ * delay execution of a function f after n milliseconds have passed.
  *
- * Any errors thrown are caught.
+ * Any errors thrown are caught and processed in the Future chain.
  */
 exports.delay = function (f, n) {
     if (n === void 0) { n = 0; }
     return new Run(function (s) {
-        setTimeout(function () { try {
-            s.onSuccess(f());
-        }
-        catch (e) {
-            s.onError(e);
-        } }, n);
+        setTimeout(function () {
+            try {
+                s.onSuccess(f());
+            }
+            catch (e) {
+                s.onError(e);
+            }
+        }, n);
+        return function_1.noop;
+    });
+};
+/**
+ * wait n milliseconds before continuing the Future chain.
+ */
+exports.wait = function (n) {
+    return new Run(function (s) {
+        setTimeout(function () { s.onSuccess(undefined); }, n);
         return function_1.noop;
     });
 };
@@ -1557,7 +1568,7 @@ exports.throttle = function (f, duration) {
 };
 
 }).call(this,require('_process'))
-},{"_process":40}],18:[function(require,module,exports){
+},{"_process":45}],18:[function(require,module,exports){
 "use strict";
 var __spreadArrays = (this && this.__spreadArrays) || function () {
     for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
@@ -1698,7 +1709,7 @@ exports.compact = function (list) {
     return list.filter(function (v) { return (v != null); });
 };
 
-},{"../../math":25,"../record":22}],19:[function(require,module,exports){
+},{"../../math":26,"../record":22}],19:[function(require,module,exports){
 "use strict";
 /**
  * Either represents a value that may be one of two types.
@@ -2195,6 +2206,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
  * be able track integrity and may result in runtime errors if not used carefully.
  */
 var array_1 = require("../array");
+var type_1 = require("../type");
 /**
  * assign polyfill.
  */
@@ -2231,6 +2243,7 @@ exports.assign = assign;
  */
 exports.isRecord = function (value) {
     return (typeof value === 'object') &&
+        (value != null) &&
         (!Array.isArray(value)) &&
         (!(value instanceof Date)) &&
         (!(value instanceof RegExp));
@@ -2249,6 +2262,14 @@ exports.map = function (o, f) {
         var _a;
         return exports.merge(p, (_a = {}, _a[k] = f(o[k], k, o), _a));
     }, {});
+};
+/**
+ * mapTo maps over a Record's properties producing an array of each result.
+ *
+ * The order of elements in the array is not guaranteed.
+ */
+exports.mapTo = function (o, f) {
+    return exports.keys(o).map(function (k) { return f(o[k], k, o); });
 };
 /**
  * reduce a Record's keys to a single value.
@@ -2397,15 +2418,15 @@ exports.clone = function (r) {
     return exports.reduce(r, {}, function (p, c, k) { p[k] = _clone(c); return p; });
 };
 var _clone = function (a) {
-    if (Array.isArray(a))
+    if (type_1.isArray(a))
         return a.map(_clone);
-    else if (typeof a === 'object')
+    else if (exports.isRecord(a))
         return exports.clone(a);
     else
         return a;
 };
 
-},{"../array":18}],23:[function(require,module,exports){
+},{"../array":18,"../type":25}],23:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 /**
@@ -2808,6 +2829,126 @@ exports.interpolate = function (str, data, opts) {
 },{"./record":22,"./record/path":23}],25:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+var prims = ['string', 'number', 'boolean'];
+/**
+ * Any is a class used to represent typescript's "any" type.
+ */
+var Any = /** @class */ (function () {
+    function Any() {
+    }
+    return Any;
+}());
+exports.Any = Any;
+/**
+ * isObject test.
+ *
+ * Does not consider an Array an object.
+ */
+exports.isObject = function (value) {
+    return (typeof value === 'object') && (!exports.isArray(value));
+};
+/**
+ * isArray test.
+ */
+exports.isArray = Array.isArray;
+/**
+ * isString test.
+ */
+exports.isString = function (value) { return typeof value === 'string'; };
+/**
+ * isNumber test.
+ */
+exports.isNumber = function (value) {
+    return (typeof value === 'number') && (!isNaN(value));
+};
+/**
+ * isBoolean test.
+ */
+exports.isBoolean = function (value) { return typeof value === 'boolean'; };
+/**
+ * isFunction test.
+ */
+exports.isFunction = function (value) { return typeof value === 'function'; };
+/**
+ * isPrim test.
+ */
+exports.isPrim = function (value) {
+    return !(exports.isObject(value) ||
+        exports.isArray(value) ||
+        exports.isFunction(value));
+};
+/**
+ * is performs a typeof of check on a type.
+ */
+exports.is = function (expected) { return function (value) { return typeof (value) === expected; }; };
+/**
+ * test whether a value conforms to some pattern.
+ *
+ * This function is made available mainly for a crude pattern matching
+ * machinery that works as followss:
+ * string   -> Matches on the value of the string.
+ * number   -> Matches on the value of the number.
+ * boolean  -> Matches on the value of the boolean.
+ * object   -> Each key of the object is matched on the value, all must match.
+ * function -> Treated as a constructor and results in an instanceof check or
+ *             for String,Number and Boolean, this uses the typeof check. If
+ *             the function is RegExp then we uses the RegExp.test function
+ *             instead.
+ */
+exports.test = function (value, t) {
+    if ((prims.indexOf(typeof t) > -1) && (value === t))
+        return true;
+    else if ((typeof t === 'function') &&
+        (((t === String) && (typeof value === 'string')) ||
+            ((t === Number) && (typeof value === 'number')) ||
+            ((t === Boolean) && (typeof value === 'boolean')) ||
+            ((t === Array) && (Array.isArray(value))) ||
+            (t === Any) ||
+            (value instanceof t)))
+        return true;
+    else if ((t instanceof RegExp) &&
+        ((typeof value === 'string') &&
+            t.test(value)))
+        return true;
+    else if ((typeof t === 'object') && (typeof value === 'object'))
+        return Object
+            .keys(t)
+            .every(function (k) { return Object.hasOwnProperty.call(value, k) ?
+            exports.test(value[k], t[k]) : false; });
+    return false;
+};
+/**
+ * show the type of a value.
+ *
+ * Note: This may crash if the value is an
+ * object literal with recursive references.
+ */
+exports.show = function (value) {
+    if (typeof value === 'object') {
+        if (Array.isArray(value))
+            return "[" + value.map(exports.show) + "];";
+        else if (value.constructor !== Object)
+            return (value.constructor.name || value.constructor);
+        else
+            return JSON.stringify(value);
+    }
+    else {
+        return '' + value;
+    }
+};
+/**
+ * toString casts a value to a string.
+ *
+ * If the value is null or undefined an empty string is returned instead of
+ * the default.
+ */
+exports.toString = function (val) {
+    return (val == null) ? '' : String(val);
+};
+
+},{}],26:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 /**
  * isMultipleOf tests whether the Integer 'y' is a multiple of x.
  */
@@ -2848,7 +2989,7 @@ exports.round = function (x, n) {
     return sign * (Math.round((Math.abs(x) * exp) + offset) / exp);
 };
 
-},{}],26:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -3011,7 +3152,9 @@ exports.toString = function (value) {
         return value.toString();
     }
     else if (typeof value === 'object') {
-        if ((value.constructor !== Object) && (!Array.isArray(value)))
+        if ((value != null) &&
+            (value.constructor !== Object) &&
+            (!Array.isArray(value)))
             return value.constructor.name;
         else
             return stringify(value);
@@ -3026,7 +3169,7 @@ exports.toString = function (value) {
  */
 exports.assert = function (value) { return new Positive(value, true); };
 
-},{"deep-equal":27,"json-stringify-safe":35}],27:[function(require,module,exports){
+},{"deep-equal":28,"json-stringify-safe":40}],28:[function(require,module,exports){
 var objectKeys = require('object-keys');
 var isArguments = require('is-arguments');
 var is = require('object-is');
@@ -3140,7 +3283,7 @@ function objEquiv(a, b, opts) {
 
 module.exports = deepEqual;
 
-},{"is-arguments":32,"is-date-object":33,"is-regex":34,"object-is":36,"object-keys":38,"regexp.prototype.flags":47}],28:[function(require,module,exports){
+},{"is-arguments":37,"is-date-object":38,"is-regex":39,"object-is":41,"object-keys":43,"regexp.prototype.flags":52}],29:[function(require,module,exports){
 'use strict';
 
 var keys = require('object-keys');
@@ -3200,7 +3343,246 @@ defineProperties.supportsDescriptors = !!supportsDescriptors;
 
 module.exports = defineProperties;
 
-},{"object-keys":38}],29:[function(require,module,exports){
+},{"object-keys":43}],30:[function(require,module,exports){
+'use strict';
+
+/* globals
+	Atomics,
+	SharedArrayBuffer,
+*/
+
+var undefined;
+
+var $TypeError = TypeError;
+
+var $gOPD = Object.getOwnPropertyDescriptor;
+if ($gOPD) {
+	try {
+		$gOPD({}, '');
+	} catch (e) {
+		$gOPD = null; // this is IE 8, which has a broken gOPD
+	}
+}
+
+var throwTypeError = function () { throw new $TypeError(); };
+var ThrowTypeError = $gOPD
+	? (function () {
+		try {
+			// eslint-disable-next-line no-unused-expressions, no-caller, no-restricted-properties
+			arguments.callee; // IE 8 does not throw here
+			return throwTypeError;
+		} catch (calleeThrows) {
+			try {
+				// IE 8 throws on Object.getOwnPropertyDescriptor(arguments, '')
+				return $gOPD(arguments, 'callee').get;
+			} catch (gOPDthrows) {
+				return throwTypeError;
+			}
+		}
+	}())
+	: throwTypeError;
+
+var hasSymbols = require('has-symbols')();
+
+var getProto = Object.getPrototypeOf || function (x) { return x.__proto__; }; // eslint-disable-line no-proto
+
+var generator; // = function * () {};
+var generatorFunction = generator ? getProto(generator) : undefined;
+var asyncFn; // async function() {};
+var asyncFunction = asyncFn ? asyncFn.constructor : undefined;
+var asyncGen; // async function * () {};
+var asyncGenFunction = asyncGen ? getProto(asyncGen) : undefined;
+var asyncGenIterator = asyncGen ? asyncGen() : undefined;
+
+var TypedArray = typeof Uint8Array === 'undefined' ? undefined : getProto(Uint8Array);
+
+var INTRINSICS = {
+	'%Array%': Array,
+	'%ArrayBuffer%': typeof ArrayBuffer === 'undefined' ? undefined : ArrayBuffer,
+	'%ArrayBufferPrototype%': typeof ArrayBuffer === 'undefined' ? undefined : ArrayBuffer.prototype,
+	'%ArrayIteratorPrototype%': hasSymbols ? getProto([][Symbol.iterator]()) : undefined,
+	'%ArrayPrototype%': Array.prototype,
+	'%ArrayProto_entries%': Array.prototype.entries,
+	'%ArrayProto_forEach%': Array.prototype.forEach,
+	'%ArrayProto_keys%': Array.prototype.keys,
+	'%ArrayProto_values%': Array.prototype.values,
+	'%AsyncFromSyncIteratorPrototype%': undefined,
+	'%AsyncFunction%': asyncFunction,
+	'%AsyncFunctionPrototype%': asyncFunction ? asyncFunction.prototype : undefined,
+	'%AsyncGenerator%': asyncGen ? getProto(asyncGenIterator) : undefined,
+	'%AsyncGeneratorFunction%': asyncGenFunction,
+	'%AsyncGeneratorPrototype%': asyncGenFunction ? asyncGenFunction.prototype : undefined,
+	'%AsyncIteratorPrototype%': asyncGenIterator && hasSymbols && Symbol.asyncIterator ? asyncGenIterator[Symbol.asyncIterator]() : undefined,
+	'%Atomics%': typeof Atomics === 'undefined' ? undefined : Atomics,
+	'%Boolean%': Boolean,
+	'%BooleanPrototype%': Boolean.prototype,
+	'%DataView%': typeof DataView === 'undefined' ? undefined : DataView,
+	'%DataViewPrototype%': typeof DataView === 'undefined' ? undefined : DataView.prototype,
+	'%Date%': Date,
+	'%DatePrototype%': Date.prototype,
+	'%decodeURI%': decodeURI,
+	'%decodeURIComponent%': decodeURIComponent,
+	'%encodeURI%': encodeURI,
+	'%encodeURIComponent%': encodeURIComponent,
+	'%Error%': Error,
+	'%ErrorPrototype%': Error.prototype,
+	'%eval%': eval, // eslint-disable-line no-eval
+	'%EvalError%': EvalError,
+	'%EvalErrorPrototype%': EvalError.prototype,
+	'%Float32Array%': typeof Float32Array === 'undefined' ? undefined : Float32Array,
+	'%Float32ArrayPrototype%': typeof Float32Array === 'undefined' ? undefined : Float32Array.prototype,
+	'%Float64Array%': typeof Float64Array === 'undefined' ? undefined : Float64Array,
+	'%Float64ArrayPrototype%': typeof Float64Array === 'undefined' ? undefined : Float64Array.prototype,
+	'%Function%': Function,
+	'%FunctionPrototype%': Function.prototype,
+	'%Generator%': generator ? getProto(generator()) : undefined,
+	'%GeneratorFunction%': generatorFunction,
+	'%GeneratorPrototype%': generatorFunction ? generatorFunction.prototype : undefined,
+	'%Int8Array%': typeof Int8Array === 'undefined' ? undefined : Int8Array,
+	'%Int8ArrayPrototype%': typeof Int8Array === 'undefined' ? undefined : Int8Array.prototype,
+	'%Int16Array%': typeof Int16Array === 'undefined' ? undefined : Int16Array,
+	'%Int16ArrayPrototype%': typeof Int16Array === 'undefined' ? undefined : Int8Array.prototype,
+	'%Int32Array%': typeof Int32Array === 'undefined' ? undefined : Int32Array,
+	'%Int32ArrayPrototype%': typeof Int32Array === 'undefined' ? undefined : Int32Array.prototype,
+	'%isFinite%': isFinite,
+	'%isNaN%': isNaN,
+	'%IteratorPrototype%': hasSymbols ? getProto(getProto([][Symbol.iterator]())) : undefined,
+	'%JSON%': typeof JSON === 'object' ? JSON : undefined,
+	'%JSONParse%': typeof JSON === 'object' ? JSON.parse : undefined,
+	'%Map%': typeof Map === 'undefined' ? undefined : Map,
+	'%MapIteratorPrototype%': typeof Map === 'undefined' || !hasSymbols ? undefined : getProto(new Map()[Symbol.iterator]()),
+	'%MapPrototype%': typeof Map === 'undefined' ? undefined : Map.prototype,
+	'%Math%': Math,
+	'%Number%': Number,
+	'%NumberPrototype%': Number.prototype,
+	'%Object%': Object,
+	'%ObjectPrototype%': Object.prototype,
+	'%ObjProto_toString%': Object.prototype.toString,
+	'%ObjProto_valueOf%': Object.prototype.valueOf,
+	'%parseFloat%': parseFloat,
+	'%parseInt%': parseInt,
+	'%Promise%': typeof Promise === 'undefined' ? undefined : Promise,
+	'%PromisePrototype%': typeof Promise === 'undefined' ? undefined : Promise.prototype,
+	'%PromiseProto_then%': typeof Promise === 'undefined' ? undefined : Promise.prototype.then,
+	'%Promise_all%': typeof Promise === 'undefined' ? undefined : Promise.all,
+	'%Promise_reject%': typeof Promise === 'undefined' ? undefined : Promise.reject,
+	'%Promise_resolve%': typeof Promise === 'undefined' ? undefined : Promise.resolve,
+	'%Proxy%': typeof Proxy === 'undefined' ? undefined : Proxy,
+	'%RangeError%': RangeError,
+	'%RangeErrorPrototype%': RangeError.prototype,
+	'%ReferenceError%': ReferenceError,
+	'%ReferenceErrorPrototype%': ReferenceError.prototype,
+	'%Reflect%': typeof Reflect === 'undefined' ? undefined : Reflect,
+	'%RegExp%': RegExp,
+	'%RegExpPrototype%': RegExp.prototype,
+	'%Set%': typeof Set === 'undefined' ? undefined : Set,
+	'%SetIteratorPrototype%': typeof Set === 'undefined' || !hasSymbols ? undefined : getProto(new Set()[Symbol.iterator]()),
+	'%SetPrototype%': typeof Set === 'undefined' ? undefined : Set.prototype,
+	'%SharedArrayBuffer%': typeof SharedArrayBuffer === 'undefined' ? undefined : SharedArrayBuffer,
+	'%SharedArrayBufferPrototype%': typeof SharedArrayBuffer === 'undefined' ? undefined : SharedArrayBuffer.prototype,
+	'%String%': String,
+	'%StringIteratorPrototype%': hasSymbols ? getProto(''[Symbol.iterator]()) : undefined,
+	'%StringPrototype%': String.prototype,
+	'%Symbol%': hasSymbols ? Symbol : undefined,
+	'%SymbolPrototype%': hasSymbols ? Symbol.prototype : undefined,
+	'%SyntaxError%': SyntaxError,
+	'%SyntaxErrorPrototype%': SyntaxError.prototype,
+	'%ThrowTypeError%': ThrowTypeError,
+	'%TypedArray%': TypedArray,
+	'%TypedArrayPrototype%': TypedArray ? TypedArray.prototype : undefined,
+	'%TypeError%': $TypeError,
+	'%TypeErrorPrototype%': $TypeError.prototype,
+	'%Uint8Array%': typeof Uint8Array === 'undefined' ? undefined : Uint8Array,
+	'%Uint8ArrayPrototype%': typeof Uint8Array === 'undefined' ? undefined : Uint8Array.prototype,
+	'%Uint8ClampedArray%': typeof Uint8ClampedArray === 'undefined' ? undefined : Uint8ClampedArray,
+	'%Uint8ClampedArrayPrototype%': typeof Uint8ClampedArray === 'undefined' ? undefined : Uint8ClampedArray.prototype,
+	'%Uint16Array%': typeof Uint16Array === 'undefined' ? undefined : Uint16Array,
+	'%Uint16ArrayPrototype%': typeof Uint16Array === 'undefined' ? undefined : Uint16Array.prototype,
+	'%Uint32Array%': typeof Uint32Array === 'undefined' ? undefined : Uint32Array,
+	'%Uint32ArrayPrototype%': typeof Uint32Array === 'undefined' ? undefined : Uint32Array.prototype,
+	'%URIError%': URIError,
+	'%URIErrorPrototype%': URIError.prototype,
+	'%WeakMap%': typeof WeakMap === 'undefined' ? undefined : WeakMap,
+	'%WeakMapPrototype%': typeof WeakMap === 'undefined' ? undefined : WeakMap.prototype,
+	'%WeakSet%': typeof WeakSet === 'undefined' ? undefined : WeakSet,
+	'%WeakSetPrototype%': typeof WeakSet === 'undefined' ? undefined : WeakSet.prototype
+};
+
+var bind = require('function-bind');
+var $replace = bind.call(Function.call, String.prototype.replace);
+
+/* adapted from https://github.com/lodash/lodash/blob/4.17.15/dist/lodash.js#L6735-L6744 */
+var rePropName = /[^%.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|%$))/g;
+var reEscapeChar = /\\(\\)?/g; /** Used to match backslashes in property paths. */
+var stringToPath = function stringToPath(string) {
+	var result = [];
+	$replace(string, rePropName, function (match, number, quote, subString) {
+		result[result.length] = quote ? $replace(subString, reEscapeChar, '$1') : (number || match);
+	});
+	return result;
+};
+/* end adaptation */
+
+var getBaseIntrinsic = function getBaseIntrinsic(name, allowMissing) {
+	if (!(name in INTRINSICS)) {
+		throw new SyntaxError('intrinsic ' + name + ' does not exist!');
+	}
+
+	// istanbul ignore if // hopefully this is impossible to test :-)
+	if (typeof INTRINSICS[name] === 'undefined' && !allowMissing) {
+		throw new $TypeError('intrinsic ' + name + ' exists, but is not available. Please file an issue!');
+	}
+
+	return INTRINSICS[name];
+};
+
+module.exports = function GetIntrinsic(name, allowMissing) {
+	if (typeof name !== 'string' || name.length === 0) {
+		throw new TypeError('intrinsic name must be a non-empty string');
+	}
+	if (arguments.length > 1 && typeof allowMissing !== 'boolean') {
+		throw new TypeError('"allowMissing" argument must be a boolean');
+	}
+
+	var parts = stringToPath(name);
+
+	var value = getBaseIntrinsic('%' + (parts.length > 0 ? parts[0] : '') + '%', allowMissing);
+	for (var i = 1; i < parts.length; i += 1) {
+		if (value != null) {
+			if ($gOPD && (i + 1) >= parts.length) {
+				var desc = $gOPD(value, parts[i]);
+				if (!allowMissing && !(parts[i] in value)) {
+					throw new $TypeError('base intrinsic for ' + name + ' exists, but the property is not available.');
+				}
+				value = desc ? (desc.get || desc.value) : value[parts[i]];
+			} else {
+				value = value[parts[i]];
+			}
+		}
+	}
+	return value;
+};
+
+},{"function-bind":33,"has-symbols":34}],31:[function(require,module,exports){
+'use strict';
+
+var bind = require('function-bind');
+
+var GetIntrinsic = require('../GetIntrinsic');
+
+var $Function = GetIntrinsic('%Function%');
+var $apply = $Function.apply;
+var $call = $Function.call;
+
+module.exports = function callBind() {
+	return bind.apply($call, arguments);
+};
+
+module.exports.apply = function applyBind() {
+	return bind.apply($apply, arguments);
+};
+
+},{"../GetIntrinsic":30,"function-bind":33}],32:[function(require,module,exports){
 'use strict';
 
 /* eslint no-invalid-this: 1 */
@@ -3254,21 +3636,82 @@ module.exports = function bind(that) {
     return bound;
 };
 
-},{}],30:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 'use strict';
 
 var implementation = require('./implementation');
 
 module.exports = Function.prototype.bind || implementation;
 
-},{"./implementation":29}],31:[function(require,module,exports){
+},{"./implementation":32}],34:[function(require,module,exports){
+(function (global){
+'use strict';
+
+var origSymbol = global.Symbol;
+var hasSymbolSham = require('./shams');
+
+module.exports = function hasNativeSymbols() {
+	if (typeof origSymbol !== 'function') { return false; }
+	if (typeof Symbol !== 'function') { return false; }
+	if (typeof origSymbol('foo') !== 'symbol') { return false; }
+	if (typeof Symbol('bar') !== 'symbol') { return false; }
+
+	return hasSymbolSham();
+};
+
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"./shams":35}],35:[function(require,module,exports){
+'use strict';
+
+/* eslint complexity: [2, 18], max-statements: [2, 33] */
+module.exports = function hasSymbols() {
+	if (typeof Symbol !== 'function' || typeof Object.getOwnPropertySymbols !== 'function') { return false; }
+	if (typeof Symbol.iterator === 'symbol') { return true; }
+
+	var obj = {};
+	var sym = Symbol('test');
+	var symObj = Object(sym);
+	if (typeof sym === 'string') { return false; }
+
+	if (Object.prototype.toString.call(sym) !== '[object Symbol]') { return false; }
+	if (Object.prototype.toString.call(symObj) !== '[object Symbol]') { return false; }
+
+	// temp disabled per https://github.com/ljharb/object.assign/issues/17
+	// if (sym instanceof Symbol) { return false; }
+	// temp disabled per https://github.com/WebReflection/get-own-property-symbols/issues/4
+	// if (!(symObj instanceof Symbol)) { return false; }
+
+	// if (typeof Symbol.prototype.toString !== 'function') { return false; }
+	// if (String(sym) !== Symbol.prototype.toString.call(sym)) { return false; }
+
+	var symVal = 42;
+	obj[sym] = symVal;
+	for (sym in obj) { return false; } // eslint-disable-line no-restricted-syntax
+	if (typeof Object.keys === 'function' && Object.keys(obj).length !== 0) { return false; }
+
+	if (typeof Object.getOwnPropertyNames === 'function' && Object.getOwnPropertyNames(obj).length !== 0) { return false; }
+
+	var syms = Object.getOwnPropertySymbols(obj);
+	if (syms.length !== 1 || syms[0] !== sym) { return false; }
+
+	if (!Object.prototype.propertyIsEnumerable.call(obj, sym)) { return false; }
+
+	if (typeof Object.getOwnPropertyDescriptor === 'function') {
+		var descriptor = Object.getOwnPropertyDescriptor(obj, sym);
+		if (descriptor.value !== symVal || descriptor.enumerable !== true) { return false; }
+	}
+
+	return true;
+};
+
+},{}],36:[function(require,module,exports){
 'use strict';
 
 var bind = require('function-bind');
 
 module.exports = bind.call(Function.call, Object.prototype.hasOwnProperty);
 
-},{"function-bind":30}],32:[function(require,module,exports){
+},{"function-bind":33}],37:[function(require,module,exports){
 'use strict';
 
 var hasToStringTag = typeof Symbol === 'function' && typeof Symbol.toStringTag === 'symbol';
@@ -3301,11 +3744,11 @@ isStandardArguments.isLegacyArguments = isLegacyArguments; // for tests
 
 module.exports = supportsStandardArguments ? isStandardArguments : isLegacyArguments;
 
-},{}],33:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 'use strict';
 
 var getDay = Date.prototype.getDay;
-var tryDateObject = function tryDateObject(value) {
+var tryDateObject = function tryDateGetDayCall(value) {
 	try {
 		getDay.call(value);
 		return true;
@@ -3319,11 +3762,13 @@ var dateClass = '[object Date]';
 var hasToStringTag = typeof Symbol === 'function' && typeof Symbol.toStringTag === 'symbol';
 
 module.exports = function isDateObject(value) {
-	if (typeof value !== 'object' || value === null) { return false; }
+	if (typeof value !== 'object' || value === null) {
+		return false;
+	}
 	return hasToStringTag ? tryDateObject(value) : toStr.call(value) === dateClass;
 };
 
-},{}],34:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 'use strict';
 
 var has = require('has');
@@ -3333,14 +3778,14 @@ var gOPD = Object.getOwnPropertyDescriptor;
 var tryRegexExecCall = function tryRegexExec(value) {
 	try {
 		var lastIndex = value.lastIndex;
-		value.lastIndex = 0;
+		value.lastIndex = 0; // eslint-disable-line no-param-reassign
 
 		regexExec.call(value);
 		return true;
 	} catch (e) {
 		return false;
 	} finally {
-		value.lastIndex = lastIndex;
+		value.lastIndex = lastIndex; // eslint-disable-line no-param-reassign
 	}
 };
 var toStr = Object.prototype.toString;
@@ -3364,7 +3809,7 @@ module.exports = function isRegex(value) {
 	return tryRegexExecCall(value);
 };
 
-},{"has":31}],35:[function(require,module,exports){
+},{"has":36}],40:[function(require,module,exports){
 exports = module.exports = stringify
 exports.getSerialize = serializer
 
@@ -3393,28 +3838,30 @@ function serializer(replacer, cycleReplacer) {
   }
 }
 
-},{}],36:[function(require,module,exports){
-"use strict";
+},{}],41:[function(require,module,exports){
+'use strict';
 
-/* https://people.mozilla.org/~jorendorff/es6-draft.html#sec-object.is */
+// http://www.ecma-international.org/ecma-262/6.0/#sec-object.is
 
-var NumberIsNaN = function (value) {
+var numberIsNaN = function (value) {
 	return value !== value;
 };
 
 module.exports = function is(a, b) {
 	if (a === 0 && b === 0) {
 		return 1 / a === 1 / b;
-	} else if (a === b) {
+	}
+	if (a === b) {
 		return true;
-	} else if (NumberIsNaN(a) && NumberIsNaN(b)) {
+	}
+	if (numberIsNaN(a) && numberIsNaN(b)) {
 		return true;
 	}
 	return false;
 };
 
 
-},{}],37:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 'use strict';
 
 var keysShim;
@@ -3538,7 +3985,7 @@ if (!Object.keys) {
 }
 module.exports = keysShim;
 
-},{"./isArguments":39}],38:[function(require,module,exports){
+},{"./isArguments":44}],43:[function(require,module,exports){
 'use strict';
 
 var slice = Array.prototype.slice;
@@ -3572,7 +4019,7 @@ keysShim.shim = function shimObjectKeys() {
 
 module.exports = keysShim;
 
-},{"./implementation":37,"./isArguments":39}],39:[function(require,module,exports){
+},{"./implementation":42,"./isArguments":44}],44:[function(require,module,exports){
 'use strict';
 
 var toStr = Object.prototype.toString;
@@ -3591,7 +4038,7 @@ module.exports = function isArguments(value) {
 	return isArgs;
 };
 
-},{}],40:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -3777,7 +4224,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],41:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 'use strict';
 
 var replace = String.prototype.replace;
@@ -3805,7 +4252,7 @@ module.exports = util.assign(
     Format
 );
 
-},{"./utils":45}],42:[function(require,module,exports){
+},{"./utils":50}],47:[function(require,module,exports){
 'use strict';
 
 var stringify = require('./stringify');
@@ -3818,7 +4265,7 @@ module.exports = {
     stringify: stringify
 };
 
-},{"./formats":41,"./parse":43,"./stringify":44}],43:[function(require,module,exports){
+},{"./formats":46,"./parse":48,"./stringify":49}],48:[function(require,module,exports){
 'use strict';
 
 var utils = require('./utils');
@@ -4068,7 +4515,7 @@ module.exports = function (str, opts) {
     return utils.compact(obj);
 };
 
-},{"./utils":45}],44:[function(require,module,exports){
+},{"./utils":50}],49:[function(require,module,exports){
 'use strict';
 
 var utils = require('./utils');
@@ -4349,7 +4796,7 @@ module.exports = function (object, opts) {
     return joined.length > 0 ? prefix + joined : '';
 };
 
-},{"./formats":41,"./utils":45}],45:[function(require,module,exports){
+},{"./formats":46,"./utils":50}],50:[function(require,module,exports){
 'use strict';
 
 var has = Object.prototype.hasOwnProperty;
@@ -4587,15 +5034,15 @@ module.exports = {
     merge: merge
 };
 
-},{}],46:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 'use strict';
 
-var toObject = Object;
-var TypeErr = TypeError;
+var $Object = Object;
+var $TypeError = TypeError;
 
 module.exports = function flags() {
-	if (this != null && this !== toObject(this)) {
-		throw new TypeErr('RegExp.prototype.flags getter called on non-object');
+	if (this != null && this !== $Object(this)) {
+		throw new $TypeError('RegExp.prototype.flags getter called on non-object');
 	}
 	var result = '';
 	if (this.global) {
@@ -4619,16 +5066,17 @@ module.exports = function flags() {
 	return result;
 };
 
-},{}],47:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 'use strict';
 
 var define = require('define-properties');
+var callBind = require('es-abstract/helpers/callBind');
 
 var implementation = require('./implementation');
 var getPolyfill = require('./polyfill');
 var shim = require('./shim');
 
-var flagsBound = Function.call.bind(implementation);
+var flagsBound = callBind(implementation);
 
 define(flagsBound, {
 	getPolyfill: getPolyfill,
@@ -4638,21 +5086,21 @@ define(flagsBound, {
 
 module.exports = flagsBound;
 
-},{"./implementation":46,"./polyfill":48,"./shim":49,"define-properties":28}],48:[function(require,module,exports){
+},{"./implementation":51,"./polyfill":53,"./shim":54,"define-properties":29,"es-abstract/helpers/callBind":31}],53:[function(require,module,exports){
 'use strict';
 
 var implementation = require('./implementation');
 
 var supportsDescriptors = require('define-properties').supportsDescriptors;
-var gOPD = Object.getOwnPropertyDescriptor;
-var TypeErr = TypeError;
+var $gOPD = Object.getOwnPropertyDescriptor;
+var $TypeError = TypeError;
 
 module.exports = function getPolyfill() {
 	if (!supportsDescriptors) {
-		throw new TypeErr('RegExp.prototype.flags requires a true ES5 environment that supports property descriptors');
+		throw new $TypeError('RegExp.prototype.flags requires a true ES5 environment that supports property descriptors');
 	}
-	if (/a/mig.flags === 'gim') {
-		var descriptor = gOPD(RegExp.prototype, 'flags');
+	if ((/a/mig).flags === 'gim') {
+		var descriptor = $gOPD(RegExp.prototype, 'flags');
 		if (descriptor && typeof descriptor.get === 'function' && typeof (/a/).dotAll === 'boolean') {
 			return descriptor.get;
 		}
@@ -4660,7 +5108,7 @@ module.exports = function getPolyfill() {
 	return implementation;
 };
 
-},{"./implementation":46,"define-properties":28}],49:[function(require,module,exports){
+},{"./implementation":51,"define-properties":29}],54:[function(require,module,exports){
 'use strict';
 
 var supportsDescriptors = require('define-properties').supportsDescriptors;
@@ -4688,7 +5136,7 @@ module.exports = function shimFlags() {
 	return polyfill;
 };
 
-},{"./polyfill":48,"define-properties":28}],50:[function(require,module,exports){
+},{"./polyfill":53,"define-properties":29}],55:[function(require,module,exports){
 (function (process){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -4755,7 +5203,7 @@ describe('xhr', function () {
 });
 
 }).call(this,require('_process'))
-},{"../../../../../lib/agent":1,"../../../../../lib/agent/parser/json":2,"../../../../../lib/agent/transform/json":3,"../../../../../lib/agent/transform/multipart":4,"../../../../../lib/agent/transport/xhr":5,"../../../../../lib/cookie/container/memory":7,"../../../../../lib/response":12,"@quenk/noni/lib/control/monad/future":16,"@quenk/test/lib/assert":26,"_process":40}],51:[function(require,module,exports){
+},{"../../../../../lib/agent":1,"../../../../../lib/agent/parser/json":2,"../../../../../lib/agent/transform/json":3,"../../../../../lib/agent/transform/multipart":4,"../../../../../lib/agent/transport/xhr":5,"../../../../../lib/cookie/container/memory":7,"../../../../../lib/response":12,"@quenk/noni/lib/control/monad/future":16,"@quenk/test/lib/assert":27,"_process":45}],56:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var assert_1 = require("@quenk/test/lib/assert");
@@ -4787,8 +5235,8 @@ describe('browser', function () {
     });
 });
 
-},{"../../../lib/browser":6,"@quenk/test/lib/assert":26}],52:[function(require,module,exports){
+},{"../../../lib/browser":6,"@quenk/test/lib/assert":27}],57:[function(require,module,exports){
 require("./browser_test.js");
 require("./agent/transport/xhr_test.js");
 
-},{"./agent/transport/xhr_test.js":50,"./browser_test.js":51}]},{},[52]);
+},{"./agent/transport/xhr_test.js":55,"./browser_test.js":56}]},{},[57]);
