@@ -1,5 +1,6 @@
 import { Object } from '@quenk/noni/lib/data/json';
 import { Future } from '@quenk/noni/lib/control/monad/future';
+
 import { MemoryContainer } from './cookie/container/memory';
 import { JSONTransform } from './agent/transform/json';
 import { JSONParser } from './agent/parser/json';
@@ -11,6 +12,7 @@ import { Get } from './request';
 import { OutgoingHeaders } from './header';
 import { Response } from './response';
 import { Url } from './url';
+import { CSRFProtectionPlugin } from './agent/plugin/csrf';
 import { Agent } from './agent';
 
 const HTTP = 'http://';
@@ -41,7 +43,7 @@ export const createAgent = <B extends Object>
         new MemoryContainer(),
         { ttl: 0, tags: {}, context: {}, port },
         new XHRTransport('', new JSONTransform(), new JSONParser()),
-        []);
+        [new CSRFProtectionPlugin()]);
 
 const getHost = () =>
     `${window.location.protocol}//${window.location.hostname}`;

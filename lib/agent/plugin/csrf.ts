@@ -4,6 +4,9 @@ import { Context } from '../../request/context';
 import { Response } from '../../response';
 import { Plugin } from './';
 
+export const DEFAULT_CSRF_COOKIE_NAME = 'xsrf-token';
+export const DEFAULT_CSRF_HEADER_NAME = 'x-xsrf-token';
+
 /**
  * CSRFProtectionPlugin 
  *
@@ -13,7 +16,9 @@ import { Plugin } from './';
 export class CSRFProtectionPlugin<ReqBody, ResParsed>
     implements Plugin<ReqBody, ResParsed> {
 
-    constructor(public cookie: string, public header: string) { }
+    constructor(
+      public cookie: string = DEFAULT_CSRF_COOKIE_NAME,
+      public header: string = DEFAULT_CSRF_HEADER_NAME) { }
 
     beforeRequest(ctx: Context<ReqBody>): Future<Context<ReqBody>> {
 
