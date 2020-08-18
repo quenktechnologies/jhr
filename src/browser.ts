@@ -40,7 +40,7 @@ export const createAgent = <B extends Object>
     new Agent(
         host,
         {},
-        new MemoryContainer(),
+        new MemoryContainer(document.cookie),
         { ttl: 0, tags: {}, context: {}, port },
         new XHRTransport('', new JSONTransform(), new JSONParser()),
         [new CSRFProtectionPlugin()]);
