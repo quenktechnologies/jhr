@@ -17,13 +17,14 @@ export class CSRFProtectionPlugin<ReqBody, ResParsed>
     implements Plugin<ReqBody, ResParsed> {
 
     constructor(
-      public cookie: string = DEFAULT_CSRF_COOKIE_NAME,
-      public header: string = DEFAULT_CSRF_HEADER_NAME) { }
+        public cookie: string = DEFAULT_CSRF_COOKIE_NAME,
+        public header: string = DEFAULT_CSRF_HEADER_NAME) { }
 
     beforeRequest(ctx: Context<ReqBody>): Future<Context<ReqBody>> {
 
         let value = ctx.cookies.get(this.cookie);
 
+        if(value != null )
         ctx.headers = merge(ctx.headers, {
             [this.header]: value
         });

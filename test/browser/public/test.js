@@ -162,9 +162,10 @@ var CSRFProtectionPlugin = /** @class */ (function () {
     CSRFProtectionPlugin.prototype.beforeRequest = function (ctx) {
         var _a;
         var value = ctx.cookies.get(this.cookie);
-        ctx.headers = record_1.merge(ctx.headers, (_a = {},
-            _a[this.header] = value,
-            _a));
+        if (value != null)
+            ctx.headers = record_1.merge(ctx.headers, (_a = {},
+                _a[this.header] = value,
+                _a));
         return future_1.pure(ctx);
     };
     CSRFProtectionPlugin.prototype.afterResponse = function (r) {
