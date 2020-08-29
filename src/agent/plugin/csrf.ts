@@ -22,11 +22,11 @@ export class CSRFProtectionPlugin<ReqBody, ResParsed>
 
     beforeRequest(ctx: Context<ReqBody>): Future<Context<ReqBody>> {
 
-        let value = ctx.cookies.get(this.cookie);
+        let mvalue = ctx.cookies.getCookie(this.cookie);
 
-        if(value != null )
+        if(mvalue.isJust() )
         ctx.headers = merge(ctx.headers, {
-            [this.header]: value
+            [this.header]: mvalue.get().value
         });
 
         return pure(ctx);

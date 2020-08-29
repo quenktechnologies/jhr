@@ -1,4 +1,6 @@
-import { Value, Cookies, Options } from '../';
+import { Maybe } from '@quenk/noni/lib/data/maybe';
+
+import { Name, SetCookieHeader, Cookie, Cookies } from '../';
 
 /**
  * Container for cookies received.
@@ -9,30 +11,23 @@ import { Value, Cookies, Options } from '../';
 export interface Container {
 
     /**
-     * set the value of a cookie.
+     * getCookies provides all the Cookies stored currently in 
+     * the Container.
      */
-    set(name: string, value: string, options: Options): Container
+    getCookies(): Cookies
 
     /**
-     * get the value of a cookie within the Container.
+     * getCookie provides a Cookie given its name.
      */
-    get(name: string): Value
+    getCookie(name: Name): Maybe<Cookie>
 
     /**
-     * getAll the cookies in the Container as a map.
+     * setCookies updates the internal database of Cookies for the Container
+     * from a Set-Cookie string.
+     *
+     * Some Containers may ignore calls to this method opting to source the
+     * string elsewhere.
      */
-    getAll(): Cookies
-
-    /**
-     * getString provides the unparsed cookie string.
-     */
-    getString(): string
-
-    /**
-     * update the value of the string used to store cookies.
-     */
-    update(cookies: string): Container
+    setCookies(str: SetCookieHeader[]): Container
 
 }
-
-
