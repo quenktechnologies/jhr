@@ -7,8 +7,14 @@ import { Container } from './';
 export declare class MemoryContainer implements Container {
     cookies: Cookies;
     constructor(cookies?: Cookies);
-    static create(store: HTMLDocument): MemoryContainer;
-    getCookies(): Cookies;
+    /**
+     * create a new MemoryContainer instance.
+     *
+     * An array of Set-Cookie header values can be passed to intialize the
+     * internal store.
+     */
+    static create(headers?: SetCookieHeader[]): MemoryContainer;
     getCookie(name: string): Maybe<Cookie>;
+    getCookies(): Cookies;
     setCookies(str: SetCookieHeader[]): MemoryContainer;
 }
