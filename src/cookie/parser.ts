@@ -75,7 +75,7 @@ function parseDigits(
     trailingOK: boolean) {
     let count = 0;
     while (count < token.length) {
-        const c = token.charCodeAt(count);
+        let c = token.charCodeAt(count);
         // "non-digit = %x00-2F / %x3A-FF"
         if (c <= 0x2f || c >= 0x3a) {
             break;
@@ -96,8 +96,8 @@ function parseDigits(
 }
 
 function parseTime(token: string) {
-    const parts = token.split(":");
-    const result = [0, 0, 0];
+    let parts = token.split(":");
+    let result = [0, 0, 0];
 
     /* RF6256 S5.1.1:
      *      time            = hms-time ( non-digit *OCTET )
@@ -113,8 +113,8 @@ function parseTime(token: string) {
         // "time-field" must be strictly "1*2DIGIT", HOWEVER, "hms-time" can be
         // followed by "( non-digit *OCTET )" so therefore the last time-field 
         // can have a trailer
-        const trailingOK = i == 2;
-        const num = parseDigits(parts[i], 1, 2, trailingOK);
+        let trailingOK = i == 2;
+        let num = parseDigits(parts[i], 1, 2, trailingOK);
         if (num === null) {
             return null;
         }
@@ -128,7 +128,7 @@ function parseMonth(token: string) {
     token = String(token)
         .substr(0, 3)
         .toLowerCase();
-    const num = monthNums[token];
+    let num = monthNums[token];
     return num >= 0 ? num : null;
 }
 
@@ -144,7 +144,7 @@ function parseDate(str: string) {
      * 2. Process each date-token sequentially in the order the date-tokens
      * appear in the cookie-date
      */
-    const tokens = str.split(DATE_DELIM);
+    let tokens = str.split(DATE_DELIM);
     if (!tokens) {
         return;
     }
@@ -157,7 +157,7 @@ function parseDate(str: string) {
     let year = null;
 
     for (let i = 0; i < tokens.length; i++) {
-        const token = tokens[i].trim();
+        let token = tokens[i].trim();
         if (!token.length) {
             continue;
         }
@@ -268,7 +268,7 @@ function parseDate(str: string) {
 function trimTerminator(str: string) {
     if (str === '') return str;
     for (let t = 0; t < TERMINATORS.length; t++) {
-        const terminatorIdx = str.indexOf(TERMINATORS[t]);
+        let terminatorIdx = str.indexOf(TERMINATORS[t]);
         if (terminatorIdx !== -1) {
             str = str.substr(0, terminatorIdx);
         }
@@ -323,9 +323,9 @@ export function parseCookie(str: string): Cookie | undefined {
     str = String(str).trim();
 
     // We use a regex to parse the "name-value-pair" part of S5.2
-    const firstSemi = str.indexOf(";"); // S5.2 step 1
-    const cookiePair = firstSemi === -1 ? str : str.substr(0, firstSemi);
-    const c = parseCookiePair(cookiePair);
+    let firstSemi = str.indexOf(";"); // S5.2 step 1
+    let cookiePair = firstSemi === -1 ? str : str.substr(0, firstSemi);
+    let c = parseCookiePair(cookiePair);
     if (!c) {
         return;
     }
@@ -337,7 +337,7 @@ export function parseCookie(str: string): Cookie | undefined {
     // S5.2.3 "unparsed-attributes consist of the remainder of the set-cookie-string
     // (including the %x3B (";") in question)." plus later on in the same section
     // "discard the first ";" and trim".
-    const unparsed = str.slice(firstSemi + 1).trim();
+    let unparsed = str.slice(firstSemi + 1).trim();
 
     // "If the unparsed-attributes string is empty, skip the rest of these
     // steps."
@@ -353,14 +353,14 @@ export function parseCookie(str: string): Cookie | undefined {
      * cookie-attribute-list".  Therefore, in this implementation, we overwrite
      * the previous value.
      */
-    const cookie_avs = unparsed.split(";");
+    let cookie_avs = unparsed.split(";");
     while (cookie_avs.length > 0) {
-        const av = (<string>cookie_avs.shift()).trim();
+        let av = (<string>cookie_avs.shift()).trim();
         if (av.length === 0) {
             // happens if ";;" appears
             continue;
         }
-        const av_sep = av.indexOf("=");
+        let av_sep = av.indexOf("=");
         let av_key, av_value;
 
         if (av_sep === -1) {
@@ -380,7 +380,7 @@ export function parseCookie(str: string): Cookie | undefined {
         switch (av_key) {
             case "expires": // S5.2.1
                 if (av_value) {
-                    const exp = parseDate(av_value);
+                    let exp = parseDate(av_value);
                     // "If the attribute-value failed to parse as a cookie date, 
                     // ignore the cookie-av."
                     if (exp) {
@@ -411,7 +411,7 @@ export function parseCookie(str: string): Cookie | undefined {
                 if (av_value) {
                     // S5.2.3 "Let cookie-domain be the attribute-value 
                     // without the leading %x2E (".") character."
-                    const domain = av_value.trim().replace(/^\./, "");
+                    let domain = av_value.trim().replace(/^\./, "");
                     if (domain) {
                         // "Convert the cookie-domain to lower case."
                         c.domain = domain.toLowerCase();
@@ -449,7 +449,7 @@ export function parseCookie(str: string): Cookie | undefined {
                 break;
 
             case "samesite": // RFC6265bis-02 S5.3.7
-                const enforcement = av_value ? av_value.toLowerCase() : "";
+                let enforcement = av_value ? av_value.toLowerCase() : "";
                 switch (enforcement) {
                     case "strict":
                         c.sameSite = "strict";
