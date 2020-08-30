@@ -70,7 +70,7 @@ export class XHRTransport<Raw, Res> implements Transport<Raw, Res> {
 
             xhr.onload = () => {
 
-                cookies.update(document.cookie);
+                cookies.setCookies(document.cookie.split(';'));
 
                 let exceptRes = parser.apply(xhr.response);
 

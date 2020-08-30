@@ -1,17 +1,19 @@
 import * as http from 'http';
 import * as express from 'express';
-import { start } from '../../../../fixtures/server';
+
 import { assert } from '@quenk/test/lib/assert';
 import { parallel, toPromise } from '@quenk/noni/lib/control/monad/future';
-import { Agent } from '../../../../../lib/agent';
-import { MemoryContainer } from '../../../../../lib/cookie/container/memory';
-import { JSONTransform } from '../../../../../lib/agent/transform/json';
-import { JSONParser } from '../../../../../lib/agent/parser/json';
+
+import { start } from '../../../../fixtures/server';
+import { Agent } from '../../../../../../lib/agent';
+import { MemoryContainer } from '../../../../../../lib/cookie/container/memory';
+import { JSONTransform } from '../../../../../../lib/agent/transform/json';
+import { JSONParser } from '../../../../../../lib/agent/parser/json';
 import {
     BufferToStringAdapter
-} from '../../../../../lib/agent/transport/node/parser';
-import { NodeHTTPTransport } from '../../../../../lib/agent/transport/node';
-import { Ok, Created, NoContent } from '../../../../../lib/response';
+} from '../../../../../../lib/agent/transport/node/parser';
+import { NodeHTTPTransport } from '../../../../../../lib/agent/transport/node';
+import { Ok, Created, NoContent } from '../../../../../../lib/response';
 
 const host = process.env.HOST || 'localhost';
 const port = process.env.PORT || '9999';

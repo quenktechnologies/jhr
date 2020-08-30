@@ -1,22 +1,14 @@
-import { Options, Value, Cookies } from '../';
+import { Maybe } from '@quenk/noni/lib/data/maybe';
+import { Cookie, Cookies, SetCookieHeader } from '../';
 import { Container } from './';
 /**
  * MemoryContainer stores cookie values in memory.
  */
 export declare class MemoryContainer implements Container {
-    cookies: string;
-    defaults: Options;
-    constructor(cookies?: string, defaults?: Options);
-    set(name: string, value: Value, opts?: Options): Container;
-    /**
-     * update the internal cookie string representation.
-     */
-    update(cookies: string): Container;
-    get(name: string): Value;
-    getCookie(name: string): Value;
-    /**
-     * getAll the cookies as a map.
-     */
-    getAll(): Cookies;
-    getString(): string;
+    cookies: Cookies;
+    constructor(cookies?: Cookies);
+    static create(store: HTMLDocument): MemoryContainer;
+    getCookies(): Cookies;
+    getCookie(name: string): Maybe<Cookie>;
+    setCookies(str: SetCookieHeader[]): MemoryContainer;
 }
