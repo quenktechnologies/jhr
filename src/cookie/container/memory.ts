@@ -1,13 +1,14 @@
 import { make, filter, merge } from '@quenk/noni/lib/data/record';
-import { Maybe, fromNullable } from '@quenk/noni/lib/data/maybe';
+import { compact } from '@quenk/noni/lib/data/array';
+import { Maybe } from '@quenk/noni/lib/data/maybe';
 
 import { parseCookie } from '../parser';
-import { 
-  Cookie,
-  Cookies, 
-  SetCookieHeader,
-  fromCookieHeader,
-fromList
+import {
+    Cookie,
+    Cookies,
+    SetCookieHeader,
+    fromList,
+    getCookieByName
 } from '../';
 import { Container } from './';
 
@@ -18,21 +19,27 @@ export class MemoryContainer implements Container {
 
     constructor(public cookies: Cookies = {}) { }
 
-    static create(store: HTMLDocument): MemoryContainer {
+    /**
+     * create a new MemoryContainer instance.
+     *
+     * An array of Set-Cookie header values can be passed to intialize the
+     * internal store.
+     */
+    static create(headers: SetCookieHeader[] = []): MemoryContainer {
 
-        return new MemoryContainer(fromCookieHeader(store.cookie));
+        return new MemoryContainer(fromList(compact(headers.map(parseCookie))));
+
+    }
+
+    getCookie(name: string): Maybe<Cookie> {
+
+        return getCookieByName(this.cookies, name);
 
     }
 
     getCookies(): Cookies {
 
         return make(this.cookies);
-
-    }
-
-    getCookie(name: string): Maybe<Cookie> {
-
-        return fromNullable(this.cookies[name]);
 
     }
 

@@ -390,7 +390,7 @@ exports.DocumentContainer = DocumentContainer;
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MemoryContainer = void 0;
 var record_1 = require("@quenk/noni/lib/data/record");
-var maybe_1 = require("@quenk/noni/lib/data/maybe");
+var array_1 = require("@quenk/noni/lib/data/array");
 var parser_1 = require("../parser");
 var __1 = require("../");
 /**
@@ -401,14 +401,21 @@ var MemoryContainer = /** @class */ (function () {
         if (cookies === void 0) { cookies = {}; }
         this.cookies = cookies;
     }
-    MemoryContainer.create = function (store) {
-        return new MemoryContainer(__1.fromCookieHeader(store.cookie));
+    /**
+     * create a new MemoryContainer instance.
+     *
+     * An array of Set-Cookie header values can be passed to intialize the
+     * internal store.
+     */
+    MemoryContainer.create = function (headers) {
+        if (headers === void 0) { headers = []; }
+        return new MemoryContainer(__1.fromList(array_1.compact(headers.map(parser_1.parseCookie))));
+    };
+    MemoryContainer.prototype.getCookie = function (name) {
+        return __1.getCookieByName(this.cookies, name);
     };
     MemoryContainer.prototype.getCookies = function () {
         return record_1.make(this.cookies);
-    };
-    MemoryContainer.prototype.getCookie = function (name) {
-        return maybe_1.fromNullable(this.cookies[name]);
     };
     MemoryContainer.prototype.setCookies = function (str) {
         var unfiltered = str.map(function (s) { return parser_1.parseCookie(s); });
@@ -430,7 +437,7 @@ var willKeep = function (now, c) {
         return true;
 };
 
-},{"../":10,"../parser":11,"@quenk/noni/lib/data/maybe":27,"@quenk/noni/lib/data/record":28}],10:[function(require,module,exports){
+},{"../":10,"../parser":11,"@quenk/noni/lib/data/array":24,"@quenk/noni/lib/data/record":28}],10:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.toCookieHeader = exports.getCookieByName = exports.fromList = exports.fromCookieHeader = void 0;
