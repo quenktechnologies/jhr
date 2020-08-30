@@ -1,6 +1,7 @@
 (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof require&&require;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof require&&require,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Agent = exports.defaultOptions = void 0;
 var util = require("../util");
 var record_1 = require("@quenk/noni/lib/data/record");
 var future_1 = require("@quenk/noni/lib/control/monad/future");
@@ -113,9 +114,10 @@ var Agent = /** @class */ (function () {
 }());
 exports.Agent = Agent;
 
-},{"../request":11,"../util":15,"@quenk/noni/lib/control/monad/future":17,"@quenk/noni/lib/data/record":23,"@quenk/noni/lib/data/string":25}],2:[function(require,module,exports){
+},{"../request":14,"../util":18,"@quenk/noni/lib/control/monad/future":21,"@quenk/noni/lib/data/record":28,"@quenk/noni/lib/data/string":30}],2:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.JSONParser = void 0;
 var error_1 = require("@quenk/noni/lib/control/error");
 /**
  * JSONParser
@@ -139,9 +141,10 @@ var JSONParser = /** @class */ (function () {
 }());
 exports.JSONParser = JSONParser;
 
-},{"@quenk/noni/lib/control/error":16}],3:[function(require,module,exports){
+},{"@quenk/noni/lib/control/error":20}],3:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.CSRFProtectionPlugin = exports.DEFAULT_CSRF_HEADER_NAME = exports.DEFAULT_CSRF_COOKIE_NAME = void 0;
 var future_1 = require("@quenk/noni/lib/control/monad/future");
 var record_1 = require("@quenk/noni/lib/data/record");
 exports.DEFAULT_CSRF_COOKIE_NAME = 'xsrf-token';
@@ -161,10 +164,10 @@ var CSRFProtectionPlugin = /** @class */ (function () {
     }
     CSRFProtectionPlugin.prototype.beforeRequest = function (ctx) {
         var _a;
-        var value = ctx.cookies.get(this.cookie);
-        if (value != null)
+        var mvalue = ctx.cookies.getCookie(this.cookie);
+        if (mvalue.isJust())
             ctx.headers = record_1.merge(ctx.headers, (_a = {},
-                _a[this.header] = value,
+                _a[this.header] = mvalue.get().value,
                 _a));
         return future_1.pure(ctx);
     };
@@ -175,9 +178,10 @@ var CSRFProtectionPlugin = /** @class */ (function () {
 }());
 exports.CSRFProtectionPlugin = CSRFProtectionPlugin;
 
-},{"@quenk/noni/lib/control/monad/future":17,"@quenk/noni/lib/data/record":23}],4:[function(require,module,exports){
+},{"@quenk/noni/lib/control/monad/future":21,"@quenk/noni/lib/data/record":28}],4:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.JSONTransform = void 0;
 var util = require("../../util");
 var error_1 = require("@quenk/noni/lib/control/error");
 /**
@@ -200,9 +204,10 @@ var JSONTransform = /** @class */ (function () {
 }());
 exports.JSONTransform = JSONTransform;
 
-},{"../../util":15,"@quenk/noni/lib/control/error":16}],5:[function(require,module,exports){
+},{"../../util":18,"@quenk/noni/lib/control/error":20}],5:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.MultipartTransform = void 0;
 var either_1 = require("@quenk/noni/lib/data/either");
 /**
  * MultipartTransform transforms data into the multi part format.
@@ -218,9 +223,10 @@ var MultipartTransform = /** @class */ (function () {
 }());
 exports.MultipartTransform = MultipartTransform;
 
-},{"@quenk/noni/lib/data/either":20}],6:[function(require,module,exports){
+},{"@quenk/noni/lib/data/either":25}],6:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.XHRTransport = void 0;
 var future_1 = require("@quenk/noni/lib/control/monad/future");
 var header_1 = require("../../header");
 var response_1 = require("../../response");
@@ -257,7 +263,7 @@ var XHRTransport = /** @class */ (function () {
             }
             xhr.open(method, url, true);
             xhr.onload = function () {
-                cookies.update(document.cookie);
+                cookies.setCookies(document.cookie.split(';'));
                 var exceptRes = parser.apply(xhr.response);
                 if (exceptRes.isLeft()) {
                     s.onError(new Error(exceptRes.takeLeft().message));
@@ -287,10 +293,11 @@ var XHRTransport = /** @class */ (function () {
 }());
 exports.XHRTransport = XHRTransport;
 
-},{"../../header":9,"../../headers":10,"../../request/method":12,"../../response":13,"@quenk/noni/lib/control/monad/future":17}],7:[function(require,module,exports){
+},{"../../header":12,"../../headers":13,"../../request/method":15,"../../response":16,"@quenk/noni/lib/control/monad/future":21}],7:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var memory_1 = require("./cookie/container/memory");
+exports.get = exports.createAgent = exports.splitUrl = void 0;
+var document_1 = require("./cookie/container/document");
 var json_1 = require("./agent/transform/json");
 var json_2 = require("./agent/parser/json");
 var xhr_1 = require("./agent/transport/xhr");
@@ -314,7 +321,7 @@ exports.splitUrl = function (url) {
 exports.createAgent = function (host, port) {
     if (host === void 0) { host = getHost(); }
     if (port === void 0) { port = getPort(); }
-    return new agent_1.Agent(host, {}, new memory_1.MemoryContainer(document.cookie), { ttl: 0, tags: {}, context: {}, port: port }, new xhr_1.XHRTransport('', new json_1.JSONTransform(), new json_2.JSONParser()), [new csrf_1.CSRFProtectionPlugin()]);
+    return new agent_1.Agent(host, {}, document_1.DocumentContainer.create(), { ttl: 0, tags: {}, context: {}, port: port }, new xhr_1.XHRTransport('', new json_1.JSONTransform(), new json_2.JSONParser()), [new csrf_1.CSRFProtectionPlugin()]);
 };
 var getHost = function () {
     return window.location.protocol + "//" + window.location.hostname;
@@ -336,106 +343,547 @@ exports.get = function (url, params, headers) {
     return exports.createAgent(host).send(new request_1.Get(path, params, headers));
 };
 
-},{"./agent":1,"./agent/parser/json":2,"./agent/plugin/csrf":3,"./agent/transform/json":4,"./agent/transport/xhr":6,"./cookie/container/memory":8,"./request":11}],8:[function(require,module,exports){
+},{"./agent":1,"./agent/parser/json":2,"./agent/plugin/csrf":3,"./agent/transform/json":4,"./agent/transport/xhr":6,"./cookie/container/document":8,"./request":14}],8:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var _defaults = {
-    expires: 365, domain: '', path: '/', secure: true, httpOnly: false
-};
-//NOTE: This is originally based on code from another project, unfortunately
-// we lost the source.
-//
-// If you recognize anything here from another project please send an email
-// to info@quenk.com so we can update the LICENSE file.
+exports.DocumentContainer = void 0;
+var record_1 = require("@quenk/noni/lib/data/record");
+var maybe_1 = require("@quenk/noni/lib/data/maybe");
+var __1 = require("../");
+/**
+ * DocumentContainer uses `document.cookie` as its backing store.
+ *
+ * This Container is meant to be used in the browser typically with the
+ * XHRTransport.
+ */
+var DocumentContainer = /** @class */ (function () {
+    function DocumentContainer(store, cookies) {
+        if (store === void 0) { store = document; }
+        if (cookies === void 0) { cookies = {}; }
+        this.store = store;
+        this.cookies = cookies;
+    }
+    DocumentContainer.create = function (store) {
+        if (store === void 0) { store = document; }
+        return new DocumentContainer(store, __1.fromCookieHeader(store.cookie));
+    };
+    DocumentContainer.prototype.getCookies = function () {
+        return record_1.make(this.cookies);
+    };
+    DocumentContainer.prototype.getCookie = function (name) {
+        return maybe_1.fromNullable(this.cookies[name]);
+    };
+    /**
+     * setCookies ignores the provided cookie string and ALWAYS reads from
+     * the document.
+     */
+    DocumentContainer.prototype.setCookies = function (_) {
+        this.cookies = __1.fromCookieHeader(this.store.cookie);
+        return this;
+    };
+    return DocumentContainer;
+}());
+exports.DocumentContainer = DocumentContainer;
+
+},{"../":10,"@quenk/noni/lib/data/maybe":27,"@quenk/noni/lib/data/record":28}],9:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.MemoryContainer = void 0;
+var record_1 = require("@quenk/noni/lib/data/record");
+var maybe_1 = require("@quenk/noni/lib/data/maybe");
+var parser_1 = require("../parser");
+var __1 = require("../");
 /**
  * MemoryContainer stores cookie values in memory.
  */
 var MemoryContainer = /** @class */ (function () {
-    function MemoryContainer(cookies, defaults) {
-        if (cookies === void 0) { cookies = ''; }
-        if (defaults === void 0) { defaults = _defaults; }
+    function MemoryContainer(cookies) {
+        if (cookies === void 0) { cookies = {}; }
         this.cookies = cookies;
-        this.defaults = defaults;
     }
-    MemoryContainer.prototype.set = function (name, value, opts) {
-        if (opts === void 0) { opts = {}; }
-        var defaults = this.defaults;
-        // Apply default value for unspecified options
-        var expires = opts.expires || defaults.expires;
-        var domain = opts.domain || defaults.domain;
-        var path = opts.path !== undefined ?
-            opts.path : (defaults.path !== undefined ? defaults.path : '/');
-        var secure = opts.secure !== undefined ? opts.secure : defaults.secure;
-        var httpOnly = opts.httpOnly !== undefined ?
-            opts.httpOnly : defaults.httpOnly;
-        // Determine cookie expiration date
-        // If succesful the result will be a valid Date, 
-        // otherwise it will be an invalid Date or false(ish)
-        var expDate = new Date(new Date().getTime() + (expires * 864e5));
-        // Set cookie
-        this.cookies = name.replace(/[^+#$&^`|]/g, encodeURIComponent)
-            .replace('(', '%28')
-            .replace(')', '%29') +
-            '=' + value.replace(/[^+#$&/:<-\[\]-}]/g, encodeURIComponent) +
-            (expDate.getTime() >= 0 ? ';expires=' + expDate.toUTCString() : '') +
-            (domain ? ';domain=' + domain : '') +
-            (path ? ';path=' + path : '') +
-            (secure ? ';secure' : '') +
-            (httpOnly ? ';httponly' : '');
-        return this;
+    MemoryContainer.create = function (store) {
+        return new MemoryContainer(__1.fromCookieHeader(store.cookie));
     };
-    /**
-     * update the internal cookie string representation.
-     */
-    MemoryContainer.prototype.update = function (cookies) {
-        this.cookies = cookies;
-        return this;
-    };
-    MemoryContainer.prototype.get = function (name) {
-        return (this.getCookie(name));
+    MemoryContainer.prototype.getCookies = function () {
+        return record_1.make(this.cookies);
     };
     MemoryContainer.prototype.getCookie = function (name) {
-        var cookies = this.cookies.split(';');
-        // Iterate all cookies
-        for (var i = 0; i < cookies.length; i++) {
-            var cookie = cookies[i];
-            var cookieLength = cookie.length;
-            // Determine separator index ("name=value")
-            var separatorIndex = cookie.indexOf('=');
-            // IE<11 emits the equal sign when the cookie value is empty
-            separatorIndex = separatorIndex < 0 ? cookieLength : separatorIndex;
-            // Decode the cookie name and remove any leading/trailing spaces, 
-            // then compare to the requested cookie name
-            if (decodeURIComponent(cookie.substring(0, separatorIndex)
-                .replace(/^\s+|\s+$/g, '')) === name) {
-                return decodeURIComponent(cookie.substring(separatorIndex + 1, cookieLength));
-            }
-        }
-        return '';
+        return maybe_1.fromNullable(this.cookies[name]);
     };
-    /**
-     * getAll the cookies as a map.
-     */
-    MemoryContainer.prototype.getAll = function () {
-        var _this = this;
-        var o = {};
-        this
-            .cookies
-            .replace(/((?:^|\s*;)[^\=]+)(?=;|$)|^\s*|\s*(?:\=[^;]*)?(?:\1|$)/g, "")
-            .split(/\s*(?:\=[^;]*)?;\s*/)
-            .forEach(function (k) { o[k] = _this.getCookie(k); });
-        return (o);
-    };
-    MemoryContainer.prototype.getString = function () {
-        return this.cookies;
+    MemoryContainer.prototype.setCookies = function (str) {
+        var unfiltered = str.map(function (s) { return parser_1.parseCookie(s); });
+        var filtered = unfiltered.filter(function (c) { return c != null; });
+        var cookies = record_1.merge(this.cookies, __1.fromList(filtered));
+        var now = new Date();
+        this.cookies = record_1.filter(cookies, function (c) { return willKeep(now, c); });
+        return this;
     };
     return MemoryContainer;
 }());
 exports.MemoryContainer = MemoryContainer;
+var willKeep = function (now, c) {
+    if (c.maxAge)
+        return ((now.getTime() / 1000) - c.created.getTime()) <= c.maxAge;
+    else if (c.expires)
+        return now <= c.expires;
+    else
+        return true;
+};
 
-},{}],9:[function(require,module,exports){
+},{"../":10,"../parser":11,"@quenk/noni/lib/data/maybe":27,"@quenk/noni/lib/data/record":28}],10:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.toCookieHeader = exports.getCookieByName = exports.fromList = exports.fromCookieHeader = void 0;
+var record_1 = require("@quenk/noni/lib/data/record");
+/**
+ * fromCookieHeader creates a Cookies map from a string compliant with the
+ * value of the Cookie header.
+ *
+ * Note: Only the name and value is available in this header and as a result
+ * only those fields will be available in the individual Cookie objects.
+ */
+exports.fromCookieHeader = function (str) {
+    var rec = record_1.make();
+    var cookies = str.split(';');
+    var created = new Date();
+    for (var i = 0; i < cookies.length; i++) {
+        var cookie = cookies[i];
+        var cookieLength = cookie.length;
+        var delimIdx = cookie.indexOf('=');
+        delimIdx = delimIdx < 0 ? cookieLength : delimIdx;
+        var name_1 = decodeURIComponent(cookie.substring(0, delimIdx)
+            .replace(/^\s+|\s+$/g, ''));
+        var value = decodeURIComponent(cookie.substring(delimIdx + 1, cookieLength));
+        var c = { name: name_1, value: value, created: created };
+        rec[getPath(c)] = c;
+    }
+    return rec;
+};
+/**
+ * fromList constructs a Cookies object from a list of Cookie objects.
+ */
+exports.fromList = function (list) {
+    return list.reduce(function (p, c) {
+        var _a;
+        return record_1.merge(p, (_a = {}, _a[getPath(c)] = c, _a));
+    }, {});
+};
+var getPath = function (c) { return [c.name, c.domain, c.path].join(';;'); };
+/**
+ * getCookieByName retrieves a Cookie object from a map using its name.
+ *
+ * The path is not considered by this function.
+ */
+exports.getCookieByName = function (store, name) {
+    return record_1.pickValue(store, function (c) { return c.name === name; });
+};
+/**
+ * toCookieHeader converts a Cookies map into a string suitable for use as the
+ * value of the Cookie header.
+ */
+exports.toCookieHeader = function (store) {
+    return record_1.mapTo(store, function (c) { return c.name + "=" + c.value; }).join('; ');
+};
+
+},{"@quenk/noni/lib/data/record":28}],11:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.parseCookie = void 0;
+var CONTROL_CHARS = /[\x00-\x1F]/;
+// From Chromium // '\r', '\n' and '\0' should be treated as a terminator in
+// the "relaxed" mode, see:
+// https://github.com/ChromiumWebApps/chromium/blob/b3d3b4da8bb94c1b2e061600df106d590fda3620/net/cookies/parsed_cookie.cc#L60
+var TERMINATORS = ["\n", "\r", "\0"];
+// date-time parsing constants (RFC6265 S5.1.1)
+var DATE_DELIM = /[\x09\x20-\x2F\x3B-\x40\x5B-\x60\x7B-\x7E]/;
+var monthNums = {
+    jan: 0,
+    feb: 1,
+    mar: 2,
+    apr: 3,
+    may: 4,
+    jun: 5,
+    jul: 6,
+    aug: 7,
+    sep: 8,
+    oct: 9,
+    nov: 10,
+    dec: 11
+};
+/*
+ * Parses a Natural number (i.e., non-negative integer) with either the
+ *    <min>*<max>DIGIT ( non-digit *OCTET )
+ * or
+ *    <min>*<max>DIGIT
+ * grammar (RFC6265 S5.1.1).
+ *
+ * The "trailingOK" boolean controls if the grammar accepts a
+ * "( non-digit *OCTET )" trailer.
+ */
+function parseDigits(token, minDigits, maxDigits, trailingOK) {
+    var count = 0;
+    while (count < token.length) {
+        var c = token.charCodeAt(count);
+        // "non-digit = %x00-2F / %x3A-FF"
+        if (c <= 0x2f || c >= 0x3a) {
+            break;
+        }
+        count++;
+    }
+    // constrain to a minimum and maximum number of digits.
+    if (count < minDigits || count > maxDigits) {
+        return null;
+    }
+    if (!trailingOK && count != token.length) {
+        return null;
+    }
+    return parseInt(token.substr(0, count), 10);
+}
+function parseTime(token) {
+    var parts = token.split(":");
+    var result = [0, 0, 0];
+    /* RF6256 S5.1.1:
+     *      time            = hms-time ( non-digit *OCTET )
+     *      hms-time        = time-field ":" time-field ":" time-field
+     *      time-field      = 1*2DIGIT
+     */
+    if (parts.length !== 3) {
+        return null;
+    }
+    for (var i = 0; i < 3; i++) {
+        // "time-field" must be strictly "1*2DIGIT", HOWEVER, "hms-time" can be
+        // followed by "( non-digit *OCTET )" so therefore the last time-field 
+        // can have a trailer
+        var trailingOK = i == 2;
+        var num = parseDigits(parts[i], 1, 2, trailingOK);
+        if (num === null) {
+            return null;
+        }
+        result[i] = num;
+    }
+    return result;
+}
+function parseMonth(token) {
+    token = String(token)
+        .substr(0, 3)
+        .toLowerCase();
+    var num = monthNums[token];
+    return num >= 0 ? num : null;
+}
+/*
+ * RFC6265 S5.1.1 date parser (see RFC for full grammar)
+ */
+function parseDate(str) {
+    if (!str) {
+        return;
+    }
+    /* RFC6265 S5.1.1:
+     * 2. Process each date-token sequentially in the order the date-tokens
+     * appear in the cookie-date
+     */
+    var tokens = str.split(DATE_DELIM);
+    if (!tokens) {
+        return;
+    }
+    var hour = null;
+    var minute = null;
+    var second = null;
+    var dayOfMonth = null;
+    var month = null;
+    var year = null;
+    for (var i = 0; i < tokens.length; i++) {
+        var token = tokens[i].trim();
+        if (!token.length) {
+            continue;
+        }
+        var result = void 0;
+        /* 2.1. If the found-time flag is not set and the token matches the time
+         * production, set the found-time flag and set the hour- value,
+         * minute-value, and second-value to the numbers denoted by the digits
+         * in the date-token, respectively.  Skip the remaining sub-steps and
+         * continue to the next date-token.
+         */
+        if (second === null) {
+            result = parseTime(token);
+            if (result) {
+                hour = result[0];
+                minute = result[1];
+                second = result[2];
+                continue;
+            }
+        }
+        /* 2.2. If the found-day-of-month flag is not set and the date-token
+         * matches the day-of-month production, set the found-day-of- month flag
+         * and set the day-of-month-value to the number denoted by the
+         * date-token. Skip the remaining sub-steps and continue to the next
+         * date-token.
+         */
+        if (dayOfMonth === null) {
+            // "day-of-month = 1*2DIGIT ( non-digit *OCTET )"
+            result = parseDigits(token, 1, 2, true);
+            if (result !== null) {
+                dayOfMonth = result;
+                continue;
+            }
+        }
+        /* 2.3. If the found-month flag is not set and the date-token matches the
+         * month production, set the found-month flag and set the month-value to
+         * the month denoted by the date-token.  Skip the remaining sub-stepsa
+         * and continue to the next date-token.
+         */
+        if (month === null) {
+            result = parseMonth(token);
+            if (result !== null) {
+                month = result;
+                continue;
+            }
+        }
+        /* 2.4. If the found-year flag is not set and the date-token matches the
+         * year production, set the found-year flag and set the year-value to
+         * the number denoted by the date-token.  Skip the remaining sub-steps
+         * and continue to the next date-token.
+         */
+        if (year === null) {
+            // "year = 2*4DIGIT ( non-digit *OCTET )"
+            result = parseDigits(token, 2, 4, true);
+            if (result !== null) {
+                year = result;
+                /* From S5.1.1:
+                 * 3.  If the year-value is greater than or equal to 70 and less
+                 * than or equal to 99, increment the year-value by 1900.
+                 * 4.  If the year-value is greater than or equal to 0 and less
+                 * than or equal to 69, increment the year-value by 2000.
+                 */
+                if (year >= 70 && year <= 99) {
+                    year += 1900;
+                }
+                else if (year >= 0 && year <= 69) {
+                    year += 2000;
+                }
+            }
+        }
+    }
+    /* RFC 6265 S5.1.1
+     * "5. Abort these steps and fail to parse the cookie-date if:
+     *     *  at least one of the found-day-of-month, found-month, found-
+     *        year, or found-time flags is not set,
+     *     *  the day-of-month-value is less than 1 or greater than 31,
+     *     *  the year-value is less than 1601,
+     *     *  the hour-value is greater than 23,
+     *     *  the minute-value is greater than 59, or
+     *     *  the second-value is greater than 59.
+     *     (Note that leap seconds cannot be represented in this syntax.)"
+     *
+     * So, in order as above:
+     */
+    if (dayOfMonth === null ||
+        month === null ||
+        year === null ||
+        second === null ||
+        dayOfMonth < 1 ||
+        dayOfMonth > 31 ||
+        year < 1601 ||
+        hour > 23 ||
+        minute > 59 ||
+        second > 59) {
+        return;
+    }
+    return new Date(Date.UTC(year, month, dayOfMonth, hour, minute, second));
+}
+function trimTerminator(str) {
+    if (str === '')
+        return str;
+    for (var t = 0; t < TERMINATORS.length; t++) {
+        var terminatorIdx = str.indexOf(TERMINATORS[t]);
+        if (terminatorIdx !== -1) {
+            str = str.substr(0, terminatorIdx);
+        }
+    }
+    return str;
+}
+function parseCookiePair(cookiePair, looseMode) {
+    if (looseMode === void 0) { looseMode = false; }
+    cookiePair = trimTerminator(cookiePair);
+    var firstEq = cookiePair.indexOf("=");
+    if (looseMode) {
+        if (firstEq === 0) {
+            // '=' is immediately at start
+            cookiePair = cookiePair.substr(1);
+            firstEq = cookiePair.indexOf("="); // might still need to split on '='
+        }
+    }
+    else {
+        // non-loose mode
+        if (firstEq <= 0) {
+            // no '=' or is at start
+            return; // needs to have non-empty "cookie-name"
+        }
+    }
+    var cookieName, cookieValue;
+    if (firstEq <= 0) {
+        cookieName = "";
+        cookieValue = cookiePair.trim();
+    }
+    else {
+        cookieName = cookiePair.substr(0, firstEq).trim();
+        cookieValue = cookiePair.substr(firstEq + 1).trim();
+    }
+    if (CONTROL_CHARS.test(cookieName) || CONTROL_CHARS.test(cookieValue)) {
+        return;
+    }
+    return { name: cookieName, value: cookieValue, created: new Date() };
+}
+/**
+ * parseCookie parses a string containing a single cookie into a Cookie
+ * object.
+ *
+ * If the string cannot be properly parsed, undefined is returned.
+ */
+function parseCookie(str) {
+    str = String(str).trim();
+    // We use a regex to parse the "name-value-pair" part of S5.2
+    var firstSemi = str.indexOf(";"); // S5.2 step 1
+    var cookiePair = firstSemi === -1 ? str : str.substr(0, firstSemi);
+    var c = parseCookiePair(cookiePair);
+    if (!c) {
+        return;
+    }
+    if (firstSemi === -1) {
+        return c;
+    }
+    // S5.2.3 "unparsed-attributes consist of the remainder of the set-cookie-string
+    // (including the %x3B (";") in question)." plus later on in the same section
+    // "discard the first ";" and trim".
+    var unparsed = str.slice(firstSemi + 1).trim();
+    // "If the unparsed-attributes string is empty, skip the rest of these
+    // steps."
+    if (unparsed.length === 0) {
+        return c;
+    }
+    /*
+     * S5.2 says that when looping over the items "[p]rocess the attribute-name
+     * and attribute-value according to the requirements in the following
+     * subsections" for every item.  Plus, for many of the individual attributes
+     * in S5.3 it says to use the "attribute-value of the last attribute in the
+     * cookie-attribute-list".  Therefore, in this implementation, we overwrite
+     * the previous value.
+     */
+    var cookie_avs = unparsed.split(";");
+    while (cookie_avs.length > 0) {
+        var av = cookie_avs.shift().trim();
+        if (av.length === 0) {
+            // happens if ";;" appears
+            continue;
+        }
+        var av_sep = av.indexOf("=");
+        var av_key = void 0, av_value = void 0;
+        if (av_sep === -1) {
+            av_key = av;
+            av_value = null;
+        }
+        else {
+            av_key = av.substr(0, av_sep);
+            av_value = av.substr(av_sep + 1);
+        }
+        av_key = av_key.trim().toLowerCase();
+        if (av_value) {
+            av_value = av_value.trim();
+        }
+        switch (av_key) {
+            case "expires": // S5.2.1
+                if (av_value) {
+                    var exp = parseDate(av_value);
+                    // "If the attribute-value failed to parse as a cookie date, 
+                    // ignore the cookie-av."
+                    if (exp) {
+                        // over and underflow not realistically a concern: V8's
+                        // getTime() seems to store something larger than a 
+                        // 32-bit time_t (even with 32-bit node)
+                        c.expires = exp;
+                    }
+                }
+                break;
+            case "max-age": // S5.2.2
+                if (av_value) {
+                    // "If the first character of the attribute-value is not a
+                    // DIGIT or a "-"/ character ...[or]... If the remainder of
+                    // attribute-value contains a non-DIGIT character, ignore 
+                    // the cookie-av."
+                    if (/^-?[0-9]+$/.test(av_value)) {
+                        c.maxAge = parseInt(av_value, 10);
+                    }
+                }
+                break;
+            case "domain": // S5.2.3
+                // "If the attribute-value is empty, the behavior is undefined.
+                // However, the user agent SHOULD ignore the cookie-av
+                // entirely."
+                if (av_value) {
+                    // S5.2.3 "Let cookie-domain be the attribute-value 
+                    // without the leading %x2E (".") character."
+                    var domain = av_value.trim().replace(/^\./, "");
+                    if (domain) {
+                        // "Convert the cookie-domain to lower case."
+                        c.domain = domain.toLowerCase();
+                    }
+                }
+                break;
+            case "path": // S5.2.4
+                /*
+                 * "If the attribute-value is empty or if the first character of
+                 * the attribute-value is not %x2F ("/"):
+                 *   Let cookie-path be the default-path.
+                 * Otherwise:
+                 *   Let cookie-path be the attribute-value."
+                 *
+                 * We'll represent the default-path as null since it depends on
+                 * the context of the parsing.
+                 */
+                c.path = av_value && av_value[0] === "/" ? av_value : undefined;
+                break;
+            case "secure": // S5.2.5
+                /*
+                 * "If the attribute-name case-insensitively matches the
+                 * string "Secure", the user agent MUST append an attribute to
+                 * the cookie-attribute-list
+                 * with an attribute-name of Secure and an empty
+                 * attribute-value."
+                 */
+                c.secure = true;
+                break;
+            case "httponly": // S5.2.6 -- effectively the same as 'secure'
+                c.httpOnly = true;
+                break;
+            case "samesite": // RFC6265bis-02 S5.3.7
+                var enforcement = av_value ? av_value.toLowerCase() : "";
+                switch (enforcement) {
+                    case "strict":
+                        c.sameSite = "strict";
+                        break;
+                    case "lax":
+                        c.sameSite = "lax";
+                        break;
+                    default:
+                        // RFC6265bis-02 S5.3.7 step 1:
+                        // "If cookie-av's attribute-value is not a
+                        // case-insensitive match for "Strict" or "Lax",
+                        // ignore the "cookie-av"." This effectively sets it to
+                        // 'none' from the prototype.
+                        break;
+                }
+                break;
+            default:
+                break;
+        }
+    }
+    return c;
+}
+exports.parseCookie = parseCookie;
+
+},{}],12:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.set = exports.fromString = void 0;
 /**
  * fromString a string of headers into an object.
  */
@@ -503,22 +951,23 @@ exports.set = function (xhr) {
                 });
 };
 
-},{}],10:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.ACCEPTS = exports.CONTENT_TYPE = void 0;
 /**
  * Common HTTP header constants.
  */
 exports.CONTENT_TYPE = 'Content-Type';
 exports.ACCEPTS = 'Accept';
 
-},{}],11:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
@@ -528,6 +977,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Delete = exports.Patch = exports.Put = exports.Post = exports.Get = exports.Head = void 0;
 var method_1 = require("./method");
 /**
  * Head request.
@@ -614,9 +1064,10 @@ var Delete = /** @class */ (function (_super) {
 }(Post));
 exports.Delete = Delete;
 
-},{"./method":12}],12:[function(require,module,exports){
+},{"./method":15}],15:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.Method = void 0;
 /**
  * Method types.
  */
@@ -630,13 +1081,13 @@ var Method;
     Method["Patch"] = "PATCH";
 })(Method = exports.Method || (exports.Method = {}));
 
-},{}],13:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
@@ -646,6 +1097,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.createResponse = exports.InternalServerError = exports.ServerError = exports.Conflict = exports.NotFound = exports.Forbidden = exports.Unauthorized = exports.BadRequest = exports.ClientError = exports.Created = exports.NoContent = exports.Accepted = exports.Ok = exports.Success = exports.GenericResponse = void 0;
 var status = require("./status");
 /**
  * GenericResponse response refers to response codes we don't have
@@ -888,9 +1340,10 @@ exports.createResponse = function (code, body, headers, options) {
     }
 };
 
-},{"./status":14}],14:[function(require,module,exports){
+},{"./status":17}],17:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.NETWORK_AUTHENTICATION_REQUIRED = exports.NOT_EXTENDED = exports.LOOP_DETECTED = exports.INSUFFICIENT_STORAGE = exports.VARIANT_ALSO_NEGOTIATES = exports.HTTP_VERSION_NOT_SUPPORTED = exports.GATEWAY_TIMEOUT = exports.SERVICE_UNAVAILABLE = exports.BAD_GATEWAY = exports.NOT_IMPLEMENTED = exports.INTERNAL_SERVER_ERROR = exports.UNAVAILABLE_FOR_LEGAL_RREASONS = exports.REQUEST_HEADER_FIELDS_TOO_LARGE = exports.TOO_MANY_REQUESTS = exports.PRECONDITION_REQUIRED = exports.UPGRADE_REQUIRED = exports.FAILED_DEPENDENCY = exports.LOCKED = exports.UNPROCESSABLE_ENTITY = exports.TEAPOT = exports.EXPECTATION_FAILED = exports.REQUESTED_RANGE_NOT_SATISFIABLE = exports.UNSUPPORTED_MEDIA_TYPE = exports.REQUEST_URI_TOO_LONG = exports.REQUEST_ENTITY_TOO_LARGE = exports.PRECONDITION_FAILED = exports.LENGTH_REQUIRED = exports.GONE = exports.CONFLICT = exports.REQUEST_TIMEOUT = exports.PROXY_AUTH_REQUIRED = exports.NOT_ACCEPTABLE = exports.METHOD_NOT_ALLOWED = exports.NOT_FOUND = exports.FORBIDDEN = exports.PAYMENT_REQUIRED = exports.UNAUTHORIZED = exports.BAD_REQUEST = exports.PERMANENT_REDIRECT = exports.TEMPORARY_REDIRECT = exports.USE_PROXY = exports.NOT_MODIFIED = exports.SEE_OTHER = exports.FOUND = exports.MOVED_PERMANENTLY = exports.MULTIPLE_CHOICES = exports.IM_USED = exports.ALREADY_REPORTED = exports.MULTI_STATUS = exports.PARTIAL_CONTENT = exports.RESET_CONTENT = exports.NO_CONTENT = exports.NON_AUTHORITATIV_INFO = exports.ACCEPTED = exports.CREATED = exports.OK = exports.PROCESSING = exports.SWITCHING_PROTOCOLS = exports.CONTINUE = void 0;
 exports.CONTINUE = 100;
 exports.SWITCHING_PROTOCOLS = 101;
 exports.PROCESSING = 102;
@@ -951,10 +1404,11 @@ exports.LOOP_DETECTED = 508;
 exports.NOT_EXTENDED = 510;
 exports.NETWORK_AUTHENTICATION_REQUIRED = 511;
 
-},{}],15:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var qs = require("qs");
+exports.urlFromString = exports.isBlob = exports.isFormData = exports.isFile = exports.isObject = void 0;
+var qs_1 = require("./qs");
 /**
  * isObject test.
  */
@@ -986,16 +1440,345 @@ exports.isBlob = function (obj) {
  */
 exports.urlFromString = function (url, params) {
     if (params === void 0) { params = {}; }
-    return url + "?" + qs.stringify(params);
+    return url + "?" + qs_1.stringify(params);
 };
 
-},{"qs":48}],16:[function(require,module,exports){
+},{"./qs":19}],19:[function(require,module,exports){
+"use strict";
+/* Based on code from https://github.com/ljharb/qs/blob/master/lib/stringify.js
+ * See LICENSE file for copyright information.
+ */
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.stringify = exports.formats = void 0;
+var record_1 = require("@quenk/noni/lib/data/record");
+var percentTwenties = /%20/g;
+var Format = {
+    RFC1738: 'RFC1738',
+    RFC3986: 'RFC3986'
+};
+/**
+ * @private
+ */
+exports.formats = record_1.assign({
+    'default': Format.RFC3986,
+    formatters: {
+        RFC1738: function (value) { return replace.call(value, percentTwenties, '+'); },
+        RFC3986: String
+    }
+}, Format);
+var arrayPrefixGenerators = {
+    brackets: function (prefix) { return prefix + '[]'; },
+    comma: 'comma',
+    indices: function (prefix, key) { return prefix + '[' + key + ']'; },
+    repeat: function (prefix) { return prefix; }
+};
+var has = Object.prototype.hasOwnProperty;
+var replace = String.prototype.replace;
+var isArray = Array.isArray;
+var push = Array.prototype.push;
+var pushToArray = function (arr, valueOrArray) {
+    push.apply(arr, isArray(valueOrArray) ? valueOrArray : [valueOrArray]);
+};
+var toISO = Date.prototype.toISOString;
+var defaultFormat = exports.formats['default'];
+var hexTable = (function () {
+    var array = [];
+    for (var i = 0; i < 256; ++i)
+        array.push('%' + ((i < 16 ? '0' : '') + i.toString(16)).toUpperCase());
+    return array;
+}());
+var utilsEncode = function (str, _, charset) {
+    // This code was originally written by Brian White (mscdex) for the io.js
+    // core querystring library.
+    // It has been adapted here for stricter adherence to RFC 3986
+    if (str.length === 0) {
+        return str;
+    }
+    var string = str;
+    if (typeof str === 'symbol') {
+        string = Symbol.prototype.toString.call(str);
+    }
+    else if (typeof str !== 'string') {
+        string = String(str);
+    }
+    if (charset === 'iso-8859-1') {
+        return escape(string).replace(/%u[0-9a-f]{4}/gi, function ($0) {
+            return '%26%23' + parseInt($0.slice(2), 16) + '%3B';
+        });
+    }
+    var out = '';
+    for (var i = 0; i < string.length; ++i) {
+        var c = string.charCodeAt(i);
+        if (c === 0x2D // -
+            || c === 0x2E // .
+            || c === 0x5F // _
+            || c === 0x7E // ~
+            || (c >= 0x30 && c <= 0x39) // 0-9
+            || (c >= 0x41 && c <= 0x5A) // a-z
+            || (c >= 0x61 && c <= 0x7A) // A-Z
+        ) {
+            out += string.charAt(i);
+            continue;
+        }
+        if (c < 0x80) {
+            out = out + hexTable[c];
+            continue;
+        }
+        if (c < 0x800) {
+            out = out + (hexTable[0xC0 | (c >> 6)] +
+                hexTable[0x80 | (c & 0x3F)]);
+            continue;
+        }
+        if (c < 0xD800 || c >= 0xE000) {
+            out = out + (hexTable[0xE0 | (c >> 12)] +
+                hexTable[0x80 | ((c >> 6) & 0x3F)] +
+                hexTable[0x80 | (c & 0x3F)]);
+            continue;
+        }
+        i += 1;
+        c = 0x10000 + (((c & 0x3FF) << 10) | (string.charCodeAt(i) & 0x3FF));
+        out += hexTable[0xF0 | (c >> 18)]
+            + hexTable[0x80 | ((c >> 12) & 0x3F)]
+            + hexTable[0x80 | ((c >> 6) & 0x3F)]
+            + hexTable[0x80 | (c & 0x3F)];
+    }
+    return out;
+};
+var utilsMaybeMap = function (val, fn) {
+    if (isArray(val)) {
+        var mapped = [];
+        for (var i = 0; i < val.length; i += 1) {
+            mapped.push(fn(val[i]));
+        }
+        return mapped;
+    }
+    return fn(val);
+};
+var utilsIsBuffer = function (obj) {
+    if (!obj || typeof obj !== 'object') {
+        return false;
+    }
+    return !!(obj.constructor &&
+        obj.constructor.isBuffer &&
+        obj.constructor.isBuffer(obj));
+};
+var isNonNullishPrimitive = function (v) {
+    return typeof v === 'string'
+        || typeof v === 'number'
+        || typeof v === 'boolean'
+        || typeof v === 'symbol'
+        || typeof v === 'bigint';
+};
+var defaults = {
+    addQueryPrefix: false,
+    allowDots: false,
+    charset: 'utf-8',
+    charsetSentinel: false,
+    delimiter: '&',
+    encode: true,
+    encoder: utilsEncode,
+    encodeValuesOnly: false,
+    format: defaultFormat,
+    formatter: exports.formats.formatters[defaultFormat],
+    // deprecated
+    indices: false,
+    serializeDate: function (date) { return toISO.call(date); },
+    skipNulls: false,
+    strictNullHandling: false
+};
+function doStringify(target, prefix, generateArrayPrefix, strictNullHandling, skipNulls, encoder, filter, sort, allowDots, serializeDate, formatter, encodeValuesOnly, charset) {
+    var obj = target;
+    if (typeof filter === 'function') {
+        obj = filter(prefix, obj);
+    }
+    else if (obj instanceof Date) {
+        obj = serializeDate(obj);
+    }
+    else if (generateArrayPrefix === 'comma' && isArray(obj)) {
+        obj = utilsMaybeMap(obj, function (value) {
+            if (value instanceof Date) {
+                return new String(serializeDate(value));
+            }
+            return value;
+        });
+    }
+    if (obj === null) {
+        if (strictNullHandling) {
+            return encoder &&
+                !encodeValuesOnly ?
+                encoder(prefix, defaults.encoder, charset, 'key') : prefix;
+        }
+        obj = '';
+    }
+    if (isNonNullishPrimitive(obj) || utilsIsBuffer(obj)) {
+        if (encoder) {
+            var keyValue = encodeValuesOnly ?
+                prefix :
+                encoder(prefix, defaults.encoder, charset, 'key');
+            return [formatter(keyValue) + '='
+                    + formatter(encoder(obj, defaults.encoder, charset, 'value'))];
+        }
+        return [formatter(prefix) + '=' + formatter(String(obj))];
+    }
+    var values = [];
+    if (typeof obj === 'undefined') {
+        return values;
+    }
+    var objKeys;
+    if (generateArrayPrefix === 'comma' && isArray(obj)) {
+        // we need to join elements in
+        objKeys = [{ value: obj.length > 0 ? obj.join(',') || null : undefined }];
+    }
+    else if (isArray(filter)) {
+        objKeys = filter;
+    }
+    else {
+        var keys = Object.keys(obj);
+        objKeys = sort ? keys.sort(sort) : keys;
+    }
+    for (var i = 0; i < objKeys.length; ++i) {
+        var key = objKeys[i];
+        var value = typeof key === 'object' &&
+            key.value !== undefined ? key.value : obj[key];
+        if (skipNulls && value === null) {
+            continue;
+        }
+        var keyPrefix = isArray(obj) ?
+            typeof generateArrayPrefix === 'function' ?
+                generateArrayPrefix(prefix, key) : prefix
+            : prefix + (allowDots ? '.' + key : '[' + key + ']');
+        pushToArray(values, doStringify(value, keyPrefix, generateArrayPrefix, strictNullHandling, skipNulls, encoder, filter, sort, allowDots, serializeDate, formatter, encodeValuesOnly, charset));
+    }
+    return values;
+}
+;
+var normalizeStringifyOptions = function (opts) {
+    if (!opts) {
+        return defaults;
+    }
+    if (opts.encoder !== null &&
+        opts.encoder !== undefined &&
+        typeof opts.encoder !== 'function') {
+        throw new TypeError('Encoder has to be a function.');
+    }
+    var charset = opts.charset || defaults.charset;
+    if (typeof opts.charset !== 'undefined' &&
+        opts.charset !== 'utf-8' &&
+        opts.charset !== 'iso-8859-1') {
+        throw new TypeError('The charset option must be either utf-8,' +
+            ' iso-8859-1, or undefined');
+    }
+    var format = exports.formats['default'];
+    if (typeof opts.format !== 'undefined') {
+        if (!has.call(exports.formats.formatters, opts.format)) {
+            throw new TypeError('Unknown format option provided.');
+        }
+        format = opts.format;
+    }
+    var formatter = exports.formats.formatters[format];
+    var filter;
+    if (typeof opts.filter === 'function' || isArray(opts.filter)) {
+        filter = opts.filter;
+    }
+    return {
+        addQueryPrefix: typeof opts.addQueryPrefix === 'boolean' ?
+            opts.addQueryPrefix : defaults.addQueryPrefix,
+        allowDots: typeof opts.allowDots === 'undefined' ?
+            defaults.allowDots : !!opts.allowDots,
+        charset: charset,
+        charsetSentinel: typeof opts.charsetSentinel === 'boolean' ?
+            opts.charsetSentinel : defaults.charsetSentinel,
+        delimiter: typeof opts.delimiter === 'undefined' ?
+            defaults.delimiter : opts.delimiter,
+        encode: typeof opts.encode === 'boolean' ?
+            opts.encode : defaults.encode,
+        encoder: typeof opts.encoder === 'function' ?
+            opts.encoder : defaults.encoder,
+        encodeValuesOnly: typeof opts.encodeValuesOnly === 'boolean' ?
+            opts.encodeValuesOnly : defaults.encodeValuesOnly,
+        filter: filter,
+        formatter: formatter,
+        serializeDate: typeof opts.serializeDate === 'function' ?
+            opts.serializeDate : defaults.serializeDate,
+        skipNulls: typeof opts.skipNulls === 'boolean' ?
+            opts.skipNulls : defaults.skipNulls,
+        sort: typeof opts.sort === 'function' ?
+            opts.sort : undefined,
+        strictNullHandling: typeof opts.strictNullHandling === 'boolean' ?
+            opts.strictNullHandling : defaults.strictNullHandling
+    };
+};
+/**
+ * stringify the target object into a valid query string.
+ */
+function stringify(target, opts) {
+    if (opts === void 0) { opts = {}; }
+    var obj = target;
+    var options = normalizeStringifyOptions(opts);
+    var objKeys;
+    var filter;
+    if (typeof options.filter === 'function') {
+        filter = options.filter;
+        obj = filter('', obj);
+    }
+    else if (isArray(options.filter)) {
+        filter = options.filter;
+        objKeys = filter;
+    }
+    var keys = [];
+    if (typeof obj !== 'object' || obj === null) {
+        return '';
+    }
+    var arrayFormat;
+    if (opts && opts.arrayFormat && opts.arrayFormat in arrayPrefixGenerators) {
+        arrayFormat = opts.arrayFormat;
+    }
+    else if (opts && 'indices' in opts) {
+        arrayFormat = opts.indices ? 'indices' : 'repeat';
+    }
+    else {
+        arrayFormat = 'indices';
+    }
+    var generateArrayPrefix = arrayPrefixGenerators[arrayFormat];
+    if (!objKeys) {
+        objKeys = Object.keys(obj);
+    }
+    if (options.sort) {
+        objKeys.sort(options.sort);
+    }
+    for (var i = 0; i < objKeys.length; ++i) {
+        var key = objKeys[i];
+        if (options.skipNulls && (obj)[key] === null) {
+            continue;
+        }
+        pushToArray(keys, doStringify(obj[key], key, generateArrayPrefix, options.strictNullHandling, options.skipNulls, options.encode ? options.encoder : undefined, options.filter, options.sort, options.allowDots, options.serializeDate, options.formatter, options.encodeValuesOnly, options.charset));
+    }
+    var joined = keys.join(options.delimiter);
+    var prefix = options.addQueryPrefix === true ? '?' : '';
+    if (options.charsetSentinel) {
+        if (options.charset === 'iso-8859-1') {
+            // encodeURIComponent('&#10003;'), 
+            // the "numeric entity" representation of a checkmark
+            prefix += 'utf8=%26%2310003%3B&';
+        }
+        else {
+            // encodeURIComponent('✓')
+            prefix += 'utf8=%E2%9C%93&';
+        }
+    }
+    return joined.length > 0 ? prefix + joined : '';
+}
+exports.stringify = stringify;
+;
+
+},{"@quenk/noni/lib/data/record":28}],20:[function(require,module,exports){
 "use strict";
 /**
  * This module provides functions and types to make dealing with ES errors
  * easier.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.attempt = exports.raise = exports.convert = void 0;
 /** imports */
 var either_1 = require("../data/either");
 /**
@@ -1030,7 +1813,7 @@ exports.attempt = function (f) {
     }
 };
 
-},{"../data/either":20}],17:[function(require,module,exports){
+},{"../data/either":25}],21:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -1046,9 +1829,11 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.doFuture = exports.liftP = exports.fromExcept = exports.toPromise = exports.race = exports.reduce = exports.sequential = exports.parallel = exports.batch = exports.fromCallback = exports.fromAbortable = exports.wait = exports.delay = exports.attempt = exports.raise = exports.pure = exports.Compute = exports.Run = exports.Raise = exports.Trap = exports.Finally = exports.Catch = exports.Step = exports.Bind = exports.Pure = exports.Future = void 0;
 var timer_1 = require("../timer");
-var function_1 = require("../../data/function");
 var error_1 = require("../error");
+var function_1 = require("../../data/function");
+var _1 = require("./");
 var Future = /** @class */ (function () {
     function Future() {
     }
@@ -1554,11 +2339,107 @@ exports.liftP = function (f) { return new Run(function (s) {
         .catch(function (e) { return s.onError(e); });
     return function_1.noop;
 }); };
+/**
+ * doFuture provides a do notation function specialized to Futures.
+ *
+ * Use this function to avoid explicit type assertions with control/monad#doN.
+ */
+exports.doFuture = function (f) { return _1.doN(f); };
 
-},{"../../data/function":21,"../error":16,"../timer":18}],18:[function(require,module,exports){
+},{"../../data/function":26,"../error":20,"../timer":23,"./":22}],22:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.doMonad = exports.doN = exports.pipeN = exports.pipe = exports.compose = exports.join = void 0;
+/**
+ * join flattens a Monad that contains another Monad.
+ */
+exports.join = function (outer) {
+    return outer.chain(function (x) { return x; });
+};
+/**
+ * compose right composes functions that produce Monads so that the output
+ * of the second is the input of the first.
+ */
+exports.compose = function (g, f) { return exports.pipe(f, g); };
+/**
+ * pipe left composes functions that produce Monads so that the output of the
+ * first is the input of the second.
+ */
+exports.pipe = function (f, g) { return function (value) { return f(value).chain(function (b) { return g(b); }); }; };
+/**
+ * pipeN is like pipe but takes variadic parameters.
+ *
+ * Because of this, the resulting function only maps from A -> B.
+ */
+exports.pipeN = function (f) {
+    var list = [];
+    for (var _i = 1; _i < arguments.length; _i++) {
+        list[_i - 1] = arguments[_i];
+    }
+    return function (value) {
+        return list.reduce(function (p, c) { return p.chain(function (v) { return c(v); }); }, f(value));
+    };
+};
+/**
+ * doN simulates haskell's do notation using ES6's generator syntax.
+ *
+ * Example:
+ *
+ * ```typescript
+ * doN(function*() {
+ *
+ *   const a = yield pure(1);
+ *   const b = yield pure(a+2);
+ *   const c = yield pure(b+1);
+ *
+ *   return c;
+ *
+ * })
+ * ```
+ * Each yield is results in a level of nesting added to the chain. The above
+ * could be re-written as:
+ *
+ * ```typescript
+ *
+ * pure(1)
+ *  .chain(a =>
+ *   pure(a + 2)
+ *    .chain(b =>
+ *       pure(b + 1)));
+ *
+ * ```
+ *
+ * NOTE: You MUST wrap your return values manually, this function
+ *       will not do it for you.
+ *
+ * NOTE1: Errors thrown in the body of a generator function simply
+ * bring the generator to an end. According to MDN:
+ *
+ * "Much like a return statement, an error thrown inside the generator will
+ * make the generator finished -- unless caught within the generator's body."
+ *
+ * Source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator.
+ *
+ * Beware of uncaught errors being swallowed in the function body.
+ */
+exports.doN = function (f) {
+    var gen = f();
+    var next = function (val) {
+        var r = gen.next(val);
+        if (r.done)
+            return r.value;
+        else
+            return r.value.chain(next);
+    };
+    return next();
+};
+exports.doMonad = exports.doN;
+
+},{}],23:[function(require,module,exports){
 (function (process){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.throttle = exports.debounce = exports.tick = void 0;
 /**
  * tick runs a function in the "next tick" using process.nextTick in node
  * or setTimeout(f, 0) elsewhere.
@@ -1605,7 +2486,7 @@ exports.throttle = function (f, duration) {
 };
 
 }).call(this,require('_process'))
-},{"_process":46}],19:[function(require,module,exports){
+},{"_process":53}],24:[function(require,module,exports){
 "use strict";
 var __spreadArrays = (this && this.__spreadArrays) || function () {
     for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
@@ -1615,6 +2496,7 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
     return r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.compact = exports.combine = exports.make = exports.removeAt = exports.remove = exports.dedupe = exports.distribute = exports.group = exports.partition = exports.concat = exports.flatMap = exports.map = exports.contains = exports.empty = exports.tail = exports.head = void 0;
 /**
  * The array module provides helper functions
  * for working with JS arrays.
@@ -1636,11 +2518,18 @@ exports.empty = function (list) { return (list.length === 0); };
 /**
  * contains indicates whether an element exists in an array.
  */
-exports.contains = function (list) { return function (a) { return (list.indexOf(a) > -1); }; };
+exports.contains = function (list, a) { return (list.indexOf(a) > -1); };
 /**
  * map is a curried version of the Array#map method.
  */
 exports.map = function (list) { return function (f) { return list.map(f); }; };
+/**
+ * flatMap allows a function to produce a combined set of arrays from a map
+ * operation over each member of a list.
+ */
+exports.flatMap = function (list, f) {
+    return list.reduce(function (p, c, i) { return p.concat(f(c, i, list)); }, []);
+};
 /**
  * concat concatenates an element to an array without destructuring
  * the element if itself is an array.
@@ -1746,7 +2635,7 @@ exports.compact = function (list) {
     return list.filter(function (v) { return (v != null); });
 };
 
-},{"../../math":27,"../record":23}],20:[function(require,module,exports){
+},{"../../math":32,"../record":28}],25:[function(require,module,exports){
 "use strict";
 /**
  * Either represents a value that may be one of two types.
@@ -1781,6 +2670,7 @@ var __extends = (this && this.__extends) || (function () {
     };
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.either = exports.fromBoolean = exports.right = exports.left = exports.Right = exports.Left = exports.Either = void 0;
 var maybe_1 = require("./maybe");
 /**
  * The abstract Either class.
@@ -1941,9 +2831,10 @@ exports.either = function (f) { return function (g) { return function (e) {
     return (e instanceof Right) ? g(e.takeRight()) : f(e.takeLeft());
 }; }; };
 
-},{"./maybe":22}],21:[function(require,module,exports){
+},{"./maybe":27}],26:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.noop = exports.curry5 = exports.curry4 = exports.curry3 = exports.curry = exports.id = exports.identity = exports.flip = exports.cons = exports.compose5 = exports.compose4 = exports.compose3 = exports.compose = void 0;
 /**
  * compose two functions into one.
  */
@@ -2000,9 +2891,10 @@ exports.curry5 = function (f) {
  */
 exports.noop = function () { };
 
-},{}],22:[function(require,module,exports){
+},{}],27:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.fromNaN = exports.fromNumber = exports.fromBoolean = exports.fromString = exports.fromObject = exports.fromArray = exports.fromNullable = exports.just = exports.nothing = exports.of = exports.Just = exports.Nothing = void 0;
 /**
  * Nothing represents the absence of a usable value.
  */
@@ -2233,37 +3125,44 @@ exports.fromNaN = function (n) {
     return isNaN(n) ? new Nothing() : new Just(n);
 };
 
-},{}],23:[function(require,module,exports){
+},{}],28:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.pickValue = exports.pickKey = exports.make = exports.rcompact = exports.compact = exports.isBadKey = exports.set = exports.every = exports.some = exports.empty = exports.count = exports.clone = exports.hasKey = exports.values = exports.group = exports.partition = exports.exclude = exports.rmerge5 = exports.rmerge4 = exports.rmerge3 = exports.rmerge = exports.merge5 = exports.merge4 = exports.merge3 = exports.merge = exports.filter = exports.reduce = exports.mapTo = exports.map = exports.keys = exports.isRecord = exports.assign = exports.badKeys = void 0;
 /**
  * The record module provides functions for treating ES objects as records.
  *
- * Some of the functions provided here are inherently unsafe (tsc will not
- * be able track integrity and may result in runtime errors if not used carefully.
+ * Some of the functions provided here are not type safe and may result in
+ * runtime errors if not used carefully.
  */
 var array_1 = require("../array");
 var type_1 = require("../type");
+var maybe_1 = require("../maybe");
 /**
- * assign polyfill.
+ * badKeys is a list of keys we don't want to copy around between objects.
+ *
+ * Mostly due to prototype pollution but who knows what other keys may become
+ * a problem as the language matures.
+ */
+exports.badKeys = ['__proto__'];
+/**
+ * assign is an Object.assign polyfill.
+ *
+ * It is used internally and should probably not be used directly elsewhere.
  */
 function assign(target) {
     var _varArgs = [];
     for (var _i = 1; _i < arguments.length; _i++) {
         _varArgs[_i - 1] = arguments[_i];
     }
-    if (target == null)
-        throw new TypeError('Cannot convert undefined or null to object');
     var to = Object(target);
     for (var index = 1; index < arguments.length; index++) {
         var nextSource = arguments[index];
-        if (nextSource != null) {
-            for (var nextKey in nextSource) {
+        if (nextSource != null)
+            for (var nextKey in nextSource)
                 // Avoid bugs when hasOwnProperty is shadowed
                 if (Object.prototype.hasOwnProperty.call(nextSource, nextKey))
-                    to[nextKey] = nextSource[nextKey];
-            }
-        }
+                    exports.set(to, nextKey, nextSource[nextKey]);
     }
     return to;
 }
@@ -2271,12 +3170,11 @@ exports.assign = assign;
 /**
  * isRecord tests whether a value is a record.
  *
- * The following are not considered records:
- * 1. Array
- * 2. Date
- * 3. RegExp
- *
- * This function is unsafe.
+ * To be a Record, a value must be an object and:
+ * 1. must not be null
+ * 2. must not be an Array
+ * 2. must not be an instance of Date
+ * 3. must not be an instance of RegExp
  */
 exports.isRecord = function (value) {
     return (typeof value === 'object') &&
@@ -2286,78 +3184,77 @@ exports.isRecord = function (value) {
         (!(value instanceof RegExp));
 };
 /**
- * keys produces a list of property names from a Record.
+ * keys is an Object.keys shortcut.
  */
-exports.keys = function (value) { return Object.keys(value); };
+exports.keys = function (obj) { return Object.keys(obj); };
 /**
  * map over a Record's properties producing a new record.
  *
  * The order of keys processed is not guaranteed.
  */
-exports.map = function (o, f) {
-    return exports.keys(o).reduce(function (p, k) {
-        var _a;
-        return exports.merge(p, (_a = {}, _a[k] = f(o[k], k, o), _a));
-    }, {});
+exports.map = function (rec, f) {
+    return exports.keys(rec)
+        .reduce(function (p, k) { return exports.merge(p, exports.set({}, k, f(rec[k], k, rec))); }, {});
 };
 /**
- * mapTo maps over a Record's properties producing an array of each result.
+ * mapTo an array the properties of the provided Record.
  *
- * The order of elements in the array is not guaranteed.
+ * The elements of the array are the result of applying the function provided
+ * to each property. The order of elements is not guaranteed.
  */
-exports.mapTo = function (o, f) {
-    return exports.keys(o).map(function (k) { return f(o[k], k, o); });
+exports.mapTo = function (rec, f) {
+    return exports.keys(rec).map(function (k) { return f(rec[k], k, rec); });
 };
 /**
  * reduce a Record's keys to a single value.
  *
  * The initial value (accum) must be supplied to avoid errors when
- * there are no properites on the Record.
- * The order of keys processed is not guaranteed.
+ * there are no properites on the Record. The order of keys processed is
+ * not guaranteed.
  */
-exports.reduce = function (o, accum, f) {
-    return exports.keys(o).reduce(function (p, k) { return f(p, o[k], k); }, accum);
+exports.reduce = function (rec, accum, f) {
+    return exports.keys(rec).reduce(function (p, k) { return f(p, rec[k], k); }, accum);
 };
 /**
- * filter the keys of a record using a filter function.
+ * filter the keys of a Record using a filter function.
  */
-exports.filter = function (o, f) {
-    return exports.keys(o).reduce(function (p, k) {
-        var _a;
-        return f(o[k], k, o) ? exports.merge(p, (_a = {}, _a[k] = o[k], _a)) : p;
-    }, {});
+exports.filter = function (rec, f) {
+    return exports.keys(rec)
+        .reduce(function (p, k) { return f(rec[k], k, rec) ?
+        exports.merge(p, exports.set({}, k, rec[k])) : p; }, {});
 };
 /**
- * merge two objects into one.
+ * merge two objects (shallow) into one new object.
  *
- * The return value's type is the product of the two types supplied.
- * This function may be unsafe.
+ * The return value's type is the product of the two objects provided.
  */
 exports.merge = function (left, right) { return assign({}, left, right); };
 /**
- * merge3 merges 3 records into one.
+ * merge3
  */
 exports.merge3 = function (a, b, c) { return assign({}, a, b, c); };
 /**
- * merge4 merges 4 records into one.
+ * merge4
  */
 exports.merge4 = function (a, b, c, d) {
     return assign({}, a, b, c, d);
 };
 /**
- * merge5 merges 5 records into one.
+ * merge5
  */
-exports.merge5 = function (a, b, c, d, e) { return assign({}, a, b, c, d, e); };
+exports.merge5 = function (a, b, c, d, e) {
+    return assign({}, a, b, c, d, e);
+};
 /**
  * rmerge merges 2 records recursively.
  *
- * This function may be unsafe.
+ * This function may violate type safety.
  */
 exports.rmerge = function (left, right) {
     return exports.reduce(right, left, deepMerge);
 };
 /**
- * rmerge3 merges 3 records recursively.
+ * rmerge3
  */
 exports.rmerge3 = function (r, s, t) {
     return [s, t]
@@ -2366,7 +3263,7 @@ exports.rmerge3 = function (r, s, t) {
     }, r);
 };
 /**
- * rmerge4 merges 4 records recursively.
+ * rmerge4
  */
 exports.rmerge4 = function (r, s, t, u) {
     return [s, t, u]
@@ -2375,7 +3272,7 @@ exports.rmerge4 = function (r, s, t, u) {
     }, r);
 };
 /**
- * rmerge5 merges 5 records recursively.
+ * rmerge5
  */
 exports.rmerge5 = function (r, s, t, u, v) {
     return [s, t, u, v]
@@ -2384,52 +3281,46 @@ exports.rmerge5 = function (r, s, t, u, v) {
     }, r);
 };
 var deepMerge = function (pre, curr, key) {
-    var _a, _b;
     return exports.isRecord(curr) ?
-        exports.merge(pre, (_a = {},
-            _a[key] = exports.isRecord(pre[key]) ?
-                exports.rmerge(pre[key], curr) :
-                curr,
-            _a)) :
-        exports.merge(pre, (_b = {}, _b[key] = curr, _b));
+        exports.merge(pre, exports.set({}, key, exports.isRecord(pre[key]) ?
+            exports.rmerge(pre[key], curr) :
+            exports.merge({}, curr))) :
+        exports.merge(pre, exports.set({}, key, curr));
 };
 /**
  * exclude removes the specified properties from a Record.
  */
-exports.exclude = function (o, keys) {
+exports.exclude = function (rec, keys) {
     var list = Array.isArray(keys) ? keys : [keys];
-    return exports.reduce(o, {}, function (p, c, k) {
-        var _a;
-        return list.indexOf(k) > -1 ? p : exports.merge(p, (_a = {}, _a[k] = c, _a));
+    return exports.reduce(rec, {}, function (p, c, k) {
+        return list.indexOf(k) > -1 ? p : exports.merge(p, exports.set({}, k, c));
     });
 };
 /**
- * partition a Record into two sub-records using a separating function.
+ * partition a Record into two sub-records using a PartitionFunc function.
  *
- * This function produces an array where the first element is a record
- * of passing values and the second the failing values.
+ * This function produces an array where the first element is a Record
+ * of values that return true and the second, false.
  */
 exports.partition = function (r, f) {
     return exports.reduce(r, [{}, {}], function (_a, c, k) {
-        var _b, _c;
         var yes = _a[0], no = _a[1];
         return f(c, k, r) ?
-            [exports.merge(yes, (_b = {}, _b[k] = c, _b)), no] :
-            [yes, exports.merge(no, (_c = {}, _c[k] = c, _c))];
+            [exports.merge(yes, exports.set({}, k, c)), no] :
+            [yes, exports.merge(no, exports.set({}, k, c))];
     });
 };
 /**
- * group the properties of a Record into another Record using a grouping
+ * group the properties of a Record into another Record using a GroupFunc
  * function.
  */
-exports.group = function (r, f) {
-    return exports.reduce(r, {}, function (p, c, k) {
-        var _a, _b, _c;
-        var g = f(c, k, r);
-        return exports.merge(p, (_a = {},
-            _a[g] = exports.isRecord(p[g]) ?
-                exports.merge(p[g], (_b = {}, _b[k] = c, _b)) : (_c = {}, _c[k] = c, _c),
-            _a));
+exports.group = function (rec, f) {
+    return exports.reduce(rec, {}, function (prev, curr, key) {
+        var category = f(curr, key, rec);
+        var value = exports.isRecord(prev[category]) ?
+            exports.merge(prev[category], exports.set({}, key, curr)) :
+            exports.set({}, key, curr);
+        return exports.merge(prev, exports.set({}, category, value));
     });
 };
 /**
@@ -2439,9 +3330,9 @@ exports.values = function (r) {
     return exports.reduce(r, [], function (p, c) { return array_1.concat(p, c); });
 };
 /**
- * contains indicates whether a Record has a given key.
+ * hasKey indicates whether a Record has a given key.
  */
-exports.contains = function (r, key) {
+exports.hasKey = function (r, key) {
     return Object.hasOwnProperty.call(r, key);
 };
 /**
@@ -2449,10 +3340,10 @@ exports.contains = function (r, key) {
  *
  * Breaks references and deep clones arrays.
  * This function should only be used on Records or objects that
- * are not class instances.
+ * are not class instances. This function may violate type safety.
  */
 exports.clone = function (r) {
-    return exports.reduce(r, {}, function (p, c, k) { p[k] = _clone(c); return p; });
+    return exports.reduce(r, {}, function (p, c, k) { exports.set(p, k, _clone(c)); return p; });
 };
 var _clone = function (a) {
     if (type_1.isArray(a))
@@ -2462,10 +3353,114 @@ var _clone = function (a) {
     else
         return a;
 };
+/**
+ * count how many properties exist on the record.
+ */
+exports.count = function (r) { return exports.keys(r).length; };
+/**
+ * empty tests whether the object has any properties or not.
+ */
+exports.empty = function (r) { return exports.count(r) === 0; };
+/**
+ * some tests whether at least one property of a Record passes the
+ * test implemented by the provided function.
+ */
+exports.some = function (o, f) {
+    return exports.keys(o).some(function (k) { return f(o[k], k, o); });
+};
+/**
+ * every tests whether each property of a Record passes the
+ * test implemented by the provided function.
+ */
+exports.every = function (o, f) {
+    return exports.keys(o).every(function (k) { return f(o[k], k, o); });
+};
+/**
+ * set the value of a key on a Record ignoring problematic keys.
+ *
+ * This function exists to avoid unintentionally setting problem keys such
+ * as __proto__ on an object.
+ *
+ * Even though this function mutates the provided record, it should be used
+ * as though it does not.
+ *
+ * Don't:
+ * set(obj, key, value);
+ *
+ * Do:
+ * obj = set(obj, key, value);
+ */
+exports.set = function (r, k, value) {
+    if (!exports.isBadKey(k))
+        r[k] = value;
+    return r;
+};
+/**
+ * isBadKey tests whether a key is problematic (Like __proto__).
+ */
+exports.isBadKey = function (key) {
+    return exports.badKeys.indexOf(key) !== -1;
+};
+/**
+ * compact a Record by removing any properties that == null.
+ */
+exports.compact = function (rec) {
+    var result = {};
+    for (var key in rec)
+        if (rec.hasOwnProperty(key))
+            if (rec[key] != null)
+                result = exports.set(result, key, rec[key]);
+    return result;
+};
+/**
+ * rcompact recursively compacts a Record.
+ */
+exports.rcompact = function (rec) {
+    return exports.compact(exports.map(rec, function (val) { return exports.isRecord(val) ? exports.rcompact(val) : val; }));
+};
+/**
+ * make creates a new instance of a Record optionally using the provided
+ * value as an initializer.
+ *
+ * This function is intended to assist with curbing prototype pollution by
+ * configuring a setter for __proto__ that ignores changes.
+ */
+exports.make = function (init) {
+    if (init === void 0) { init = {}; }
+    var rec = {};
+    Object.defineProperty(rec, '__proto__', {
+        configurable: false,
+        enumerable: false,
+        set: function () { }
+    });
+    for (var key in init)
+        if (init.hasOwnProperty(key))
+            rec[key] = init[key];
+    return rec;
+};
+/**
+ * pickKey selects the value of the first property in a Record that passes the
+ * provided test.
+ */
+exports.pickKey = function (rec, test) {
+    return exports.reduce(rec, maybe_1.nothing(), function (p, c, k) {
+        return p.isJust() ? p : test(c, k, rec) ? maybe_1.just(k) : p;
+    });
+};
+/**
+ * pickValue selects the value of the first property in a Record that passes the
+ * provided test.
+ */
+exports.pickValue = function (rec, test) {
+    return exports.reduce(rec, maybe_1.nothing(), function (p, c, k) {
+        return p.isJust() ? p : test(c, k, rec) ? maybe_1.just(c) : p;
+    });
+};
 
-},{"../array":19,"../type":26}],24:[function(require,module,exports){
+},{"../array":24,"../maybe":27,"../type":31}],29:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.project = exports.unflatten = exports.flatten = exports.unescapeRecord = exports.escapeRecord = exports.unescape = exports.escape = exports.set = exports.getString = exports.getDefault = exports.get = exports.unsafeGet = exports.tokenize = void 0;
 /**
  * This module provides a syntax and associated functions for
  * getting and setting values on ES objects easily.
@@ -2623,7 +3618,7 @@ var _set = function (r, value, toks) {
     if (toks.length === 0)
         return value;
     o = _1.isRecord(r) ? _1.clone(r) : {};
-    o[toks[0]] = _set(o[toks[0]], value, toks.slice(1));
+    o = _1.set(o, toks[0], _set(o[toks[0]], value, toks.slice(1)));
     return o;
 };
 /**
@@ -2673,9 +3668,9 @@ exports.unescape = function (p) {
 exports.escapeRecord = function (r) {
     return _1.reduce(r, {}, function (p, c, k) {
         if (typeof c === 'object')
-            p[exports.escape(k)] = exports.escapeRecord(c);
+            p = _1.set(p, exports.escape(k), exports.escapeRecord(c));
         else
-            p[exports.escape(k)] = c;
+            p = _1.set(p, exports.escape(k), c);
         return p;
     });
 };
@@ -2685,9 +3680,9 @@ exports.escapeRecord = function (r) {
 exports.unescapeRecord = function (r) {
     return _1.reduce(r, {}, function (p, c, k) {
         if (_1.isRecord(c))
-            p[exports.unescape(k)] = exports.unescapeRecord(c);
+            p = _1.set(p, exports.unescape(k), exports.unescapeRecord(c));
         else
-            p[exports.unescape(k)] = c;
+            p = _1.set(p, exports.unescape(k), c);
         return p;
     });
 };
@@ -2702,12 +3697,9 @@ exports.flatten = function (r) {
 };
 var flatImpl = function (pfix) { return function (prev) {
     return function (r) {
-        return _1.reduce(r, prev, function (p, c, k) {
-            var _a;
-            return _1.isRecord(c) ?
-                (flatImpl(prefix(pfix, k))(p)(c)) :
-                _1.merge(p, (_a = {}, _a[prefix(pfix, k)] = c, _a));
-        });
+        return _1.reduce(r, prev, function (p, c, k) { return _1.isRecord(c) ?
+            (flatImpl(prefix(pfix, k))(p)(c)) :
+            _1.merge(p, _1.set({}, prefix(pfix, k), c)); });
     };
 }; };
 var prefix = function (pfix, key) { return (pfix === '') ?
@@ -2720,46 +3712,11 @@ exports.unflatten = function (r) {
     return _1.reduce(r, {}, function (p, c, k) { return exports.set(k, c, p); });
 };
 /**
- * intersect set operation between the keys of two records.
- *
- * All the properties of the left record that have matching property
- * names in the right are retained.
- */
-exports.intersect = function (a, b) {
-    return _1.reduce(a, {}, function (p, c, k) {
-        if (b.hasOwnProperty(k))
-            p[k] = c;
-        return p;
-    });
-};
-/**
- * difference set operation between the keys of two records.
- *
- * All the properties on the left record that do not have matching
- * property names in the right are retained.
- */
-exports.difference = function (a, b) {
-    return _1.reduce(a, {}, function (p, c, k) {
-        if (!b.hasOwnProperty(k))
-            p[k] = c;
-        return p;
-    });
-};
-/**
- * map over the property names of a record.
- */
-exports.map = function (a, f) {
-    return _1.reduce(a, {}, function (p, c, k) {
-        p[f(k)] = c;
-        return p;
-    });
-};
-/**
  * project a Record according to the field specification given.
  *
  * Only properties that appear in the spec and set to true will be retained.
- * This function is not safe. It may leave undefined values in the resulting
- * record.
+ * This function may violate type safety and may leave undefined holes in the
+ * result.
  */
 exports.project = function (spec, rec) {
     return _1.reduce(spec, {}, function (p, c, k) {
@@ -2767,15 +3724,16 @@ exports.project = function (spec, rec) {
     });
 };
 
-},{"../maybe":22,"./":23}],25:[function(require,module,exports){
+},{"../maybe":27,"./":28}],30:[function(require,module,exports){
 "use strict";
 /**
  *  Common functions used to manipulate strings.
  */
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.propercase = exports.interpolate = exports.uncapitalize = exports.capitalize = exports.camelCase = exports.contains = exports.endsWith = exports.startsWith = void 0;
 /** imports */
-var path_1 = require("./record/path");
-var record_1 = require("./record");
+var path_1 = require("../record/path");
+var record_1 = require("../record");
 ;
 /**
  * startsWith polyfill.
@@ -2862,10 +3820,23 @@ exports.interpolate = function (str, data, opts) {
             .get();
     });
 };
+/**
+ * propercase converts a string into Proper Case.
+ */
+exports.propercase = function (str) {
+    return str
+        .trim()
+        .toLowerCase()
+        .split(' ')
+        .map(function (tok) { return (tok.length > 0) ?
+        "" + tok[0].toUpperCase() + tok.slice(1) : tok; })
+        .join(' ');
+};
 
-},{"./record":23,"./record/path":24}],26:[function(require,module,exports){
+},{"../record":28,"../record/path":29}],31:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.toString = exports.show = exports.test = exports.is = exports.isPrim = exports.isFunction = exports.isBoolean = exports.isNumber = exports.isString = exports.isArray = exports.isObject = exports.Any = void 0;
 var prims = ['string', 'number', 'boolean'];
 /**
  * Any is a class used to represent typescript's "any" type.
@@ -2891,7 +3862,9 @@ exports.isArray = Array.isArray;
 /**
  * isString test.
  */
-exports.isString = function (value) { return typeof value === 'string'; };
+exports.isString = function (value) {
+    return typeof value === 'string';
+};
 /**
  * isNumber test.
  */
@@ -2901,11 +3874,15 @@ exports.isNumber = function (value) {
 /**
  * isBoolean test.
  */
-exports.isBoolean = function (value) { return typeof value === 'boolean'; };
+exports.isBoolean = function (value) {
+    return typeof value === 'boolean';
+};
 /**
  * isFunction test.
  */
-exports.isFunction = function (value) { return typeof value === 'function'; };
+exports.isFunction = function (value) {
+    return typeof value === 'function';
+};
 /**
  * isPrim test.
  */
@@ -2917,7 +3894,9 @@ exports.isPrim = function (value) {
 /**
  * is performs a typeof of check on a type.
  */
-exports.is = function (expected) { return function (value) { return typeof (value) === expected; }; };
+exports.is = function (expected) { return function (value) {
+    return typeof (value) === expected;
+}; };
 /**
  * test whether a value conforms to some pattern.
  *
@@ -2965,7 +3944,8 @@ exports.show = function (value) {
         if (Array.isArray(value))
             return "[" + value.map(exports.show) + "];";
         else if (value.constructor !== Object)
-            return (value.constructor.name || value.constructor);
+            return (value.constructor.name ||
+                value.constructor);
         else
             return JSON.stringify(value);
     }
@@ -2983,9 +3963,10 @@ exports.toString = function (val) {
     return (val == null) ? '' : String(val);
 };
 
-},{}],27:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.round = exports.isMultipleOf = void 0;
 /**
  * isMultipleOf tests whether the Integer 'y' is a multiple of x.
  */
@@ -3026,7 +4007,7 @@ exports.round = function (x, n) {
     return sign * (Math.round((Math.abs(x) * exp) + offset) / exp);
 };
 
-},{}],28:[function(require,module,exports){
+},{}],33:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -3206,7 +4187,7 @@ exports.toString = function (value) {
  */
 exports.assert = function (value) { return new Positive(value, true); };
 
-},{"deep-equal":29,"json-stringify-safe":41}],29:[function(require,module,exports){
+},{"deep-equal":34,"json-stringify-safe":45}],34:[function(require,module,exports){
 var objectKeys = require('object-keys');
 var isArguments = require('is-arguments');
 var is = require('object-is');
@@ -3320,7 +4301,7 @@ function objEquiv(a, b, opts) {
 
 module.exports = deepEqual;
 
-},{"is-arguments":38,"is-date-object":39,"is-regex":40,"object-is":42,"object-keys":44,"regexp.prototype.flags":53}],30:[function(require,module,exports){
+},{"is-arguments":42,"is-date-object":43,"is-regex":44,"object-is":47,"object-keys":51,"regexp.prototype.flags":55}],35:[function(require,module,exports){
 'use strict';
 
 var keys = require('object-keys');
@@ -3380,7 +4361,7 @@ defineProperties.supportsDescriptors = !!supportsDescriptors;
 
 module.exports = defineProperties;
 
-},{"object-keys":44}],31:[function(require,module,exports){
+},{"object-keys":51}],36:[function(require,module,exports){
 'use strict';
 
 /* globals
@@ -3600,26 +4581,26 @@ module.exports = function GetIntrinsic(name, allowMissing) {
 	return value;
 };
 
-},{"function-bind":34,"has-symbols":35}],32:[function(require,module,exports){
+},{"function-bind":39,"has-symbols":40}],37:[function(require,module,exports){
 'use strict';
 
 var bind = require('function-bind');
 
 var GetIntrinsic = require('../GetIntrinsic');
 
-var $Function = GetIntrinsic('%Function%');
-var $apply = $Function.apply;
-var $call = $Function.call;
+var $apply = GetIntrinsic('%Function.prototype.apply%');
+var $call = GetIntrinsic('%Function.prototype.call%');
+var $reflectApply = GetIntrinsic('%Reflect.apply%', true) || bind.call($call, $apply);
 
 module.exports = function callBind() {
-	return bind.apply($call, arguments);
+	return $reflectApply(bind, $call, arguments);
 };
 
 module.exports.apply = function applyBind() {
-	return bind.apply($apply, arguments);
+	return $reflectApply(bind, $apply, arguments);
 };
 
-},{"../GetIntrinsic":31,"function-bind":34}],33:[function(require,module,exports){
+},{"../GetIntrinsic":36,"function-bind":39}],38:[function(require,module,exports){
 'use strict';
 
 /* eslint no-invalid-this: 1 */
@@ -3673,14 +4654,14 @@ module.exports = function bind(that) {
     return bound;
 };
 
-},{}],34:[function(require,module,exports){
+},{}],39:[function(require,module,exports){
 'use strict';
 
 var implementation = require('./implementation');
 
 module.exports = Function.prototype.bind || implementation;
 
-},{"./implementation":33}],35:[function(require,module,exports){
+},{"./implementation":38}],40:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -3697,7 +4678,7 @@ module.exports = function hasNativeSymbols() {
 };
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./shams":36}],36:[function(require,module,exports){
+},{"./shams":41}],41:[function(require,module,exports){
 'use strict';
 
 /* eslint complexity: [2, 18], max-statements: [2, 33] */
@@ -3741,14 +4722,7 @@ module.exports = function hasSymbols() {
 	return true;
 };
 
-},{}],37:[function(require,module,exports){
-'use strict';
-
-var bind = require('function-bind');
-
-module.exports = bind.call(Function.call, Object.prototype.hasOwnProperty);
-
-},{"function-bind":34}],38:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 'use strict';
 
 var hasToStringTag = typeof Symbol === 'function' && typeof Symbol.toStringTag === 'symbol';
@@ -3781,7 +4755,7 @@ isStandardArguments.isLegacyArguments = isLegacyArguments; // for tests
 
 module.exports = supportsStandardArguments ? isStandardArguments : isLegacyArguments;
 
-},{}],39:[function(require,module,exports){
+},{}],43:[function(require,module,exports){
 'use strict';
 
 var getDay = Date.prototype.getDay;
@@ -3805,48 +4779,67 @@ module.exports = function isDateObject(value) {
 	return hasToStringTag ? tryDateObject(value) : toStr.call(value) === dateClass;
 };
 
-},{}],40:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 'use strict';
 
-var has = require('has');
-var regexExec = RegExp.prototype.exec;
-var gOPD = Object.getOwnPropertyDescriptor;
+var hasSymbols = require('has-symbols')();
+var hasToStringTag = hasSymbols && typeof Symbol.toStringTag === 'symbol';
+var hasOwnProperty;
+var regexExec;
+var isRegexMarker;
+var badStringifier;
 
-var tryRegexExecCall = function tryRegexExec(value) {
-	try {
-		var lastIndex = value.lastIndex;
-		value.lastIndex = 0; // eslint-disable-line no-param-reassign
+if (hasToStringTag) {
+	hasOwnProperty = Function.call.bind(Object.prototype.hasOwnProperty);
+	regexExec = Function.call.bind(RegExp.prototype.exec);
+	isRegexMarker = {};
 
-		regexExec.call(value);
-		return true;
-	} catch (e) {
-		return false;
-	} finally {
-		value.lastIndex = lastIndex; // eslint-disable-line no-param-reassign
+	var throwRegexMarker = function () {
+		throw isRegexMarker;
+	};
+	badStringifier = {
+		toString: throwRegexMarker,
+		valueOf: throwRegexMarker
+	};
+
+	if (typeof Symbol.toPrimitive === 'symbol') {
+		badStringifier[Symbol.toPrimitive] = throwRegexMarker;
 	}
-};
+}
+
 var toStr = Object.prototype.toString;
+var gOPD = Object.getOwnPropertyDescriptor;
 var regexClass = '[object RegExp]';
-var hasToStringTag = typeof Symbol === 'function' && typeof Symbol.toStringTag === 'symbol';
 
-module.exports = function isRegex(value) {
-	if (!value || typeof value !== 'object') {
-		return false;
+module.exports = hasToStringTag
+	// eslint-disable-next-line consistent-return
+	? function isRegex(value) {
+		if (!value || typeof value !== 'object') {
+			return false;
+		}
+
+		var descriptor = gOPD(value, 'lastIndex');
+		var hasLastIndexDataProperty = descriptor && hasOwnProperty(descriptor, 'value');
+		if (!hasLastIndexDataProperty) {
+			return false;
+		}
+
+		try {
+			regexExec(value, badStringifier);
+		} catch (e) {
+			return e === isRegexMarker;
+		}
 	}
-	if (!hasToStringTag) {
+	: function isRegex(value) {
+		// In older browsers, typeof regex incorrectly returns 'function'
+		if (!value || (typeof value !== 'object' && typeof value !== 'function')) {
+			return false;
+		}
+
 		return toStr.call(value) === regexClass;
-	}
+	};
 
-	var descriptor = gOPD(value, 'lastIndex');
-	var hasLastIndexDataProperty = descriptor && has(descriptor, 'value');
-	if (!hasLastIndexDataProperty) {
-		return false;
-	}
-
-	return tryRegexExecCall(value);
-};
-
-},{"has":37}],41:[function(require,module,exports){
+},{"has-symbols":40}],45:[function(require,module,exports){
 exports = module.exports = stringify
 exports.getSerialize = serializer
 
@@ -3875,10 +4868,8 @@ function serializer(replacer, cycleReplacer) {
   }
 }
 
-},{}],42:[function(require,module,exports){
+},{}],46:[function(require,module,exports){
 'use strict';
-
-// http://www.ecma-international.org/ecma-262/6.0/#sec-object.is
 
 var numberIsNaN = function (value) {
 	return value !== value;
@@ -3898,7 +4889,52 @@ module.exports = function is(a, b) {
 };
 
 
-},{}],43:[function(require,module,exports){
+},{}],47:[function(require,module,exports){
+'use strict';
+
+var define = require('define-properties');
+var callBind = require('es-abstract/helpers/callBind');
+
+var implementation = require('./implementation');
+var getPolyfill = require('./polyfill');
+var shim = require('./shim');
+
+var polyfill = callBind(getPolyfill(), Object);
+
+define(polyfill, {
+	getPolyfill: getPolyfill,
+	implementation: implementation,
+	shim: shim
+});
+
+module.exports = polyfill;
+
+},{"./implementation":46,"./polyfill":48,"./shim":49,"define-properties":35,"es-abstract/helpers/callBind":37}],48:[function(require,module,exports){
+'use strict';
+
+var implementation = require('./implementation');
+
+module.exports = function getPolyfill() {
+	return typeof Object.is === 'function' ? Object.is : implementation;
+};
+
+},{"./implementation":46}],49:[function(require,module,exports){
+'use strict';
+
+var getPolyfill = require('./polyfill');
+var define = require('define-properties');
+
+module.exports = function shimObjectIs() {
+	var polyfill = getPolyfill();
+	define(Object, { is: polyfill }, {
+		is: function testObjectIs() {
+			return Object.is !== polyfill;
+		}
+	});
+	return polyfill;
+};
+
+},{"./polyfill":48,"define-properties":35}],50:[function(require,module,exports){
 'use strict';
 
 var keysShim;
@@ -4022,7 +5058,7 @@ if (!Object.keys) {
 }
 module.exports = keysShim;
 
-},{"./isArguments":45}],44:[function(require,module,exports){
+},{"./isArguments":52}],51:[function(require,module,exports){
 'use strict';
 
 var slice = Array.prototype.slice;
@@ -4056,7 +5092,7 @@ keysShim.shim = function shimObjectKeys() {
 
 module.exports = keysShim;
 
-},{"./implementation":43,"./isArguments":45}],45:[function(require,module,exports){
+},{"./implementation":50,"./isArguments":52}],52:[function(require,module,exports){
 'use strict';
 
 var toStr = Object.prototype.toString;
@@ -4075,7 +5111,7 @@ module.exports = function isArguments(value) {
 	return isArgs;
 };
 
-},{}],46:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -4261,817 +5297,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],47:[function(require,module,exports){
-'use strict';
-
-var replace = String.prototype.replace;
-var percentTwenties = /%20/g;
-
-var util = require('./utils');
-
-var Format = {
-    RFC1738: 'RFC1738',
-    RFC3986: 'RFC3986'
-};
-
-module.exports = util.assign(
-    {
-        'default': Format.RFC3986,
-        formatters: {
-            RFC1738: function (value) {
-                return replace.call(value, percentTwenties, '+');
-            },
-            RFC3986: function (value) {
-                return String(value);
-            }
-        }
-    },
-    Format
-);
-
-},{"./utils":51}],48:[function(require,module,exports){
-'use strict';
-
-var stringify = require('./stringify');
-var parse = require('./parse');
-var formats = require('./formats');
-
-module.exports = {
-    formats: formats,
-    parse: parse,
-    stringify: stringify
-};
-
-},{"./formats":47,"./parse":49,"./stringify":50}],49:[function(require,module,exports){
-'use strict';
-
-var utils = require('./utils');
-
-var has = Object.prototype.hasOwnProperty;
-var isArray = Array.isArray;
-
-var defaults = {
-    allowDots: false,
-    allowPrototypes: false,
-    arrayLimit: 20,
-    charset: 'utf-8',
-    charsetSentinel: false,
-    comma: false,
-    decoder: utils.decode,
-    delimiter: '&',
-    depth: 5,
-    ignoreQueryPrefix: false,
-    interpretNumericEntities: false,
-    parameterLimit: 1000,
-    parseArrays: true,
-    plainObjects: false,
-    strictNullHandling: false
-};
-
-var interpretNumericEntities = function (str) {
-    return str.replace(/&#(\d+);/g, function ($0, numberStr) {
-        return String.fromCharCode(parseInt(numberStr, 10));
-    });
-};
-
-// This is what browsers will submit when the ✓ character occurs in an
-// application/x-www-form-urlencoded body and the encoding of the page containing
-// the form is iso-8859-1, or when the submitted form has an accept-charset
-// attribute of iso-8859-1. Presumably also with other charsets that do not contain
-// the ✓ character, such as us-ascii.
-var isoSentinel = 'utf8=%26%2310003%3B'; // encodeURIComponent('&#10003;')
-
-// These are the percent-encoded utf-8 octets representing a checkmark, indicating that the request actually is utf-8 encoded.
-var charsetSentinel = 'utf8=%E2%9C%93'; // encodeURIComponent('✓')
-
-var parseValues = function parseQueryStringValues(str, options) {
-    var obj = {};
-    var cleanStr = options.ignoreQueryPrefix ? str.replace(/^\?/, '') : str;
-    var limit = options.parameterLimit === Infinity ? undefined : options.parameterLimit;
-    var parts = cleanStr.split(options.delimiter, limit);
-    var skipIndex = -1; // Keep track of where the utf8 sentinel was found
-    var i;
-
-    var charset = options.charset;
-    if (options.charsetSentinel) {
-        for (i = 0; i < parts.length; ++i) {
-            if (parts[i].indexOf('utf8=') === 0) {
-                if (parts[i] === charsetSentinel) {
-                    charset = 'utf-8';
-                } else if (parts[i] === isoSentinel) {
-                    charset = 'iso-8859-1';
-                }
-                skipIndex = i;
-                i = parts.length; // The eslint settings do not allow break;
-            }
-        }
-    }
-
-    for (i = 0; i < parts.length; ++i) {
-        if (i === skipIndex) {
-            continue;
-        }
-        var part = parts[i];
-
-        var bracketEqualsPos = part.indexOf(']=');
-        var pos = bracketEqualsPos === -1 ? part.indexOf('=') : bracketEqualsPos + 1;
-
-        var key, val;
-        if (pos === -1) {
-            key = options.decoder(part, defaults.decoder, charset, 'key');
-            val = options.strictNullHandling ? null : '';
-        } else {
-            key = options.decoder(part.slice(0, pos), defaults.decoder, charset, 'key');
-            val = options.decoder(part.slice(pos + 1), defaults.decoder, charset, 'value');
-        }
-
-        if (val && options.interpretNumericEntities && charset === 'iso-8859-1') {
-            val = interpretNumericEntities(val);
-        }
-
-        if (val && typeof val === 'string' && options.comma && val.indexOf(',') > -1) {
-            val = val.split(',');
-        }
-
-        if (part.indexOf('[]=') > -1) {
-            val = isArray(val) ? [val] : val;
-        }
-
-        if (has.call(obj, key)) {
-            obj[key] = utils.combine(obj[key], val);
-        } else {
-            obj[key] = val;
-        }
-    }
-
-    return obj;
-};
-
-var parseObject = function (chain, val, options) {
-    var leaf = val;
-
-    for (var i = chain.length - 1; i >= 0; --i) {
-        var obj;
-        var root = chain[i];
-
-        if (root === '[]' && options.parseArrays) {
-            obj = [].concat(leaf);
-        } else {
-            obj = options.plainObjects ? Object.create(null) : {};
-            var cleanRoot = root.charAt(0) === '[' && root.charAt(root.length - 1) === ']' ? root.slice(1, -1) : root;
-            var index = parseInt(cleanRoot, 10);
-            if (!options.parseArrays && cleanRoot === '') {
-                obj = { 0: leaf };
-            } else if (
-                !isNaN(index)
-                && root !== cleanRoot
-                && String(index) === cleanRoot
-                && index >= 0
-                && (options.parseArrays && index <= options.arrayLimit)
-            ) {
-                obj = [];
-                obj[index] = leaf;
-            } else {
-                obj[cleanRoot] = leaf;
-            }
-        }
-
-        leaf = obj;
-    }
-
-    return leaf;
-};
-
-var parseKeys = function parseQueryStringKeys(givenKey, val, options) {
-    if (!givenKey) {
-        return;
-    }
-
-    // Transform dot notation to bracket notation
-    var key = options.allowDots ? givenKey.replace(/\.([^.[]+)/g, '[$1]') : givenKey;
-
-    // The regex chunks
-
-    var brackets = /(\[[^[\]]*])/;
-    var child = /(\[[^[\]]*])/g;
-
-    // Get the parent
-
-    var segment = options.depth > 0 && brackets.exec(key);
-    var parent = segment ? key.slice(0, segment.index) : key;
-
-    // Stash the parent if it exists
-
-    var keys = [];
-    if (parent) {
-        // If we aren't using plain objects, optionally prefix keys that would overwrite object prototype properties
-        if (!options.plainObjects && has.call(Object.prototype, parent)) {
-            if (!options.allowPrototypes) {
-                return;
-            }
-        }
-
-        keys.push(parent);
-    }
-
-    // Loop through children appending to the array until we hit depth
-
-    var i = 0;
-    while (options.depth > 0 && (segment = child.exec(key)) !== null && i < options.depth) {
-        i += 1;
-        if (!options.plainObjects && has.call(Object.prototype, segment[1].slice(1, -1))) {
-            if (!options.allowPrototypes) {
-                return;
-            }
-        }
-        keys.push(segment[1]);
-    }
-
-    // If there's a remainder, just add whatever is left
-
-    if (segment) {
-        keys.push('[' + key.slice(segment.index) + ']');
-    }
-
-    return parseObject(keys, val, options);
-};
-
-var normalizeParseOptions = function normalizeParseOptions(opts) {
-    if (!opts) {
-        return defaults;
-    }
-
-    if (opts.decoder !== null && opts.decoder !== undefined && typeof opts.decoder !== 'function') {
-        throw new TypeError('Decoder has to be a function.');
-    }
-
-    if (typeof opts.charset !== 'undefined' && opts.charset !== 'utf-8' && opts.charset !== 'iso-8859-1') {
-        throw new Error('The charset option must be either utf-8, iso-8859-1, or undefined');
-    }
-    var charset = typeof opts.charset === 'undefined' ? defaults.charset : opts.charset;
-
-    return {
-        allowDots: typeof opts.allowDots === 'undefined' ? defaults.allowDots : !!opts.allowDots,
-        allowPrototypes: typeof opts.allowPrototypes === 'boolean' ? opts.allowPrototypes : defaults.allowPrototypes,
-        arrayLimit: typeof opts.arrayLimit === 'number' ? opts.arrayLimit : defaults.arrayLimit,
-        charset: charset,
-        charsetSentinel: typeof opts.charsetSentinel === 'boolean' ? opts.charsetSentinel : defaults.charsetSentinel,
-        comma: typeof opts.comma === 'boolean' ? opts.comma : defaults.comma,
-        decoder: typeof opts.decoder === 'function' ? opts.decoder : defaults.decoder,
-        delimiter: typeof opts.delimiter === 'string' || utils.isRegExp(opts.delimiter) ? opts.delimiter : defaults.delimiter,
-        // eslint-disable-next-line no-implicit-coercion, no-extra-parens
-        depth: (typeof opts.depth === 'number' || opts.depth === false) ? +opts.depth : defaults.depth,
-        ignoreQueryPrefix: opts.ignoreQueryPrefix === true,
-        interpretNumericEntities: typeof opts.interpretNumericEntities === 'boolean' ? opts.interpretNumericEntities : defaults.interpretNumericEntities,
-        parameterLimit: typeof opts.parameterLimit === 'number' ? opts.parameterLimit : defaults.parameterLimit,
-        parseArrays: opts.parseArrays !== false,
-        plainObjects: typeof opts.plainObjects === 'boolean' ? opts.plainObjects : defaults.plainObjects,
-        strictNullHandling: typeof opts.strictNullHandling === 'boolean' ? opts.strictNullHandling : defaults.strictNullHandling
-    };
-};
-
-module.exports = function (str, opts) {
-    var options = normalizeParseOptions(opts);
-
-    if (str === '' || str === null || typeof str === 'undefined') {
-        return options.plainObjects ? Object.create(null) : {};
-    }
-
-    var tempObj = typeof str === 'string' ? parseValues(str, options) : str;
-    var obj = options.plainObjects ? Object.create(null) : {};
-
-    // Iterate over the keys and setup the new object
-
-    var keys = Object.keys(tempObj);
-    for (var i = 0; i < keys.length; ++i) {
-        var key = keys[i];
-        var newObj = parseKeys(key, tempObj[key], options);
-        obj = utils.merge(obj, newObj, options);
-    }
-
-    return utils.compact(obj);
-};
-
-},{"./utils":51}],50:[function(require,module,exports){
-'use strict';
-
-var utils = require('./utils');
-var formats = require('./formats');
-var has = Object.prototype.hasOwnProperty;
-
-var arrayPrefixGenerators = {
-    brackets: function brackets(prefix) {
-        return prefix + '[]';
-    },
-    comma: 'comma',
-    indices: function indices(prefix, key) {
-        return prefix + '[' + key + ']';
-    },
-    repeat: function repeat(prefix) {
-        return prefix;
-    }
-};
-
-var isArray = Array.isArray;
-var push = Array.prototype.push;
-var pushToArray = function (arr, valueOrArray) {
-    push.apply(arr, isArray(valueOrArray) ? valueOrArray : [valueOrArray]);
-};
-
-var toISO = Date.prototype.toISOString;
-
-var defaultFormat = formats['default'];
-var defaults = {
-    addQueryPrefix: false,
-    allowDots: false,
-    charset: 'utf-8',
-    charsetSentinel: false,
-    delimiter: '&',
-    encode: true,
-    encoder: utils.encode,
-    encodeValuesOnly: false,
-    format: defaultFormat,
-    formatter: formats.formatters[defaultFormat],
-    // deprecated
-    indices: false,
-    serializeDate: function serializeDate(date) {
-        return toISO.call(date);
-    },
-    skipNulls: false,
-    strictNullHandling: false
-};
-
-var isNonNullishPrimitive = function isNonNullishPrimitive(v) {
-    return typeof v === 'string'
-        || typeof v === 'number'
-        || typeof v === 'boolean'
-        || typeof v === 'symbol'
-        || typeof v === 'bigint';
-};
-
-var stringify = function stringify(
-    object,
-    prefix,
-    generateArrayPrefix,
-    strictNullHandling,
-    skipNulls,
-    encoder,
-    filter,
-    sort,
-    allowDots,
-    serializeDate,
-    formatter,
-    encodeValuesOnly,
-    charset
-) {
-    var obj = object;
-    if (typeof filter === 'function') {
-        obj = filter(prefix, obj);
-    } else if (obj instanceof Date) {
-        obj = serializeDate(obj);
-    } else if (generateArrayPrefix === 'comma' && isArray(obj)) {
-        obj = obj.join(',');
-    }
-
-    if (obj === null) {
-        if (strictNullHandling) {
-            return encoder && !encodeValuesOnly ? encoder(prefix, defaults.encoder, charset, 'key') : prefix;
-        }
-
-        obj = '';
-    }
-
-    if (isNonNullishPrimitive(obj) || utils.isBuffer(obj)) {
-        if (encoder) {
-            var keyValue = encodeValuesOnly ? prefix : encoder(prefix, defaults.encoder, charset, 'key');
-            return [formatter(keyValue) + '=' + formatter(encoder(obj, defaults.encoder, charset, 'value'))];
-        }
-        return [formatter(prefix) + '=' + formatter(String(obj))];
-    }
-
-    var values = [];
-
-    if (typeof obj === 'undefined') {
-        return values;
-    }
-
-    var objKeys;
-    if (isArray(filter)) {
-        objKeys = filter;
-    } else {
-        var keys = Object.keys(obj);
-        objKeys = sort ? keys.sort(sort) : keys;
-    }
-
-    for (var i = 0; i < objKeys.length; ++i) {
-        var key = objKeys[i];
-
-        if (skipNulls && obj[key] === null) {
-            continue;
-        }
-
-        if (isArray(obj)) {
-            pushToArray(values, stringify(
-                obj[key],
-                typeof generateArrayPrefix === 'function' ? generateArrayPrefix(prefix, key) : prefix,
-                generateArrayPrefix,
-                strictNullHandling,
-                skipNulls,
-                encoder,
-                filter,
-                sort,
-                allowDots,
-                serializeDate,
-                formatter,
-                encodeValuesOnly,
-                charset
-            ));
-        } else {
-            pushToArray(values, stringify(
-                obj[key],
-                prefix + (allowDots ? '.' + key : '[' + key + ']'),
-                generateArrayPrefix,
-                strictNullHandling,
-                skipNulls,
-                encoder,
-                filter,
-                sort,
-                allowDots,
-                serializeDate,
-                formatter,
-                encodeValuesOnly,
-                charset
-            ));
-        }
-    }
-
-    return values;
-};
-
-var normalizeStringifyOptions = function normalizeStringifyOptions(opts) {
-    if (!opts) {
-        return defaults;
-    }
-
-    if (opts.encoder !== null && opts.encoder !== undefined && typeof opts.encoder !== 'function') {
-        throw new TypeError('Encoder has to be a function.');
-    }
-
-    var charset = opts.charset || defaults.charset;
-    if (typeof opts.charset !== 'undefined' && opts.charset !== 'utf-8' && opts.charset !== 'iso-8859-1') {
-        throw new TypeError('The charset option must be either utf-8, iso-8859-1, or undefined');
-    }
-
-    var format = formats['default'];
-    if (typeof opts.format !== 'undefined') {
-        if (!has.call(formats.formatters, opts.format)) {
-            throw new TypeError('Unknown format option provided.');
-        }
-        format = opts.format;
-    }
-    var formatter = formats.formatters[format];
-
-    var filter = defaults.filter;
-    if (typeof opts.filter === 'function' || isArray(opts.filter)) {
-        filter = opts.filter;
-    }
-
-    return {
-        addQueryPrefix: typeof opts.addQueryPrefix === 'boolean' ? opts.addQueryPrefix : defaults.addQueryPrefix,
-        allowDots: typeof opts.allowDots === 'undefined' ? defaults.allowDots : !!opts.allowDots,
-        charset: charset,
-        charsetSentinel: typeof opts.charsetSentinel === 'boolean' ? opts.charsetSentinel : defaults.charsetSentinel,
-        delimiter: typeof opts.delimiter === 'undefined' ? defaults.delimiter : opts.delimiter,
-        encode: typeof opts.encode === 'boolean' ? opts.encode : defaults.encode,
-        encoder: typeof opts.encoder === 'function' ? opts.encoder : defaults.encoder,
-        encodeValuesOnly: typeof opts.encodeValuesOnly === 'boolean' ? opts.encodeValuesOnly : defaults.encodeValuesOnly,
-        filter: filter,
-        formatter: formatter,
-        serializeDate: typeof opts.serializeDate === 'function' ? opts.serializeDate : defaults.serializeDate,
-        skipNulls: typeof opts.skipNulls === 'boolean' ? opts.skipNulls : defaults.skipNulls,
-        sort: typeof opts.sort === 'function' ? opts.sort : null,
-        strictNullHandling: typeof opts.strictNullHandling === 'boolean' ? opts.strictNullHandling : defaults.strictNullHandling
-    };
-};
-
-module.exports = function (object, opts) {
-    var obj = object;
-    var options = normalizeStringifyOptions(opts);
-
-    var objKeys;
-    var filter;
-
-    if (typeof options.filter === 'function') {
-        filter = options.filter;
-        obj = filter('', obj);
-    } else if (isArray(options.filter)) {
-        filter = options.filter;
-        objKeys = filter;
-    }
-
-    var keys = [];
-
-    if (typeof obj !== 'object' || obj === null) {
-        return '';
-    }
-
-    var arrayFormat;
-    if (opts && opts.arrayFormat in arrayPrefixGenerators) {
-        arrayFormat = opts.arrayFormat;
-    } else if (opts && 'indices' in opts) {
-        arrayFormat = opts.indices ? 'indices' : 'repeat';
-    } else {
-        arrayFormat = 'indices';
-    }
-
-    var generateArrayPrefix = arrayPrefixGenerators[arrayFormat];
-
-    if (!objKeys) {
-        objKeys = Object.keys(obj);
-    }
-
-    if (options.sort) {
-        objKeys.sort(options.sort);
-    }
-
-    for (var i = 0; i < objKeys.length; ++i) {
-        var key = objKeys[i];
-
-        if (options.skipNulls && obj[key] === null) {
-            continue;
-        }
-        pushToArray(keys, stringify(
-            obj[key],
-            key,
-            generateArrayPrefix,
-            options.strictNullHandling,
-            options.skipNulls,
-            options.encode ? options.encoder : null,
-            options.filter,
-            options.sort,
-            options.allowDots,
-            options.serializeDate,
-            options.formatter,
-            options.encodeValuesOnly,
-            options.charset
-        ));
-    }
-
-    var joined = keys.join(options.delimiter);
-    var prefix = options.addQueryPrefix === true ? '?' : '';
-
-    if (options.charsetSentinel) {
-        if (options.charset === 'iso-8859-1') {
-            // encodeURIComponent('&#10003;'), the "numeric entity" representation of a checkmark
-            prefix += 'utf8=%26%2310003%3B&';
-        } else {
-            // encodeURIComponent('✓')
-            prefix += 'utf8=%E2%9C%93&';
-        }
-    }
-
-    return joined.length > 0 ? prefix + joined : '';
-};
-
-},{"./formats":47,"./utils":51}],51:[function(require,module,exports){
-'use strict';
-
-var has = Object.prototype.hasOwnProperty;
-var isArray = Array.isArray;
-
-var hexTable = (function () {
-    var array = [];
-    for (var i = 0; i < 256; ++i) {
-        array.push('%' + ((i < 16 ? '0' : '') + i.toString(16)).toUpperCase());
-    }
-
-    return array;
-}());
-
-var compactQueue = function compactQueue(queue) {
-    while (queue.length > 1) {
-        var item = queue.pop();
-        var obj = item.obj[item.prop];
-
-        if (isArray(obj)) {
-            var compacted = [];
-
-            for (var j = 0; j < obj.length; ++j) {
-                if (typeof obj[j] !== 'undefined') {
-                    compacted.push(obj[j]);
-                }
-            }
-
-            item.obj[item.prop] = compacted;
-        }
-    }
-};
-
-var arrayToObject = function arrayToObject(source, options) {
-    var obj = options && options.plainObjects ? Object.create(null) : {};
-    for (var i = 0; i < source.length; ++i) {
-        if (typeof source[i] !== 'undefined') {
-            obj[i] = source[i];
-        }
-    }
-
-    return obj;
-};
-
-var merge = function merge(target, source, options) {
-    /* eslint no-param-reassign: 0 */
-    if (!source) {
-        return target;
-    }
-
-    if (typeof source !== 'object') {
-        if (isArray(target)) {
-            target.push(source);
-        } else if (target && typeof target === 'object') {
-            if ((options && (options.plainObjects || options.allowPrototypes)) || !has.call(Object.prototype, source)) {
-                target[source] = true;
-            }
-        } else {
-            return [target, source];
-        }
-
-        return target;
-    }
-
-    if (!target || typeof target !== 'object') {
-        return [target].concat(source);
-    }
-
-    var mergeTarget = target;
-    if (isArray(target) && !isArray(source)) {
-        mergeTarget = arrayToObject(target, options);
-    }
-
-    if (isArray(target) && isArray(source)) {
-        source.forEach(function (item, i) {
-            if (has.call(target, i)) {
-                var targetItem = target[i];
-                if (targetItem && typeof targetItem === 'object' && item && typeof item === 'object') {
-                    target[i] = merge(targetItem, item, options);
-                } else {
-                    target.push(item);
-                }
-            } else {
-                target[i] = item;
-            }
-        });
-        return target;
-    }
-
-    return Object.keys(source).reduce(function (acc, key) {
-        var value = source[key];
-
-        if (has.call(acc, key)) {
-            acc[key] = merge(acc[key], value, options);
-        } else {
-            acc[key] = value;
-        }
-        return acc;
-    }, mergeTarget);
-};
-
-var assign = function assignSingleSource(target, source) {
-    return Object.keys(source).reduce(function (acc, key) {
-        acc[key] = source[key];
-        return acc;
-    }, target);
-};
-
-var decode = function (str, decoder, charset) {
-    var strWithoutPlus = str.replace(/\+/g, ' ');
-    if (charset === 'iso-8859-1') {
-        // unescape never throws, no try...catch needed:
-        return strWithoutPlus.replace(/%[0-9a-f]{2}/gi, unescape);
-    }
-    // utf-8
-    try {
-        return decodeURIComponent(strWithoutPlus);
-    } catch (e) {
-        return strWithoutPlus;
-    }
-};
-
-var encode = function encode(str, defaultEncoder, charset) {
-    // This code was originally written by Brian White (mscdex) for the io.js core querystring library.
-    // It has been adapted here for stricter adherence to RFC 3986
-    if (str.length === 0) {
-        return str;
-    }
-
-    var string = str;
-    if (typeof str === 'symbol') {
-        string = Symbol.prototype.toString.call(str);
-    } else if (typeof str !== 'string') {
-        string = String(str);
-    }
-
-    if (charset === 'iso-8859-1') {
-        return escape(string).replace(/%u[0-9a-f]{4}/gi, function ($0) {
-            return '%26%23' + parseInt($0.slice(2), 16) + '%3B';
-        });
-    }
-
-    var out = '';
-    for (var i = 0; i < string.length; ++i) {
-        var c = string.charCodeAt(i);
-
-        if (
-            c === 0x2D // -
-            || c === 0x2E // .
-            || c === 0x5F // _
-            || c === 0x7E // ~
-            || (c >= 0x30 && c <= 0x39) // 0-9
-            || (c >= 0x41 && c <= 0x5A) // a-z
-            || (c >= 0x61 && c <= 0x7A) // A-Z
-        ) {
-            out += string.charAt(i);
-            continue;
-        }
-
-        if (c < 0x80) {
-            out = out + hexTable[c];
-            continue;
-        }
-
-        if (c < 0x800) {
-            out = out + (hexTable[0xC0 | (c >> 6)] + hexTable[0x80 | (c & 0x3F)]);
-            continue;
-        }
-
-        if (c < 0xD800 || c >= 0xE000) {
-            out = out + (hexTable[0xE0 | (c >> 12)] + hexTable[0x80 | ((c >> 6) & 0x3F)] + hexTable[0x80 | (c & 0x3F)]);
-            continue;
-        }
-
-        i += 1;
-        c = 0x10000 + (((c & 0x3FF) << 10) | (string.charCodeAt(i) & 0x3FF));
-        out += hexTable[0xF0 | (c >> 18)]
-            + hexTable[0x80 | ((c >> 12) & 0x3F)]
-            + hexTable[0x80 | ((c >> 6) & 0x3F)]
-            + hexTable[0x80 | (c & 0x3F)];
-    }
-
-    return out;
-};
-
-var compact = function compact(value) {
-    var queue = [{ obj: { o: value }, prop: 'o' }];
-    var refs = [];
-
-    for (var i = 0; i < queue.length; ++i) {
-        var item = queue[i];
-        var obj = item.obj[item.prop];
-
-        var keys = Object.keys(obj);
-        for (var j = 0; j < keys.length; ++j) {
-            var key = keys[j];
-            var val = obj[key];
-            if (typeof val === 'object' && val !== null && refs.indexOf(val) === -1) {
-                queue.push({ obj: obj, prop: key });
-                refs.push(val);
-            }
-        }
-    }
-
-    compactQueue(queue);
-
-    return value;
-};
-
-var isRegExp = function isRegExp(obj) {
-    return Object.prototype.toString.call(obj) === '[object RegExp]';
-};
-
-var isBuffer = function isBuffer(obj) {
-    if (!obj || typeof obj !== 'object') {
-        return false;
-    }
-
-    return !!(obj.constructor && obj.constructor.isBuffer && obj.constructor.isBuffer(obj));
-};
-
-var combine = function combine(a, b) {
-    return [].concat(a, b);
-};
-
-module.exports = {
-    arrayToObject: arrayToObject,
-    assign: assign,
-    combine: combine,
-    compact: compact,
-    decode: decode,
-    encode: encode,
-    isBuffer: isBuffer,
-    isRegExp: isRegExp,
-    merge: merge
-};
-
-},{}],52:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 'use strict';
 
 var $Object = Object;
@@ -5103,7 +5329,7 @@ module.exports = function flags() {
 	return result;
 };
 
-},{}],53:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 'use strict';
 
 var define = require('define-properties');
@@ -5123,7 +5349,7 @@ define(flagsBound, {
 
 module.exports = flagsBound;
 
-},{"./implementation":52,"./polyfill":54,"./shim":55,"define-properties":30,"es-abstract/helpers/callBind":32}],54:[function(require,module,exports){
+},{"./implementation":54,"./polyfill":56,"./shim":57,"define-properties":35,"es-abstract/helpers/callBind":37}],56:[function(require,module,exports){
 'use strict';
 
 var implementation = require('./implementation');
@@ -5145,7 +5371,7 @@ module.exports = function getPolyfill() {
 	return implementation;
 };
 
-},{"./implementation":52,"define-properties":30}],55:[function(require,module,exports){
+},{"./implementation":54,"define-properties":35}],57:[function(require,module,exports){
 'use strict';
 
 var supportsDescriptors = require('define-properties').supportsDescriptors;
@@ -5173,7 +5399,7 @@ module.exports = function shimFlags() {
 	return polyfill;
 };
 
-},{"./polyfill":54,"define-properties":30}],56:[function(require,module,exports){
+},{"./polyfill":56,"define-properties":35}],58:[function(require,module,exports){
 (function (process){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -5240,7 +5466,7 @@ describe('xhr', function () {
 });
 
 }).call(this,require('_process'))
-},{"../../../../../lib/agent":1,"../../../../../lib/agent/parser/json":2,"../../../../../lib/agent/transform/json":4,"../../../../../lib/agent/transform/multipart":5,"../../../../../lib/agent/transport/xhr":6,"../../../../../lib/cookie/container/memory":8,"../../../../../lib/response":13,"@quenk/noni/lib/control/monad/future":17,"@quenk/test/lib/assert":28,"_process":46}],57:[function(require,module,exports){
+},{"../../../../../lib/agent":1,"../../../../../lib/agent/parser/json":2,"../../../../../lib/agent/transform/json":4,"../../../../../lib/agent/transform/multipart":5,"../../../../../lib/agent/transport/xhr":6,"../../../../../lib/cookie/container/memory":9,"../../../../../lib/response":16,"@quenk/noni/lib/control/monad/future":21,"@quenk/test/lib/assert":33,"_process":53}],59:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var assert_1 = require("@quenk/test/lib/assert");
@@ -5272,8 +5498,8 @@ describe('browser', function () {
     });
 });
 
-},{"../../../lib/browser":7,"@quenk/test/lib/assert":28}],58:[function(require,module,exports){
+},{"../../../lib/browser":7,"@quenk/test/lib/assert":33}],60:[function(require,module,exports){
 require("./browser_test.js");
 require("./agent/transport/xhr_test.js");
 
-},{"./agent/transport/xhr_test.js":56,"./browser_test.js":57}]},{},[58]);
+},{"./agent/transport/xhr_test.js":58,"./browser_test.js":59}]},{},[60]);
