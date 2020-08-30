@@ -9,6 +9,7 @@ import { Context } from '../../../request/context';
 import { Response, createResponse } from '../../../response';
 import { Transform } from '../../transform';
 import { ACCEPTS, CONTENT_TYPE } from '../../../headers';
+import { toCookieHeader } from '../../../cookie';
 import { Method } from '../../../request/method';
 import { Parser } from '../../parser';
 import { Transport } from '../';
@@ -69,15 +70,15 @@ export class NodeHTTPTransport<Raw, Res> implements Transport<Raw, Res> {
         let { parser, transform, agent } = this;
         let { host, port, path, method, body, headers, cookies, options } = ctx;
         let head = merge({}, headers);
-        let cooks = cookies.getString();
+        let cookieHeader = toCookieHeader(cookies.getCookies());
 
         if ((method === Method.Get) || (method === Method.Head))
             head[ACCEPTS] = parser.accepts;
         else if (transform.type !== 'multipart/form-data')
             head[CONTENT_TYPE] = transform.type;
 
-        if (cooks !== '')
-            head['Cookie'] = cooks;
+        if (cookieHeader !== '')
+            head['Cookie'] = cookieHeader;
 
         let opts = merge(this.options, {
 
@@ -114,7 +115,7 @@ export class NodeHTTPTransport<Raw, Res> implements Transport<Raw, Res> {
                         } else {
 
                             if (Array.isArray(res.headers['set-cookie']))
-                                cookies.update(res.headers['set-cookie'].join(';'));
+                                cookies.setCookies(res.headers['set-cookie']);
 
                             s.onSuccess(createResponse(
                                 <number>res.statusCode,

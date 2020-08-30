@@ -150,4 +150,4 @@ export declare class InternalServerError<B> extends ServerError<B> {
  * createResponse creates a new typed Response or a GenericResponse if
  * unsupported.
  */
-export declare const createResponse: <B>(code: number, body: B, headers: IncommingHeaders, options: Options) => Response<B>;
+export declare const createResponse: <B>(code: status.Code, body: B, headers: IncommingHeaders, options: Options) => Response<B>;

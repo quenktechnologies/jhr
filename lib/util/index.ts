@@ -1,4 +1,4 @@
-import * as qs from 'qs';
+import { stringify } from './qs';
 
 /**
  * isObject test.
@@ -30,4 +30,4 @@ export const isBlob = (obj: any): obj is Blob =>
  * @param {object} [params]
  */
 export const urlFromString = (url: string, params: object = {}) =>
-    `${url}?${qs.stringify(params)}`;
+    `${url}?${stringify(params)}`;

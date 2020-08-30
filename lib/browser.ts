@@ -1,7 +1,7 @@
 import { Object } from '@quenk/noni/lib/data/json';
 import { Future } from '@quenk/noni/lib/control/monad/future';
 
-import { MemoryContainer } from './cookie/container/memory';
+import { DocumentContainer } from './cookie/container/document';
 import { JSONTransform } from './agent/transform/json';
 import { JSONParser } from './agent/parser/json';
 import { XHRTransport } from './agent/transport/xhr';
@@ -40,7 +40,7 @@ export const createAgent = <B extends Object>
     new Agent(
         host,
         {},
-        new MemoryContainer(document.cookie),
+      DocumentContainer.create(),
         { ttl: 0, tags: {}, context: {}, port },
         new XHRTransport('', new JSONTransform(), new JSONParser()),
         [new CSRFProtectionPlugin()]);
