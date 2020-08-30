@@ -16,8 +16,7 @@
   "author": "Quenk Technologies<info@quenk.com> (https://quenk.com)",
   "license": "Apache-2.0",
   "dependencies": {
-    "@quenk/noni": "^1.40.4",
-    "qs": "^6.9.1"
+    "@quenk/noni": "^1.40.4"
   },
   "devDependencies": {
     "@quenk/test": "^2.2.4",
@@ -25,7 +24,6 @@
     "@types/json-stringify-safe": "^5.0.0",
     "@types/mocha": "^8.0.3",
     "@types/node": "^14.6.2",
-    "@types/qs": "^6.9.1",
     "browserify": "^16.5.2",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
