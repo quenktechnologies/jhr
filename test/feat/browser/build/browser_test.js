@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var assert_1 = require("@quenk/test/lib/assert");
-var browser_1 = require("../../../lib/browser");
+var browser_1 = require("../../../../lib/browser");
 describe('browser', function () {
     describe('splitUrl', function () {
         it('should work with domain alone', function () {

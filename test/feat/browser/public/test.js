@@ -5405,13 +5405,13 @@ module.exports = function shimFlags() {
 Object.defineProperty(exports, "__esModule", { value: true });
 var assert_1 = require("@quenk/test/lib/assert");
 var future_1 = require("@quenk/noni/lib/control/monad/future");
-var agent_1 = require("../../../../../lib/agent");
-var memory_1 = require("../../../../../lib/cookie/container/memory");
-var json_1 = require("../../../../../lib/agent/transform/json");
-var multipart_1 = require("../../../../../lib/agent/transform/multipart");
-var json_2 = require("../../../../../lib/agent/parser/json");
-var xhr_1 = require("../../../../../lib/agent/transport/xhr");
-var response_1 = require("../../../../../lib/response");
+var agent_1 = require("../../../../../../lib/agent");
+var memory_1 = require("../../../../../../lib/cookie/container/memory");
+var json_1 = require("../../../../../../lib/agent/transform/json");
+var multipart_1 = require("../../../../../../lib/agent/transform/multipart");
+var json_2 = require("../../../../../../lib/agent/parser/json");
+var xhr_1 = require("../../../../../../lib/agent/transport/xhr");
+var response_1 = require("../../../../../../lib/response");
 var host = process.env.HOST || 'http://localhost';
 var port = process.env.PORT || '9999';
 var newAgent = function (h) {
@@ -5466,11 +5466,11 @@ describe('xhr', function () {
 });
 
 }).call(this,require('_process'))
-},{"../../../../../lib/agent":1,"../../../../../lib/agent/parser/json":2,"../../../../../lib/agent/transform/json":4,"../../../../../lib/agent/transform/multipart":5,"../../../../../lib/agent/transport/xhr":6,"../../../../../lib/cookie/container/memory":9,"../../../../../lib/response":16,"@quenk/noni/lib/control/monad/future":21,"@quenk/test/lib/assert":33,"_process":53}],59:[function(require,module,exports){
+},{"../../../../../../lib/agent":1,"../../../../../../lib/agent/parser/json":2,"../../../../../../lib/agent/transform/json":4,"../../../../../../lib/agent/transform/multipart":5,"../../../../../../lib/agent/transport/xhr":6,"../../../../../../lib/cookie/container/memory":9,"../../../../../../lib/response":16,"@quenk/noni/lib/control/monad/future":21,"@quenk/test/lib/assert":33,"_process":53}],59:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var assert_1 = require("@quenk/test/lib/assert");
-var browser_1 = require("../../../lib/browser");
+var browser_1 = require("../../../../lib/browser");
 describe('browser', function () {
     describe('splitUrl', function () {
         it('should work with domain alone', function () {
@@ -5498,7 +5498,7 @@ describe('browser', function () {
     });
 });
 
-},{"../../../lib/browser":7,"@quenk/test/lib/assert":33}],60:[function(require,module,exports){
+},{"../../../../lib/browser":7,"@quenk/test/lib/assert":33}],60:[function(require,module,exports){
 require("./browser_test.js");
 require("./agent/transport/xhr_test.js");
 

@@ -2,13 +2,13 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var assert_1 = require("@quenk/test/lib/assert");
 var future_1 = require("@quenk/noni/lib/control/monad/future");
-var agent_1 = require("../../../../../lib/agent");
-var memory_1 = require("../../../../../lib/cookie/container/memory");
-var json_1 = require("../../../../../lib/agent/transform/json");
-var multipart_1 = require("../../../../../lib/agent/transform/multipart");
-var json_2 = require("../../../../../lib/agent/parser/json");
-var xhr_1 = require("../../../../../lib/agent/transport/xhr");
-var response_1 = require("../../../../../lib/response");
+var agent_1 = require("../../../../../../lib/agent");
+var memory_1 = require("../../../../../../lib/cookie/container/memory");
+var json_1 = require("../../../../../../lib/agent/transform/json");
+var multipart_1 = require("../../../../../../lib/agent/transform/multipart");
+var json_2 = require("../../../../../../lib/agent/parser/json");
+var xhr_1 = require("../../../../../../lib/agent/transport/xhr");
+var response_1 = require("../../../../../../lib/response");
 var host = process.env.HOST || 'http://localhost';
 var port = process.env.PORT || '9999';
 var newAgent = function (h) {

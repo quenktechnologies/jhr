@@ -7,20 +7,20 @@ lib: $(shell find src -type f)
 	cp -R -u src/* lib
 	./node_modules/.bin/tsc --project lib
 
-test: lib test/browser/public
+test: lib test/feat/browser/public
 	touch $@
 
-test/browser/public: test/browser/public/test.js
+test/feat/browser/public: test/feat/browser/public/test.js
 	touch $@
 
-test/browser/public/test.js: test/browser/build/run.js
-	./node_modules/.bin/browserify test/browser/build/run.js > $@
+test/feat/browser/public/test.js: test/feat/browser/build/run.js
+	./node_modules/.bin/browserify test/feat/browser/build/run.js > $@
 
-test/browser/build/run.js: $(shell find test/browser/suite -type f) lib
-	@rm -R test/browser/build || true
-	@cp -R test/browser/suite test/browser/build
-	./node_modules/.bin/tsc -p test/browser/build
-	cd test/browser/build && \
+test/feat/browser/build/run.js: $(shell find test/feat/browser/suite -type f) lib
+	@rm -R test/feat/browser/build || true
+	@cp -R test/feat/browser/suite test/feat/browser/build
+	./node_modules/.bin/tsc -p test/feat/browser/build
+	cd test/feat/browser/build && \
 	find . -name \*_test.js | \
 	sed 's/[^ ]*/require("&");/g' >> run.js
 

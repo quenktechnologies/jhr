@@ -1,12 +1,12 @@
 import { assert } from '@quenk/test/lib/assert';
 import { parallel, toPromise } from '@quenk/noni/lib/control/monad/future';
-import { Agent } from '../../../../../lib/agent';
-import { MemoryContainer } from '../../../../../lib/cookie/container/memory';
-import { JSONTransform } from '../../../../../lib/agent/transform/json';
-import { MultipartTransform } from '../../../../../lib/agent/transform/multipart';
-import { JSONParser } from '../../../../../lib/agent/parser/json';
-import { XHRTransport } from '../../../../../lib/agent/transport/xhr';
-import { Ok, Created, NoContent } from '../../../../../lib/response';
+import { Agent } from '../../../../../../lib/agent';
+import { MemoryContainer } from '../../../../../../lib/cookie/container/memory';
+import { JSONTransform } from '../../../../../../lib/agent/transform/json';
+import { MultipartTransform } from '../../../../../../lib/agent/transform/multipart';
+import { JSONParser } from '../../../../../../lib/agent/parser/json';
+import { XHRTransport } from '../../../../../../lib/agent/transport/xhr';
+import { Ok, Created, NoContent } from '../../../../../../lib/response';
 
 const host = process.env.HOST || 'http://localhost';
 const port = process.env.PORT || '9999';
