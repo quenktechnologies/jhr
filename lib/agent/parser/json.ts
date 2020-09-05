@@ -56,10 +56,10 @@ export class JSONParser<D extends json.Object> implements Parser<string, D> {
     apply(body: string): Except<D> {
 
         let { prefix, lenient } = this.opts;
-      let str = body.replace(<RegExp>prefix, '');
+        let str = body.replace(<RegExp>prefix, '');
         let eresult = attempt(() => JSON.parse(str));
 
-        return (eresult.isLeft() && lenient) ? right(<Type>undefined) : eresult;
+        return (eresult.isLeft() && lenient) ? right(<Type>{}) : eresult;
 
     }
 

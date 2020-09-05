@@ -142,7 +142,7 @@ var JSONParser = /** @class */ (function () {
         var _a = this.opts, prefix = _a.prefix, lenient = _a.lenient;
         var str = body.replace(prefix, '');
         var eresult = error_1.attempt(function () { return JSON.parse(str); });
-        return (eresult.isLeft() && lenient) ? either_1.right(undefined) : eresult;
+        return (eresult.isLeft() && lenient) ? either_1.right({}) : eresult;
     };
     return JSONParser;
 }());
@@ -328,7 +328,7 @@ exports.splitUrl = function (url) {
 exports.createAgent = function (host, port) {
     if (host === void 0) { host = getHost(); }
     if (port === void 0) { port = getPort(); }
-    return new agent_1.Agent(host, {}, document_1.DocumentContainer.create(), { ttl: 0, tags: {}, context: {}, port: port }, new xhr_1.XHRTransport('', new json_1.JSONTransform(), new json_2.JSONParser()), [new csrf_1.CSRFProtectionPlugin()]);
+    return new agent_1.Agent(host, {}, document_1.DocumentContainer.create(), { ttl: 0, tags: {}, context: {}, port: port }, new xhr_1.XHRTransport('', new json_1.JSONTransform(), new json_2.JSONParser({ lenient: true })), [new csrf_1.CSRFProtectionPlugin()]);
 };
 var getHost = function () {
     return window.location.protocol + "//" + window.location.hostname;

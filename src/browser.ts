@@ -40,9 +40,13 @@ export const createAgent = <B extends Object>
     new Agent(
         host,
         {},
-      DocumentContainer.create(),
+        DocumentContainer.create(),
         { ttl: 0, tags: {}, context: {}, port },
-        new XHRTransport('', new JSONTransform(), new JSONParser()),
+        new XHRTransport(
+          '',
+          new JSONTransform(),
+          new JSONParser({ lenient: true })
+        ),
         [new CSRFProtectionPlugin()]);
 
 const getHost = () =>
