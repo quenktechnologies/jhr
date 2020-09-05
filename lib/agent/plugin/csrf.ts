@@ -24,7 +24,7 @@ export class CSRFProtectionPlugin<ReqBody, ResParsed>
 
         let mvalue = ctx.cookies.getCookie(this.cookie);
 
-        if(mvalue.isJust() )
+        if(mvalue.isJust())
         ctx.headers = merge(ctx.headers, {
             [this.header]: mvalue.get().value
         });

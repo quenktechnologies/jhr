@@ -1,7 +1,13 @@
 import { make } from '@quenk/noni/lib/data/record';
-import {Maybe, fromNullable } from '@quenk/noni/lib/data/maybe';
+import {Maybe  } from '@quenk/noni/lib/data/maybe';
 
-import { SetCookieHeader, Cookie, Cookies, fromCookieHeader } from '../';
+import { 
+  SetCookieHeader,
+  Cookie,
+  Cookies,
+  fromCookieHeader, 
+  getCookieByName 
+} from '../';
 import { Container } from './';
 
 /**
@@ -30,7 +36,7 @@ export class DocumentContainer implements Container {
 
     getCookie(name: string): Maybe<Cookie> {
 
-        return fromNullable(this.cookies[name]);
+        return getCookieByName(this.cookies, name);
 
     }
 

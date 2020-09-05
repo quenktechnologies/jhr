@@ -355,7 +355,6 @@ exports.get = function (url, params, headers) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DocumentContainer = void 0;
 var record_1 = require("@quenk/noni/lib/data/record");
-var maybe_1 = require("@quenk/noni/lib/data/maybe");
 var __1 = require("../");
 /**
  * DocumentContainer uses `document.cookie` as its backing store.
@@ -378,7 +377,7 @@ var DocumentContainer = /** @class */ (function () {
         return record_1.make(this.cookies);
     };
     DocumentContainer.prototype.getCookie = function (name) {
-        return maybe_1.fromNullable(this.cookies[name]);
+        return __1.getCookieByName(this.cookies, name);
     };
     /**
      * setCookies ignores the provided cookie string and ALWAYS reads from
@@ -392,7 +391,7 @@ var DocumentContainer = /** @class */ (function () {
 }());
 exports.DocumentContainer = DocumentContainer;
 
-},{"../":10,"@quenk/noni/lib/data/maybe":27,"@quenk/noni/lib/data/record":28}],9:[function(require,module,exports){
+},{"../":10,"@quenk/noni/lib/data/record":28}],9:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MemoryContainer = void 0;
