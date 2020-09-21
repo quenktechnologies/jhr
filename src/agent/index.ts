@@ -94,6 +94,11 @@ export interface HTTPAgent<ReqRaw, ResParsed> {
         body?: ReqRaw,
         headers?: OutgoingHeaders): Future<Response<ResParsed>>
 
+  /**
+   * send a network request.
+   */
+    send(req: Request<ReqRaw>): Future<Response<ResParsed>> 
+
 }
 
 /**

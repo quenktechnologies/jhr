@@ -4,6 +4,7 @@ import { Type } from '@quenk/noni/lib/data/type';
 
 import { Parameters } from '../request/parameters';
 import { Path } from '../request/path';
+import {Request} from '../request';
 import { Response, GenericResponse } from '../response';
 import { OutgoingHeaders } from '../header';
 import { HTTPAgent } from './';
@@ -70,6 +71,12 @@ export class MockAgent<Req, Res> implements HTTPAgent<Req, Res> {
         headers?: OutgoingHeaders): Future<Response<Res>> {
 
         return this.__MOCK__.invoke('delete', [path, <Type>body, headers], res);
+
+    }
+
+    send(req: Request<Req>): Future<Response<Res >> {
+
+      return this.__MOCK__.invoke('send', [req], res);
 
     }
 
