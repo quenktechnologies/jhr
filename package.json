@@ -16,10 +16,10 @@
   "author": "Quenk Technologies<info@quenk.com> (https://quenk.com)",
   "license": "Apache-2.0",
   "dependencies": {
-    "@quenk/noni": "^1.40.5"
+    "@quenk/noni": "^1.40.5",
+    "@quenk/test": "^2.2.4"
   },
   "devDependencies": {
-    "@quenk/test": "^2.2.4",
     "@types/deep-equal": "^1.0.1",
     "@types/json-stringify-safe": "^5.0.0",
     "@types/mocha": "^8.0.3",

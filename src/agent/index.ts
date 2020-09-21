@@ -2,6 +2,7 @@ import * as util from '../util';
 import { rmerge3 } from '@quenk/noni/lib/data/record';
 import { Future, pure } from '@quenk/noni/lib/control/monad/future';
 import { interpolate } from '@quenk/noni/lib/data/string';
+
 import { OutgoingHeaders } from '../header';
 import {
     Request,
@@ -40,12 +41,68 @@ export interface Options extends RequestOptions {
 }
 
 /**
+ * HTTPAgent is the API Agents provide.
+ */
+export interface HTTPAgent<ReqRaw, ResParsed> {
+
+    /**
+     * head request shorthand.
+     */
+    head(
+        path: Path,
+        params: Parameters,
+        headers: OutgoingHeaders): Future<Response<ResParsed>>
+
+
+    /**
+     * get request shorthand.
+     */
+    get(
+        path: Path,
+        params: Parameters,
+        headers: OutgoingHeaders): Future<Response<ResParsed>>
+
+    /**
+     * post request shorthand.
+     */
+    post(
+        path: Path,
+        body?: ReqRaw,
+        headers?: OutgoingHeaders): Future<Response<ResParsed>>
+
+    /**
+     * put request shorthand.
+     */
+    put(
+        path: Path,
+        body?: ReqRaw,
+        headers?: OutgoingHeaders): Future<Response<ResParsed>>
+
+    /**
+     * patch request shorthand.
+     */
+    patch(
+        path: Path,
+        body?: ReqRaw,
+        headers?: OutgoingHeaders): Future<Response<ResParsed>>
+
+    /**
+     * delete request shorthand.
+     */
+    delete(
+        path: Path,
+        body?: ReqRaw,
+        headers?: OutgoingHeaders): Future<Response<ResParsed>>
+
+}
+
+/**
  * Agent acts as an HTTP client.
  *
  * An Agent instance uses its transport to send HTTP requests
  * and receive responses.
  */
-export class Agent<ReqRaw, ResParsed> {
+export class Agent<ReqRaw, ResParsed> implements HTTPAgent<ReqRaw, ResParsed> {
 
     constructor(
         public host: Host,
@@ -71,9 +128,6 @@ export class Agent<ReqRaw, ResParsed> {
 
     }
 
-    /**
-     * head request shorthand.
-     */
     head(
         path: Path,
         params: Parameters = {},
@@ -83,9 +137,6 @@ export class Agent<ReqRaw, ResParsed> {
 
     }
 
-    /**
-     * get request shorthand.
-     */
     get(
         path: Path,
         params: Parameters = {},
@@ -95,9 +146,6 @@ export class Agent<ReqRaw, ResParsed> {
 
     }
 
-    /**
-     * post request shorthand.
-     */
     post(
         path: Path,
         body?: ReqRaw,
@@ -107,9 +155,6 @@ export class Agent<ReqRaw, ResParsed> {
 
     }
 
-    /**
-     * put request shorthand.
-     */
     put(
         path: Path,
         body?: ReqRaw,
@@ -119,9 +164,6 @@ export class Agent<ReqRaw, ResParsed> {
 
     }
 
-    /**
-     * patch request shorthand.
-     */
     patch(
         path: Path,
         body?: ReqRaw,
@@ -131,9 +173,6 @@ export class Agent<ReqRaw, ResParsed> {
 
     }
 
-    /**
-     * delete request shorthand.
-     */
     delete(
         path: Path,
         body?: ReqRaw,
@@ -143,9 +182,6 @@ export class Agent<ReqRaw, ResParsed> {
 
     }
 
-    /**
-     * send a Request to the server.
-     */
     send(req: Request<ReqRaw>): Future<Response<ResParsed>> {
 
         let { host, cookies, headers, transport, plugins } = this;
