@@ -5,23 +5,23 @@ var browser_1 = require("../../../../lib/browser");
 describe('browser', function () {
     describe('splitUrl', function () {
         it('should work with domain alone', function () {
-            assert_1.assert(browser_1.splitUrl('localhost:8080')).equate([
+            (0, assert_1.assert)((0, browser_1.splitUrl)('localhost:8080')).equate([
                 'localhost:8080',
                 '/'
             ]);
         });
         it('should work with domain and path', function () {
-            assert_1.assert(browser_1.splitUrl('localhost:8080/path/to')).equate([
+            (0, assert_1.assert)((0, browser_1.splitUrl)('localhost:8080/path/to')).equate([
                 'localhost:8080',
                 '/path/to'
             ]);
         });
         it('should work when the protocol is present', function () {
-            assert_1.assert(browser_1.splitUrl('http://localhost/path/to')).equate([
+            (0, assert_1.assert)((0, browser_1.splitUrl)('http://localhost/path/to')).equate([
                 'localhost',
                 '/path/to'
             ]);
-            assert_1.assert(browser_1.splitUrl('http://localhost')).equate([
+            (0, assert_1.assert)((0, browser_1.splitUrl)('http://localhost')).equate([
                 'localhost',
                 '/'
             ]);

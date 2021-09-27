@@ -2,6 +2,7 @@ import {
     Future,
     Run
 } from '@quenk/noni/lib/control/monad/future';
+import { Type } from '@quenk/noni/lib/data/type';
 import { fromString } from '../../header';
 import { createResponse } from '../../response';
 import { Context } from '../../request/context';
@@ -104,7 +105,7 @@ export class XHRTransport<Raw, Res> implements Transport<Raw, Res> {
                 xhr.setRequestHeader(CONTENT_TYPE, transform.type);
             //^ multipart forms set a custom content type
 
-            xhr.send(transBody);
+            xhr.send(<Type>transBody);
 
             return () => xhr.abort();
 

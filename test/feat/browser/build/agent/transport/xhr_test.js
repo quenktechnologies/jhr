@@ -20,31 +20,31 @@ describe('xhr', function () {
         var codes = [200, 201, 204];
         var expected = [response_1.Ok, response_1.Created, response_1.NoContent];
         var agent = newAgent();
-        return future_1.toPromise(future_1.parallel(codes.map(function (code) { return agent.get("/status/" + code); }))
+        return (0, future_1.toPromise)((0, future_1.parallel)(codes.map(function (code) { return agent.get("/status/" + code); }))
             .map(function (list) { return list.map(function (r, i) { return r instanceof expected[i]; }); }))
             .then(function (results) { return results.reduce(function (_, c) {
-            assert_1.assert(c).equal(true);
+            (0, assert_1.assert)(c).equal(true);
             return c;
         }, true); });
     });
     it('should detect transport errors', function () {
-        return future_1.toPromise(newAgent('hddp://example.com').get('/'))
+        return (0, future_1.toPromise)(newAgent('hddp://example.com').get('/'))
             .catch(function (e) {
-            assert_1.assert(e).be.instance.of(Error);
-            assert_1.assert(e.message).equal('TransportError');
+            (0, assert_1.assert)(e).be.instance.of(Error);
+            (0, assert_1.assert)(e.message).equal('TransportError');
         });
     });
     it('should send the correct body', function () {
         var body = { "email": "me@email.com", "password": "password" };
-        return future_1.toPromise(newAgent().post('/login', body)).
+        return (0, future_1.toPromise)(newAgent().post('/login', body)).
             then(function (res) {
-            assert_1.assert(res.code).equal(200);
+            (0, assert_1.assert)(res.code).equal(200);
         });
     });
     it('should provide the correct body', function () {
-        return future_1.toPromise(newAgent().get('/json'))
+        return (0, future_1.toPromise)(newAgent().get('/json'))
             .then(function (res) {
-            assert_1.assert(res.body).equate({
+            (0, assert_1.assert)(res.body).equate({
                 "a": true, "b": false, "c": 1, "d": "1"
             });
         });
@@ -55,9 +55,9 @@ describe('xhr', function () {
             .setTransport(new xhr_1.XHRTransport('', new multipart_1.MultipartTransform(), new json_2.JSONParser()));
         fd.append('filename', 'somefile');
         fd.append('file', new Blob(['some file']));
-        return future_1.toPromise(agent.post('/file', fd))
+        return (0, future_1.toPromise)(agent.post('/file', fd))
             .then(function (res) {
-            assert_1.assert(res.code).equal(204);
+            (0, assert_1.assert)(res.code).equal(204);
         });
     });
 });
