@@ -3,9 +3,8 @@
         "baseUrl": "src",
         "lib": ["es5", "ES2015", "DOM"],
         "module": "commonjs",
-        "target": "es5",
+        "target": "es6",
         "rootDir": ".",
-        "outDir": "../lib",
         "moduleResolution": "node",
         "allowUnreachableCode": true,
         "noUnusedParameters": true,
@@ -13,7 +12,6 @@
         "skipLibCheck": true,
         "noImplicitAny": true,
         "sourceMap": true,
-        "declaration": true,
         "strict": true,
         "types": ["node"],
         "typeRoots": ["node_modules/@types"]

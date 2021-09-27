@@ -1,4 +1,5 @@
 import { assert } from '@quenk/test/lib/assert';
+
 import { splitUrl } from '../../../../lib/browser';
 
 describe('browser', () => {
