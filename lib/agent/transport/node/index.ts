@@ -94,7 +94,7 @@ export class NodeHTTPTransport<Raw, Res> implements Transport<Raw, Res> {
         let request = (this.agent instanceof https.Agent) ?
             https.request : http.request;
 
-        return new Run(s => {
+        return new Run((onError,onSuccess) => {
 
             let req = request(opts, res => {
 
@@ -110,14 +110,14 @@ export class NodeHTTPTransport<Raw, Res> implements Transport<Raw, Res> {
 
                         if (exceptParsed.isLeft()) {
 
-                            s.onError(new Error(exceptParsed.takeLeft().message));
+                            onError(new Error(exceptParsed.takeLeft().message));
 
                         } else {
 
                             if (Array.isArray(res.headers['set-cookie']))
                                 cookies.setCookies(res.headers['set-cookie']);
 
-                            s.onSuccess(createResponse(
+                            onSuccess(createResponse(
                                 <number>res.statusCode,
                                 exceptParsed.takeRight(),
                                 <{ [key: string]: string }>res.headers,
@@ -132,11 +132,11 @@ export class NodeHTTPTransport<Raw, Res> implements Transport<Raw, Res> {
 
             });
 
-            req.on('error', e => (!req.aborted) ? s.onError(e) : undefined);
+            req.on('error', e => (!req.aborted) ? onError(e) : undefined);
 
             req.on('timeout', () => req.abort());
 
-            req.on('abort', () => s.onError(new Error('Request Aborted!')));
+            req.on('abort', () => onError(new Error('Request Aborted!')));
 
             if (options.ttl) req.setTimeout(options.ttl);
 
@@ -146,7 +146,7 @@ export class NodeHTTPTransport<Raw, Res> implements Transport<Raw, Res> {
 
                 if (exceptBody.isLeft()) {
 
-                    s.onError(new Error(exceptBody.takeLeft().message));
+                    onError(new Error(exceptBody.takeLeft().message));
                     return () => { };
 
                 } else {

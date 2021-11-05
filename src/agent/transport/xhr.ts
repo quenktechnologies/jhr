@@ -46,7 +46,7 @@ export class XHRTransport<Raw, Res> implements Transport<Raw, Res> {
         let portNumer = (port && (port !== 80) && (port !== 443)) ? `:${port}` : '';
         let url = `${host}${portNumer}${path[0] === '/' ? '' : '/'}${path}`;
 
-        return new Run(s => {
+        return new Run((onError,onSuccess) => {
 
             let transBody = undefined;
 
@@ -56,7 +56,7 @@ export class XHRTransport<Raw, Res> implements Transport<Raw, Res> {
 
                 if (exceptBody.isLeft()) {
 
-                    s.onError(new Error(exceptBody.takeLeft().message));
+                    onError(new Error(exceptBody.takeLeft().message));
                     return () => { };
 
                 } else {
@@ -77,14 +77,14 @@ export class XHRTransport<Raw, Res> implements Transport<Raw, Res> {
 
                 if (exceptRes.isLeft()) {
 
-                    s.onError(new Error(exceptRes.takeLeft().message));
+                    onError(new Error(exceptRes.takeLeft().message));
 
                 } else {
 
                     let r = createResponse(xhr.status, exceptRes.takeRight(),
                         fromString(xhr.getAllResponseHeaders()), options);
 
-                    s.onSuccess(r);
+                    onSuccess(r);
 
                 }
 
@@ -92,8 +92,8 @@ export class XHRTransport<Raw, Res> implements Transport<Raw, Res> {
 
             xhr.timeout = options.ttl;
             xhr.responseType = this.responseType;
-            xhr.onerror = () => s.onError(new Error('TransportError'));
-            xhr.onabort = () => s.onError(new Error('AbortError'));
+            xhr.onerror = () => onError(new Error('TransportError'));
+            xhr.onabort = () => onError(new Error('AbortError'));
 
             Object
                 .keys(headers)
