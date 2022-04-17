@@ -46,7 +46,7 @@ export class XHRTransport<Raw, Res> implements Transport<Raw, Res> {
         let portNumer = (port && (port !== 80) && (port !== 443)) ? `:${port}` : '';
         let url = `${host}${portNumer}${path[0] === '/' ? '' : '/'}${path}`;
 
-        return new Run((onError,onSuccess) => {
+        return new Run((onError, onSuccess) => {
 
             let transBody = undefined;
 
@@ -82,7 +82,7 @@ export class XHRTransport<Raw, Res> implements Transport<Raw, Res> {
                 } else {
 
                     let r = createResponse(xhr.status, exceptRes.takeRight(),
-                        fromString(xhr.getAllResponseHeaders()), options);
+                        fromString(xhr.getAllResponseHeaders()), ctx);
 
                     onSuccess(r);
 

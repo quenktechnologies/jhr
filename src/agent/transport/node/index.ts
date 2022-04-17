@@ -121,7 +121,7 @@ export class NodeHTTPTransport<Raw, Res> implements Transport<Raw, Res> {
                                 <number>res.statusCode,
                                 exceptParsed.takeRight(),
                                 <{ [key: string]: string }>res.headers,
-                                options
+                                ctx
                             ));
 
                         }

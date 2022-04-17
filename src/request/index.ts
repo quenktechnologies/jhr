@@ -14,12 +14,10 @@ export interface URIContext {
 }
 
 /**
- * Request represents an HTTP request.
- *
- * The URL part is separate from the Request information to 
- * allow re-use among different endpoints.
+ * RequestInfo holds details about a Request, except for the request body
+ * itself.
  */
-export interface Request<B> {
+export interface RequestInfo {
 
     /**
      * path being requested.
@@ -30,13 +28,6 @@ export interface Request<B> {
      * method of the request.
      */
     method: Method,
-
-    /**
-     * body of the request.
-     * 
-     * Valid only for write requests.
-     */
-    body?: B,
 
     /**
      * params of the request.
@@ -54,6 +45,23 @@ export interface Request<B> {
      * options for the Request
      */
     options: Partial<Options>
+
+}
+
+/**
+ * Request represents an HTTP request.
+ *
+ * The URL part is separate from the Request information to 
+ * allow re-use among different endpoints.
+ */
+export interface Request<B> extends RequestInfo {
+
+    /**
+     * body of the request.
+     * 
+     * Valid only for write requests.
+     */
+    body?: B,
 
 }
 

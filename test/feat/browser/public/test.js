@@ -255,7 +255,7 @@ var XHRTransport = /** @class */ (function () {
                     onError(new Error(exceptRes.takeLeft().message));
                 }
                 else {
-                    var r = (0, response_1.createResponse)(xhr.status, exceptRes.takeRight(), (0, header_1.fromString)(xhr.getAllResponseHeaders()), options);
+                    var r = (0, response_1.createResponse)(xhr.status, exceptRes.takeRight(), (0, header_1.fromString)(xhr.getAllResponseHeaders()), ctx);
                     onSuccess(r);
                 }
             };
@@ -1109,11 +1109,11 @@ var status = require("./status");
  * an explicit type for.
  */
 var GenericResponse = /** @class */ (function () {
-    function GenericResponse(code, body, headers, options) {
+    function GenericResponse(code, body, headers, request) {
         this.code = code;
         this.body = body;
         this.headers = headers;
-        this.options = options;
+        this.request = request;
     }
     return GenericResponse;
 }());
@@ -1136,11 +1136,11 @@ exports.Success = Success;
  */
 var Ok = /** @class */ (function (_super) {
     __extends(Ok, _super);
-    function Ok(body, headers, options) {
-        var _this = _super.call(this, status.OK, body, headers, options) || this;
+    function Ok(body, headers, request) {
+        var _this = _super.call(this, status.OK, body, headers, request) || this;
         _this.body = body;
         _this.headers = headers;
-        _this.options = options;
+        _this.request = request;
         return _this;
     }
     return Ok;
@@ -1151,11 +1151,11 @@ exports.Ok = Ok;
  */
 var Accepted = /** @class */ (function (_super) {
     __extends(Accepted, _super);
-    function Accepted(body, headers, options) {
-        var _this = _super.call(this, status.ACCEPTED, body, headers, options) || this;
+    function Accepted(body, headers, request) {
+        var _this = _super.call(this, status.ACCEPTED, body, headers, request) || this;
         _this.body = body;
         _this.headers = headers;
-        _this.options = options;
+        _this.request = request;
         return _this;
     }
     return Accepted;
@@ -1168,11 +1168,11 @@ exports.Accepted = Accepted;
  */
 var NoContent = /** @class */ (function (_super) {
     __extends(NoContent, _super);
-    function NoContent(body, headers, options) {
-        var _this = _super.call(this, status.NO_CONTENT, body, headers, options) || this;
+    function NoContent(body, headers, request) {
+        var _this = _super.call(this, status.NO_CONTENT, body, headers, request) || this;
         _this.body = body;
         _this.headers = headers;
-        _this.options = options;
+        _this.request = request;
         return _this;
     }
     return NoContent;
@@ -1183,11 +1183,11 @@ exports.NoContent = NoContent;
  */
 var Created = /** @class */ (function (_super) {
     __extends(Created, _super);
-    function Created(body, headers, options) {
-        var _this = _super.call(this, status.CREATED, body, headers, options) || this;
+    function Created(body, headers, request) {
+        var _this = _super.call(this, status.CREATED, body, headers, request) || this;
         _this.body = body;
         _this.headers = headers;
-        _this.options = options;
+        _this.request = request;
         return _this;
     }
     return Created;
@@ -1210,11 +1210,11 @@ exports.ClientError = ClientError;
  */
 var BadRequest = /** @class */ (function (_super) {
     __extends(BadRequest, _super);
-    function BadRequest(body, headers, options) {
-        var _this = _super.call(this, status.BAD_REQUEST, body, headers, options) || this;
+    function BadRequest(body, headers, request) {
+        var _this = _super.call(this, status.BAD_REQUEST, body, headers, request) || this;
         _this.body = body;
         _this.headers = headers;
-        _this.options = options;
+        _this.request = request;
         return _this;
     }
     return BadRequest;
@@ -1225,11 +1225,11 @@ exports.BadRequest = BadRequest;
  */
 var Unauthorized = /** @class */ (function (_super) {
     __extends(Unauthorized, _super);
-    function Unauthorized(body, headers, options) {
-        var _this = _super.call(this, status.UNAUTHORIZED, body, headers, options) || this;
+    function Unauthorized(body, headers, request) {
+        var _this = _super.call(this, status.UNAUTHORIZED, body, headers, request) || this;
         _this.body = body;
         _this.headers = headers;
-        _this.options = options;
+        _this.request = request;
         return _this;
     }
     return Unauthorized;
@@ -1240,11 +1240,11 @@ exports.Unauthorized = Unauthorized;
  */
 var Forbidden = /** @class */ (function (_super) {
     __extends(Forbidden, _super);
-    function Forbidden(body, headers, options) {
-        var _this = _super.call(this, status.FORBIDDEN, body, headers, options) || this;
+    function Forbidden(body, headers, request) {
+        var _this = _super.call(this, status.FORBIDDEN, body, headers, request) || this;
         _this.body = body;
         _this.headers = headers;
-        _this.options = options;
+        _this.request = request;
         return _this;
     }
     return Forbidden;
@@ -1255,11 +1255,11 @@ exports.Forbidden = Forbidden;
  */
 var NotFound = /** @class */ (function (_super) {
     __extends(NotFound, _super);
-    function NotFound(body, headers, options) {
-        var _this = _super.call(this, status.NOT_FOUND, body, headers, options) || this;
+    function NotFound(body, headers, request) {
+        var _this = _super.call(this, status.NOT_FOUND, body, headers, request) || this;
         _this.body = body;
         _this.headers = headers;
-        _this.options = options;
+        _this.request = request;
         return _this;
     }
     return NotFound;
@@ -1270,11 +1270,11 @@ exports.NotFound = NotFound;
  */
 var Conflict = /** @class */ (function (_super) {
     __extends(Conflict, _super);
-    function Conflict(body, headers, options) {
-        var _this = _super.call(this, status.CONFLICT, body, headers, options) || this;
+    function Conflict(body, headers, request) {
+        var _this = _super.call(this, status.CONFLICT, body, headers, request) || this;
         _this.body = body;
         _this.headers = headers;
-        _this.options = options;
+        _this.request = request;
         return _this;
     }
     return Conflict;
@@ -1296,11 +1296,11 @@ exports.ServerError = ServerError;
  */
 var InternalServerError = /** @class */ (function (_super) {
     __extends(InternalServerError, _super);
-    function InternalServerError(body, headers, options) {
-        var _this = _super.call(this, status.INTERNAL_SERVER_ERROR, body, headers, options) || this;
+    function InternalServerError(body, headers, request) {
+        var _this = _super.call(this, status.INTERNAL_SERVER_ERROR, body, headers, request) || this;
         _this.body = body;
         _this.headers = headers;
-        _this.options = options;
+        _this.request = request;
         _this.status = status.INTERNAL_SERVER_ERROR;
         return _this;
     }
@@ -1311,37 +1311,37 @@ exports.InternalServerError = InternalServerError;
  * createResponse creates a new typed Response or a GenericResponse if
  * unsupported.
  */
-var createResponse = function (code, body, headers, options) {
+var createResponse = function (code, body, headers, request) {
     switch (code) {
         case status.OK:
-            return new Ok(body, headers, options);
+            return new Ok(body, headers, request);
         case status.ACCEPTED:
-            return new Accepted(body, headers, options);
+            return new Accepted(body, headers, request);
         case status.NO_CONTENT:
-            return new NoContent(body, headers, options);
+            return new NoContent(body, headers, request);
         case status.CREATED:
-            return new Created(body, headers, options);
+            return new Created(body, headers, request);
         case status.BAD_REQUEST:
-            return new BadRequest(body, headers, options);
+            return new BadRequest(body, headers, request);
         case status.BAD_REQUEST:
-            return new BadRequest(body, headers, options);
+            return new BadRequest(body, headers, request);
         case status.UNAUTHORIZED:
-            return new Unauthorized(body, headers, options);
+            return new Unauthorized(body, headers, request);
         case status.FORBIDDEN:
-            return new Forbidden(body, headers, options);
+            return new Forbidden(body, headers, request);
         case status.NOT_FOUND:
-            return new NotFound(body, headers, options);
+            return new NotFound(body, headers, request);
         case status.CONFLICT:
-            return new Conflict(body, headers, options);
+            return new Conflict(body, headers, request);
         case status.INTERNAL_SERVER_ERROR:
-            return new InternalServerError(body, headers, options);
+            return new InternalServerError(body, headers, request);
         default:
             if ((code >= 400) && (code <= 499))
-                return new ClientError(code, body, headers, options);
+                return new ClientError(code, body, headers, request);
             else if (code >= 500)
-                return new ServerError(code, body, headers, options);
+                return new ServerError(code, body, headers, request);
             else
-                return new GenericResponse(code, body, headers, options);
+                return new GenericResponse(code, body, headers, request);
     }
 };
 exports.createResponse = createResponse;

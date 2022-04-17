@@ -4,13 +4,18 @@ import { Type } from '@quenk/noni/lib/data/type';
 
 import { Parameters } from '../request/parameters';
 import { Path } from '../request/path';
-import {Request} from '../request';
+import { Method } from '../request/method';
+import { Request } from '../request';
 import { Response, GenericResponse } from '../response';
 import { OutgoingHeaders } from '../header';
 import { HTTPAgent } from './';
 
-const res = <Future<Type>>pure(new GenericResponse(0, <unknown>{}, {},
-    { port: 0, ttl: 0, tags: {}, context: {} }));
+const res = <Future<Type>>pure(new GenericResponse(0, <unknown>{}, {}, {
+    method: Method.Get,
+    path: '/',
+  headers: {},
+    options: { port: 0, ttl: 0, tags: {}, context: {} }
+}));
 
 /**
  * MockAgent is an HTTPAgent that can be used when testing projects that use
@@ -74,9 +79,9 @@ export class MockAgent<Req, Res> implements HTTPAgent<Req, Res> {
 
     }
 
-    send(req: Request<Req>): Future<Response<Res >> {
+    send(req: Request<Req>): Future<Response<Res>> {
 
-      return this.__MOCK__.invoke('send', [req], res);
+        return this.__MOCK__.invoke('send', [req], res);
 
     }
 

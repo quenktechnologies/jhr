@@ -1,6 +1,7 @@
 import * as status from './status';
+
 import { IncommingHeaders } from './header';
-import { Options } from './request/options';
+import { RequestInfo } from './request';
 
 /**
  * Response respresents the response from an HTTP requrest.
@@ -25,9 +26,10 @@ export interface Response<B> {
     headers: IncommingHeaders,
 
     /**
-     * options the Response's original Request were sent with.
+     * request holds info about the Request used to receive the Response
+     * except for the body.
      */
-    options: Options
+    request: RequestInfo
 
 }
 
@@ -41,7 +43,7 @@ export class GenericResponse<B> implements Response<B> {
         public code: number,
         public body: B,
         public headers: IncommingHeaders,
-        public options: Options) { }
+        public request: RequestInfo) { }
 
 }
 
@@ -60,7 +62,7 @@ export class Ok<B> extends Success<B> {
     constructor(
         public body: B,
         public headers: IncommingHeaders,
-        public options: Options) { super(status.OK, body, headers, options); }
+        public request: RequestInfo) { super(status.OK, body, headers, request); }
 
 }
 
@@ -72,7 +74,7 @@ export class Accepted<B> extends Success<B> {
     constructor(
         public body: B,
         public headers: IncommingHeaders,
-        public options: Options) { super(status.ACCEPTED, body, headers, options); }
+        public request: RequestInfo) { super(status.ACCEPTED, body, headers, request); }
 
 }
 
@@ -85,11 +87,11 @@ export class NoContent<B> extends Success<B> {
 
 
     constructor(
-      public body: B,
+        public body: B,
         public headers: IncommingHeaders,
-        public options: Options) {
+        public request: RequestInfo) {
 
-        super(status.NO_CONTENT, body, headers, options);
+        super(status.NO_CONTENT, body, headers, request);
 
     }
 
@@ -103,7 +105,7 @@ export class Created<B> extends Success<B> {
     constructor(
         public body: B,
         public headers: IncommingHeaders,
-        public options: Options) { super(status.CREATED, body, headers, options); }
+        public request: RequestInfo) { super(status.CREATED, body, headers, request); }
 
 }
 
@@ -121,8 +123,8 @@ export class BadRequest<B> extends ClientError<B> {
     constructor(
         public body: B,
         public headers: IncommingHeaders,
-        public options: Options) {
-        super(status.BAD_REQUEST, body, headers, options);
+        public request: RequestInfo) {
+        super(status.BAD_REQUEST, body, headers, request);
     }
 
 }
@@ -135,8 +137,8 @@ export class Unauthorized<B> extends ClientError<B> {
     constructor(
         public body: B,
         public headers: IncommingHeaders,
-        public options: Options) {
-        super(status.UNAUTHORIZED, body, headers, options);
+        public request: RequestInfo) {
+        super(status.UNAUTHORIZED, body, headers, request);
     }
 
 }
@@ -149,8 +151,8 @@ export class Forbidden<B> extends ClientError<B> {
     constructor(
         public body: B,
         public headers: IncommingHeaders,
-        public options: Options) {
-        super(status.FORBIDDEN, body, headers, options);
+        public request: RequestInfo) {
+        super(status.FORBIDDEN, body, headers, request);
     }
 
 }
@@ -163,8 +165,8 @@ export class NotFound<B> extends ClientError<B> {
     constructor(
         public body: B,
         public headers: IncommingHeaders,
-        public options: Options) {
-        super(status.NOT_FOUND, body, headers, options);
+        public request: RequestInfo) {
+        super(status.NOT_FOUND, body, headers, request);
     }
 
 }
@@ -177,8 +179,8 @@ export class Conflict<B> extends ClientError<B> {
     constructor(
         public body: B,
         public headers: IncommingHeaders,
-        public options: Options) {
-        super(status.CONFLICT, body, headers, options);
+        public request: RequestInfo) {
+        super(status.CONFLICT, body, headers, request);
     }
 
 }
@@ -198,8 +200,8 @@ export class InternalServerError<B> extends ServerError<B> {
     constructor(
         public body: B,
         public headers: IncommingHeaders,
-        public options: Options) {
-        super(status.INTERNAL_SERVER_ERROR, body, headers, options);
+        public request: RequestInfo) {
+        super(status.INTERNAL_SERVER_ERROR, body, headers, request);
 
     }
 
@@ -213,39 +215,39 @@ export const createResponse = <B>(
     code: status.Code,
     body: B,
     headers: IncommingHeaders,
-    options: Options): Response<B>  => {
+    request: RequestInfo): Response<B> => {
 
     switch (code) {
         case status.OK:
-            return new Ok(body, headers, options);
+            return new Ok(body, headers, request);
         case status.ACCEPTED:
-            return new Accepted(body, headers, options);
+            return new Accepted(body, headers, request);
         case status.NO_CONTENT:
-            return new NoContent(body, headers, options);
+            return new NoContent(body, headers, request);
         case status.CREATED:
-            return new Created(body, headers, options);
+            return new Created(body, headers, request);
         case status.BAD_REQUEST:
-            return new BadRequest(body, headers, options);
+            return new BadRequest(body, headers, request);
         case status.BAD_REQUEST:
-            return new BadRequest(body, headers, options);
+            return new BadRequest(body, headers, request);
         case status.UNAUTHORIZED:
-            return new Unauthorized(body, headers, options);
+            return new Unauthorized(body, headers, request);
         case status.FORBIDDEN:
-            return new Forbidden(body, headers, options);
+            return new Forbidden(body, headers, request);
         case status.NOT_FOUND:
-            return new NotFound(body, headers, options);
+            return new NotFound(body, headers, request);
         case status.CONFLICT:
-            return new Conflict(body, headers, options);
+            return new Conflict(body, headers, request);
         case status.INTERNAL_SERVER_ERROR:
-            return new InternalServerError(body, headers, options);
+            return new InternalServerError(body, headers, request);
         default:
 
             if ((code >= 400) && (code <= 499))
-                return new ClientError(code, body, headers, options);
+                return new ClientError(code, body, headers, request);
             else if (code >= 500)
-                return new ServerError(code, body, headers, options);
+                return new ServerError(code, body, headers, request);
             else
-                return new GenericResponse(code, body, headers, options);
+                return new GenericResponse(code, body, headers, request);
 
     }
 
