@@ -29,7 +29,7 @@ app.post('/login', function(req, res) {
         return res.status(400).end();
 
     if ((req.body.email === 'me@email.com') && (req.body.password === 'password'))
-        return res.status(200).end();
+        return res.status(200).send({ok:true}).end();
 
     return res.status(409).end();
 

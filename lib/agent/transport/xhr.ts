@@ -73,18 +73,26 @@ export class XHRTransport<Raw, Res> implements Transport<Raw, Res> {
 
                 cookies.setCookies(document.cookie.split(';'));
 
-                let exceptRes = parser.apply(xhr.response);
-
-                if (exceptRes.isLeft()) {
-
-                    onError(new Error(exceptRes.takeLeft().message));
-
+                // 204 should have no body.
+                if (xhr.status === 204) {
+                    onSuccess(createResponse(xhr.status, <Type>undefined,
+                        fromString(xhr.getAllResponseHeaders()), ctx));
                 } else {
 
-                    let r = createResponse(xhr.status, exceptRes.takeRight(),
-                        fromString(xhr.getAllResponseHeaders()), ctx);
+                    let exceptRes = parser.apply(xhr.response);
 
-                    onSuccess(r);
+                    if (exceptRes.isLeft()) {
+
+                        onError(new Error(exceptRes.takeLeft().message));
+
+                    } else {
+
+                        let r = createResponse(xhr.status, exceptRes.takeRight(),
+                            fromString(xhr.getAllResponseHeaders()), ctx);
+
+                        onSuccess(r);
+
+                    }
 
                 }
 
