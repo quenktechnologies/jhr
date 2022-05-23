@@ -1,31 +1,28 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var assert_1 = require("@quenk/test/lib/assert");
-var future_1 = require("@quenk/noni/lib/control/monad/future");
-var agent_1 = require("../../../../../../lib/agent");
-var memory_1 = require("../../../../../../lib/cookie/container/memory");
-var json_1 = require("../../../../../../lib/agent/transform/json");
-var multipart_1 = require("../../../../../../lib/agent/transform/multipart");
-var json_2 = require("../../../../../../lib/agent/parser/json");
-var xhr_1 = require("../../../../../../lib/agent/transport/xhr");
-var response_1 = require("../../../../../../lib/response");
-var host = process.env.HOST || 'http://localhost';
-var port = process.env.PORT || '9999';
-var newAgent = function (h) {
-    if (h === void 0) { h = host; }
-    return new agent_1.Agent(h, {}, new memory_1.MemoryContainer(), { ttl: 0, tags: {}, context: {}, port: Number(port) }, new xhr_1.XHRTransport('', new json_1.JSONTransform(), new json_2.JSONParser()), []);
-};
-describe('xhr', function () {
+const assert_1 = require("@quenk/test/lib/assert");
+const future_1 = require("@quenk/noni/lib/control/monad/future");
+const agent_1 = require("../../../../../../lib/agent");
+const memory_1 = require("../../../../../../lib/cookie/container/memory");
+const json_1 = require("../../../../../../lib/agent/transform/json");
+const multipart_1 = require("../../../../../../lib/agent/transform/multipart");
+const json_2 = require("../../../../../../lib/agent/parser/json");
+const xhr_1 = require("../../../../../../lib/agent/transport/xhr");
+const response_1 = require("../../../../../../lib/response");
+const host = process.env.HOST || 'http://localhost';
+const port = process.env.PORT || '9999';
+const newAgent = (h = host) => new agent_1.Agent(h, new memory_1.MemoryContainer(), { ttl: 0, tags: {}, context: {}, port: Number(port) }, new xhr_1.XHRTransport('', new json_1.JSONTransform(), new json_2.JSONParser()), []);
+describe('xhr', () => {
     it('should make successful requests ', function () {
-        var codes = [200, 201, 204];
-        var expected = [response_1.Ok, response_1.Created, response_1.NoContent];
-        var agent = newAgent();
-        return (0, future_1.toPromise)((0, future_1.parallel)(codes.map(function (code) { return agent.get("/status/" + code); }))
-            .map(function (list) { return list.map(function (r, i) { return r instanceof expected[i]; }); }))
-            .then(function (results) { return results.reduce(function (_, c) {
+        let codes = [200, 201, 204];
+        let expected = [response_1.Ok, response_1.Created, response_1.NoContent];
+        let agent = newAgent();
+        return (0, future_1.toPromise)((0, future_1.parallel)(codes.map(code => agent.get(`/status/${code}`)))
+            .map(list => list.map((r, i) => r instanceof expected[i])))
+            .then(results => results.reduce((_, c) => {
             (0, assert_1.assert)(c).equal(true);
             return c;
-        }, true); });
+        }, true));
     });
     it('should detect transport errors', function () {
         return (0, future_1.toPromise)(newAgent('hddp://example.com').get('/'))
@@ -50,8 +47,8 @@ describe('xhr', function () {
         });
     });
     it('should work with multiparts', function () {
-        var fd = new FormData();
-        var agent = newAgent()
+        let fd = new FormData();
+        let agent = newAgent()
             .setTransport(new xhr_1.XHRTransport('', new multipart_1.MultipartTransform(), new json_2.JSONParser()));
         fd.append('filename', 'somefile');
         fd.append('file', new Blob(['some file']));

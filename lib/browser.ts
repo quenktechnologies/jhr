@@ -9,11 +9,10 @@ import { Parameters } from './request/parameters';
 import { Host } from './request/host';
 import { Path } from './request/path';
 import { Get } from './request';
-import { OutgoingHeaders } from './header';
 import { Response } from './response';
 import { Url } from './url';
 import { CSRFProtectionPlugin } from './agent/plugin/csrf';
-import { Agent } from './agent';
+import { Agent, Options } from './agent';
 
 const HTTP = 'http://';
 const HTTPS = 'https://';
@@ -39,13 +38,12 @@ export const createAgent = <B extends Object>
     (host: Host = getHost(), port = getPort()): Agent<object, B> =>
     new Agent(
         host,
-        {},
         DocumentContainer.create(),
         { ttl: 0, tags: {}, context: {}, port },
         new XHRTransport(
-          '',
-          new JSONTransform(),
-          new JSONParser({ lenient: true })
+            '',
+            new JSONTransform(),
+            new JSONParser({ lenient: true })
         ),
         [new CSRFProtectionPlugin()]);
 
@@ -69,10 +67,10 @@ const getPort = () => {
 export const get = <B extends Object>(
     url: Url,
     params: Parameters = {},
-    headers: OutgoingHeaders = {}): Future<Response<B>> => {
+    options: Partial<Options> = {}): Future<Response<B>> => {
 
     let [host, path] = splitUrl(url);
 
-    return createAgent<B>(host).send(new Get(path, params, headers));
+    return createAgent<B>(host).send(new Get(path, params, options));
 
 }

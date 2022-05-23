@@ -1,4 +1,3 @@
-import { OutgoingHeaders } from '../header';
 import { Path } from './path';
 import { Method } from './method';
 import { Parameters } from './parameters';
@@ -37,11 +36,6 @@ export interface RequestInfo {
     params?: Parameters,
 
     /**
-     * headers to include in the request.
-     */
-    headers: OutgoingHeaders,
-
-    /**
      * options for the Request
      */
     options: Partial<Options>
@@ -65,6 +59,8 @@ export interface Request<B> extends RequestInfo {
 
 }
 
+const defaultOptions = { ttl: 0, tags: {}, context: {}, headers: {} };
+
 /**
  * Head request.
  */
@@ -75,8 +71,7 @@ export class Head implements Request<undefined> {
     constructor(
         public path: Path,
         public params: Parameters,
-        public headers: OutgoingHeaders = {},
-        public options: Partial<Options> = { ttl: 0, tags: {}, context: {} }) { }
+        public options: Partial<Options> = defaultOptions) { }
 
 }
 
@@ -99,8 +94,7 @@ export class Post<B> implements Request<B> {
     constructor(
         public path: Path,
         public body: B,
-        public headers: OutgoingHeaders = {},
-        public options: Partial<Options> = { ttl: 0, tags: {}, context: {} }) { }
+        public options: Partial<Options> = defaultOptions) { }
 
 }
 

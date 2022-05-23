@@ -12,7 +12,7 @@ const host = process.env.HOST || 'http://localhost';
 const port = process.env.PORT || '9999';
 
 const newAgent = (h = host) =>
-    new Agent(h, {}, new MemoryContainer(),
+    new Agent(h,  new MemoryContainer(),
         { ttl: 0, tags: {}, context: {}, port: Number(port) },
         new XHRTransport('', new JSONTransform(), new JSONParser()), []);
 

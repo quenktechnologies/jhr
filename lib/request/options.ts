@@ -1,3 +1,4 @@
+import { OutgoingHeaders } from '../header';
 
 /**
  * Tag type.
@@ -38,6 +39,11 @@ export interface Options {
      * context is used in the expansion of template variables in the Request's
      * path.
      */
-    context: object
+    context: object,
+
+    /**
+     * headers to include in the request.
+     */
+    headers: OutgoingHeaders
 
 }
