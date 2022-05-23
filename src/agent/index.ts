@@ -1,9 +1,12 @@
 import * as util from '../util';
 import { rmerge3 } from '@quenk/noni/lib/data/record';
-import { Future, pure } from '@quenk/noni/lib/control/monad/future';
+import {
+    Future,
+    doFuture,
+    reduce
+} from '@quenk/noni/lib/control/monad/future';
 import { interpolate } from '@quenk/noni/lib/data/string';
 
-import { OutgoingHeaders } from '../header';
 import {
     Request,
     Head,
@@ -17,8 +20,9 @@ import { Container } from '../cookie/container';
 import { Host } from '../request/host';
 import { Path } from '../request/path';
 import { Parameters } from '../request/parameters';
-import { Options as RequestOptions } from '../request/options';
+import { Options as RequestOptions, Tags } from '../request/options';
 import { Context } from '../request/context';
+import { OutgoingHeaders } from '../header';
 import { Response } from '../response';
 import { Transport } from './transport';
 import { Plugin } from './plugin';
@@ -51,7 +55,7 @@ export interface HTTPAgent<ReqRaw, ResParsed> {
     head(
         path: Path,
         params: Parameters,
-        headers: OutgoingHeaders): Future<Response<ResParsed>>
+        options?: Partial<Options>): Future<Response<ResParsed>>
 
 
     /**
@@ -60,7 +64,7 @@ export interface HTTPAgent<ReqRaw, ResParsed> {
     get(
         path: Path,
         params: Parameters,
-        headers: OutgoingHeaders): Future<Response<ResParsed>>
+        options?: Partial<Options>): Future<Response<ResParsed>>
 
     /**
      * post request shorthand.
@@ -68,7 +72,7 @@ export interface HTTPAgent<ReqRaw, ResParsed> {
     post(
         path: Path,
         body?: ReqRaw,
-        headers?: OutgoingHeaders): Future<Response<ResParsed>>
+        options?: Partial<Options>): Future<Response<ResParsed>>
 
     /**
      * put request shorthand.
@@ -76,7 +80,7 @@ export interface HTTPAgent<ReqRaw, ResParsed> {
     put(
         path: Path,
         body?: ReqRaw,
-        headers?: OutgoingHeaders): Future<Response<ResParsed>>
+        options?: Partial<Options>): Future<Response<ResParsed>>
 
     /**
      * patch request shorthand.
@@ -84,7 +88,7 @@ export interface HTTPAgent<ReqRaw, ResParsed> {
     patch(
         path: Path,
         body?: ReqRaw,
-        headers?: OutgoingHeaders): Future<Response<ResParsed>>
+        options?: Partial<Options>): Future<Response<ResParsed>>
 
     /**
      * delete request shorthand.
@@ -92,12 +96,12 @@ export interface HTTPAgent<ReqRaw, ResParsed> {
     delete(
         path: Path,
         body?: ReqRaw,
-        headers?: OutgoingHeaders): Future<Response<ResParsed>>
+        options?: Partial<Options>): Future<Response<ResParsed>>
 
-  /**
-   * send a network request.
-   */
-    send(req: Request<ReqRaw>): Future<Response<ResParsed>> 
+    /**
+     * send a network request.
+     */
+    send(req: Request<ReqRaw>): Future<Response<ResParsed>>
 
 }
 
@@ -111,7 +115,6 @@ export class Agent<ReqRaw, ResParsed> implements HTTPAgent<ReqRaw, ResParsed> {
 
     constructor(
         public host: Host,
-        public headers: OutgoingHeaders,
         public cookies: Container,
         public options: Partial<Options>,
         public transport: Transport<ReqRaw, ResParsed>,
@@ -127,96 +130,107 @@ export class Agent<ReqRaw, ResParsed> implements HTTPAgent<ReqRaw, ResParsed> {
         transport: Transport<Req, Res>,
         plugins: Plugin<Req, Res>[] = []): Agent<Req, Res> {
 
-        let { host, headers, cookies, options } = this;
+        let { host, cookies, options } = this;
 
-        return new Agent(host, headers, cookies, options, transport, plugins);
+        return new Agent(host, cookies, options, transport, plugins);
 
     }
 
     head(
         path: Path,
         params: Parameters = {},
-        headers: OutgoingHeaders = {}): Future<Response<ResParsed>> {
+        options: Partial<Options> = {}): Future<Response<ResParsed>> {
 
-        return this.send(new Head(path, params, headers));
+        return this.send(new Head(path, params, options));
 
     }
 
     get(
         path: Path,
         params: Parameters = {},
-        headers: OutgoingHeaders = {}): Future<Response<ResParsed>> {
+        options: Partial<Options> = {}): Future<Response<ResParsed>> {
 
-        return this.send(new Get(path, params, headers));
+        return this.send(new Get(path, params, options));
 
     }
 
     post(
         path: Path,
         body?: ReqRaw,
-        headers: OutgoingHeaders = {}): Future<Response<ResParsed>> {
+        options: Partial<Options> = {}): Future<Response<ResParsed>> {
 
-        return this.send(new Post(path, body, headers));
+        return this.send(new Post(path, body, options));
 
     }
 
     put(
         path: Path,
         body?: ReqRaw,
-        headers: OutgoingHeaders = {}): Future<Response<ResParsed>> {
+        options: Partial<Options> = {}): Future<Response<ResParsed>> {
 
-        return this.send(new Put(path, body, headers));
+        return this.send(new Put(path, body, options));
 
     }
 
     patch(
         path: Path,
         body?: ReqRaw,
-        headers: OutgoingHeaders = {}): Future<Response<ResParsed>> {
+        options: Partial<Options> = {}): Future<Response<ResParsed>> {
 
-        return this.send(new Patch(path, body, headers));
+        return this.send(new Patch(path, body, options));
 
     }
 
     delete(
         path: Path,
         body?: ReqRaw,
-        headers?: OutgoingHeaders): Future<Response<ResParsed>> {
+        options: Partial<Options> = {}): Future<Response<ResParsed>> {
 
-        return this.send(new Delete(path, body, headers));
+        return this.send(new Delete(path, body, options));
 
     }
 
     send(req: Request<ReqRaw>): Future<Response<ResParsed>> {
 
-        let { host, cookies, headers, transport, plugins } = this;
+        let that = this;
 
-        let options = rmerge3(defaultOptions, <Options>this.options,
-            <Options>req.options);
+        return doFuture(function*() {
 
-        let port = options.port;
-        let { method, params, body } = req;
-        let { tags, context, ttl } = options;
-        let path = util.urlFromString(interpolate(req.path, context), params);
+            let { host, cookies, options, transport, plugins } = that;
 
-        let ctx = {
-            host,
-            port,
-            method,
-            path,
-            body,
-            headers,
-            cookies,
-            options: { ttl, tags, context }
-        };
+            options = <Options>rmerge3(defaultOptions, options, req.options);
 
-        let ft = plugins.reduce((f, p) =>
-            f.chain(c => p.beforeRequest(c)), pure(ctx));
+            let port = <number>options.port;
 
-        return ft.chain((ctx: Context<ReqRaw>) => transport.send(ctx))
-            .chain((r: Response<ResParsed>) =>
-                plugins.reduce((f, p) =>
-                    f.chain(res => p.afterResponse(res)), pure(r)))
+            let { method, params, body } = req;
+
+            let { tags, context = {}, ttl, headers=  { } } = options;
+
+            let path = util.urlFromString(interpolate(req.path, context), params);
+
+            let ctx: Context<ReqRaw> = {
+                host,
+                port,
+                method,
+                path,
+                body,
+                cookies,
+                options: {
+                    headers: <OutgoingHeaders>headers,
+                    ttl: <number>ttl,
+                    tags: <Tags>tags,
+                    context
+                }
+            };
+
+            ctx = yield reduce(plugins, ctx, (ctx, plg) =>
+                plg.beforeRequest(ctx));
+
+            let res: Response<ResParsed> = yield transport.send(ctx);
+
+            return reduce(plugins, res, (res, plg) => plg.afterResponse(res));
+
+        });
 
     }
 

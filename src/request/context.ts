@@ -2,7 +2,6 @@ import { Container } from '../cookie/container';
 import { Host } from './host';
 import { Path } from './path';
 import { Method } from './method';
-import { OutgoingHeaders } from '../header';
 import { Options } from './options';
 
 /**
@@ -31,11 +30,6 @@ export interface Context<ReqBody> {
      * path requested.
      */
     path: Path,
-
-    /**
-     * headers to be sent.
-     */
-    headers: OutgoingHeaders,
 
     /**
      * body is the payload sent as part of the request.

@@ -41,7 +41,7 @@ export class XHRTransport<Raw, Res> implements Transport<Raw, Res> {
     send(ctx: Context<Raw>): Future<Response<Res>> {
 
         let { parser, transform } = this;
-        let { host, port, path, method, body, headers, options, cookies } = ctx;
+        let { host, port, path, method, body,  options, cookies } = ctx;
         let xhr = new XMLHttpRequest();
         let portNumer = (port && (port !== 80) && (port !== 443)) ? `:${port}` : '';
         let url = `${host}${portNumer}${path[0] === '/' ? '' : '/'}${path}`;
@@ -104,8 +104,8 @@ export class XHRTransport<Raw, Res> implements Transport<Raw, Res> {
             xhr.onabort = () => onError(new Error('AbortError'));
 
             Object
-                .keys(headers)
-                .forEach(k => { xhr.setRequestHeader(k, headers[k]); });
+                .keys(options.headers)
+                .forEach(k => { xhr.setRequestHeader(k, options.headers[k]); });
 
             if ((method === Method.Get) || (method === Method.Head))
                 xhr.setRequestHeader(ACCEPTS, parser.accepts);

@@ -68,8 +68,8 @@ export class NodeHTTPTransport<Raw, Res> implements Transport<Raw, Res> {
     send(ctx: Context<Raw>): Future<Response<Res>> {
 
         let { parser, transform, agent } = this;
-        let { host, port, path, method, body, headers, cookies, options } = ctx;
-        let head = merge({}, headers);
+        let { host, port, path, method, body, cookies, options } = ctx;
+        let head = merge({}, options.headers);
         let cookieHeader = toCookieHeader(cookies.getCookies());
 
         if ((method === Method.Get) || (method === Method.Head))
