@@ -70,7 +70,7 @@ export class Head implements Request<undefined> {
 
     constructor(
         public path: Path,
-        public params: Parameters,
+        public params: Parameters = {},
         public options: Partial<Options> = defaultOptions) { }
 
 }
