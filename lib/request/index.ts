@@ -93,7 +93,7 @@ export class Post<B> implements Request<B> {
 
     constructor(
         public path: Path,
-        public body: B,
+        public body?: B,
         public options: Partial<Options> = defaultOptions) { }
 
 }
