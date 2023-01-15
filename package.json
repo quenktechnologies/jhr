@@ -1,6 +1,6 @@
 {
   "name": "@quenk/jhr",
-  "version": "2.7.2",
+  "version": "2.7.3",
   "description": "HTTP agent library.",
   "repository": "https://github.com/quenktechnologies/jhr.git",
   "main": "lib/index.js",
