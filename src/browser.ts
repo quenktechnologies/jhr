@@ -1,4 +1,4 @@
-import { Object } from '@quenk/noni/lib/data/json';
+import { Object } from '@quenk/noni/lib/data/jsonx';
 import { Future } from '@quenk/noni/lib/control/monad/future';
 
 import { DocumentContainer } from './cookie/container/document';

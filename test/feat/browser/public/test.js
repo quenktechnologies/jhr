@@ -1748,8 +1748,14 @@ class Future {
             return function_1.noop;
         }));
     }
-    finally(f) {
+    finialize(f) {
         return new Finally(this, f);
+    }
+    finally(f) {
+        return this.finialize(() => {
+            f();
+            return this;
+        });
     }
     then(onResolve, onReject) {
         return new Promise((resolve, reject) => {
@@ -2346,16 +2352,17 @@ const throttle = (f, duration) => {
 exports.throttle = throttle;
 
 }).call(this)}).call(this,require('_process'))
-},{"_process":56}],24:[function(require,module,exports){
+},{"_process":58}],24:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.compact = exports.flatten = exports.combine = exports.make = exports.removeAt = exports.remove = exports.dedupe = exports.distribute = exports.group = exports.partition = exports.concat = exports.flatMap = exports.map = exports.contains = exports.empty = exports.tail = exports.head = void 0;
+exports.isEqual = exports.find = exports.compact = exports.flatten = exports.combine = exports.make = exports.removeAt = exports.remove = exports.dedupe = exports.distribute = exports.group = exports.partition = exports.concat = exports.flatMap = exports.map = exports.contains = exports.empty = exports.tail = exports.head = void 0;
 /**
  * The array module provides helper functions
  * for working with JS arrays.
  */
 const record_1 = require("../record");
 const math_1 = require("../../math");
+const maybe_1 = require("../maybe");
 /**
  * head returns the item at index 0 of an array
  */
@@ -2496,8 +2503,24 @@ exports.flatten = flatten;
  */
 const compact = (list) => list.filter(v => (v != null));
 exports.compact = compact;
+/**
+ * find searches an array for the first element that passes the test implemented
+ * in the provided [[FindFund]].
+ */
+const find = (list, cb) => {
+    for (let i = 0; i < list.length; i++)
+        if (cb(list[i]))
+            return (0, maybe_1.just)(list[i]);
+    return (0, maybe_1.nothing)();
+};
+exports.find = find;
+/**
+ * isEqual shallow compares two arrays to determine if they are equivalent.
+ */
+const isEqual = (list1, list2) => list1.every((val, idx) => list2[idx] === val);
+exports.isEqual = isEqual;
 
-},{"../../math":32,"../record":28}],25:[function(require,module,exports){
+},{"../../math":32,"../maybe":27,"../record":28}],25:[function(require,module,exports){
 "use strict";
 /**
  * Either represents a value that may be one of two types.
@@ -2966,7 +2989,7 @@ exports.fromNaN = fromNaN;
 },{}],28:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.pickValue = exports.pickKey = exports.make = exports.rcompact = exports.compact = exports.isBadKey = exports.set = exports.every = exports.some = exports.empty = exports.count = exports.clone = exports.hasKey = exports.values = exports.group = exports.partition = exports.exclude = exports.rmerge5 = exports.rmerge4 = exports.rmerge3 = exports.rmerge = exports.merge5 = exports.merge4 = exports.merge3 = exports.merge = exports.filter = exports.reduce = exports.forEach = exports.mapTo = exports.map = exports.keys = exports.isRecord = exports.assign = exports.badKeys = void 0;
+exports.isEqual = exports.pickValue = exports.pickKey = exports.make = exports.rcompact = exports.compact = exports.isBadKey = exports.set = exports.every = exports.some = exports.empty = exports.count = exports.clone = exports.hasKey = exports.values = exports.group = exports.partition = exports.exclude = exports.rmerge5 = exports.rmerge4 = exports.rmerge3 = exports.rmerge = exports.merge5 = exports.merge4 = exports.merge3 = exports.merge = exports.filter = exports.reduce = exports.forEach = exports.mapTo = exports.map = exports.keys = exports.isRecord = exports.assign = exports.badKeys = void 0;
 /**
  * The record module provides functions for treating ES objects as records.
  *
@@ -3266,6 +3289,12 @@ exports.pickKey = pickKey;
  */
 const pickValue = (rec, test) => (0, exports.reduce)(rec, (0, maybe_1.nothing)(), (p, c, k) => p.isJust() ? p : test(c, k, rec) ? (0, maybe_1.just)(c) : p);
 exports.pickValue = pickValue;
+/**
+ * isEqual shallow compares two records to determine if they are equivalent.
+ */
+const isEqual = (rec1, rec2) => (0, exports.keys)(rec1).every(key => rec2[key] ===
+    rec1[key]);
+exports.isEqual = isEqual;
 
 },{"../array":24,"../maybe":27,"../type":31}],29:[function(require,module,exports){
 "use strict";
@@ -4059,7 +4088,7 @@ var assert = function (value, name) {
 };
 exports.assert = assert;
 
-},{"deep-equal":36,"json-stringify-safe":48}],34:[function(require,module,exports){
+},{"deep-equal":36,"json-stringify-safe":50}],34:[function(require,module,exports){
 'use strict';
 
 var GetIntrinsic = require('get-intrinsic');
@@ -4076,7 +4105,7 @@ module.exports = function callBoundIntrinsic(name, allowMissing) {
 	return intrinsic;
 };
 
-},{"./":35,"get-intrinsic":40}],35:[function(require,module,exports){
+},{"./":35,"get-intrinsic":41}],35:[function(require,module,exports){
 'use strict';
 
 var bind = require('function-bind');
@@ -4125,7 +4154,7 @@ if ($defineProperty) {
 	module.exports.apply = applyBind;
 }
 
-},{"function-bind":39,"get-intrinsic":40}],36:[function(require,module,exports){
+},{"function-bind":39,"get-intrinsic":41}],36:[function(require,module,exports){
 var objectKeys = require('object-keys');
 var isArguments = require('is-arguments');
 var is = require('object-is');
@@ -4239,7 +4268,7 @@ function objEquiv(a, b, opts) {
 
 module.exports = deepEqual;
 
-},{"is-arguments":45,"is-date-object":46,"is-regex":47,"object-is":50,"object-keys":54,"regexp.prototype.flags":58}],37:[function(require,module,exports){
+},{"is-arguments":47,"is-date-object":48,"is-regex":49,"object-is":52,"object-keys":56,"regexp.prototype.flags":60}],37:[function(require,module,exports){
 'use strict';
 
 var keys = require('object-keys');
@@ -4253,20 +4282,9 @@ var isFunction = function (fn) {
 	return typeof fn === 'function' && toStr.call(fn) === '[object Function]';
 };
 
-var arePropertyDescriptorsSupported = function () {
-	var obj = {};
-	try {
-		origDefineProperty(obj, 'x', { enumerable: false, value: obj });
-		// eslint-disable-next-line no-unused-vars, no-restricted-syntax
-		for (var _ in obj) { // jscs:ignore disallowUnusedVariables
-			return false;
-		}
-		return obj.x === obj;
-	} catch (e) { /* this is IE 8. */
-		return false;
-	}
-};
-var supportsDescriptors = origDefineProperty && arePropertyDescriptorsSupported();
+var hasPropertyDescriptors = require('has-property-descriptors')();
+
+var supportsDescriptors = origDefineProperty && hasPropertyDescriptors;
 
 var defineProperty = function (object, name, value, predicate) {
 	if (name in object && (!isFunction(predicate) || !predicate())) {
@@ -4280,7 +4298,7 @@ var defineProperty = function (object, name, value, predicate) {
 			writable: true
 		});
 	} else {
-		object[name] = value;
+		object[name] = value; // eslint-disable-line no-param-reassign
 	}
 };
 
@@ -4299,7 +4317,7 @@ defineProperties.supportsDescriptors = !!supportsDescriptors;
 
 module.exports = defineProperties;
 
-},{"object-keys":54}],38:[function(require,module,exports){
+},{"has-property-descriptors":42,"object-keys":56}],38:[function(require,module,exports){
 'use strict';
 
 /* eslint no-invalid-this: 1 */
@@ -4361,6 +4379,39 @@ var implementation = require('./implementation');
 module.exports = Function.prototype.bind || implementation;
 
 },{"./implementation":38}],40:[function(require,module,exports){
+'use strict';
+
+var functionsHaveNames = function functionsHaveNames() {
+	return typeof function f() {}.name === 'string';
+};
+
+var gOPD = Object.getOwnPropertyDescriptor;
+if (gOPD) {
+	try {
+		gOPD([], 'length');
+	} catch (e) {
+		// IE 8 has a broken gOPD
+		gOPD = null;
+	}
+}
+
+functionsHaveNames.functionsHaveConfigurableNames = function functionsHaveConfigurableNames() {
+	if (!functionsHaveNames() || !gOPD) {
+		return false;
+	}
+	var desc = gOPD(function () {}, 'name');
+	return !!desc && !!desc.configurable;
+};
+
+var $bind = Function.prototype.bind;
+
+functionsHaveNames.boundFunctionsHaveNames = function boundFunctionsHaveNames() {
+	return functionsHaveNames() && typeof $bind === 'function' && function f() {}.bind().name !== '';
+};
+
+module.exports = functionsHaveNames;
+
+},{}],41:[function(require,module,exports){
 'use strict';
 
 var undefined;
@@ -4565,6 +4616,7 @@ var $concat = bind.call(Function.call, Array.prototype.concat);
 var $spliceApply = bind.call(Function.apply, Array.prototype.splice);
 var $replace = bind.call(Function.call, String.prototype.replace);
 var $strSlice = bind.call(Function.call, String.prototype.slice);
+var $exec = bind.call(Function.call, RegExp.prototype.exec);
 
 /* adapted from https://github.com/lodash/lodash/blob/4.17.15/dist/lodash.js#L6735-L6744 */
 var rePropName = /[^%.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|%$))/g;
@@ -4620,6 +4672,9 @@ module.exports = function GetIntrinsic(name, allowMissing) {
 		throw new $TypeError('"allowMissing" argument must be a boolean');
 	}
 
+	if ($exec(/^%?[^%]*%?$/, name) === null) {
+		throw new $SyntaxError('`%` may not be present anywhere but at the beginning and end of the intrinsic name');
+	}
 	var parts = stringToPath(name);
 	var intrinsicBaseName = parts.length > 0 ? parts[0] : '';
 
@@ -4692,7 +4747,42 @@ module.exports = function GetIntrinsic(name, allowMissing) {
 	return value;
 };
 
-},{"function-bind":39,"has":44,"has-symbols":41}],41:[function(require,module,exports){
+},{"function-bind":39,"has":46,"has-symbols":43}],42:[function(require,module,exports){
+'use strict';
+
+var GetIntrinsic = require('get-intrinsic');
+
+var $defineProperty = GetIntrinsic('%Object.defineProperty%', true);
+
+var hasPropertyDescriptors = function hasPropertyDescriptors() {
+	if ($defineProperty) {
+		try {
+			$defineProperty({}, 'a', { value: 1 });
+			return true;
+		} catch (e) {
+			// IE 8 has a broken defineProperty
+			return false;
+		}
+	}
+	return false;
+};
+
+hasPropertyDescriptors.hasArrayLengthDefineBug = function hasArrayLengthDefineBug() {
+	// node v0.6 has a bug where array lengths can be Set but not Defined
+	if (!hasPropertyDescriptors()) {
+		return null;
+	}
+	try {
+		return $defineProperty([], 'length', { value: 1 }).length !== 1;
+	} catch (e) {
+		// In Firefox 4-22, defining length on an array throws an exception.
+		return true;
+	}
+};
+
+module.exports = hasPropertyDescriptors;
+
+},{"get-intrinsic":41}],43:[function(require,module,exports){
 'use strict';
 
 var origSymbol = typeof Symbol !== 'undefined' && Symbol;
@@ -4707,7 +4797,7 @@ module.exports = function hasNativeSymbols() {
 	return hasSymbolSham();
 };
 
-},{"./shams":42}],42:[function(require,module,exports){
+},{"./shams":44}],44:[function(require,module,exports){
 'use strict';
 
 /* eslint complexity: [2, 18], max-statements: [2, 33] */
@@ -4751,7 +4841,7 @@ module.exports = function hasSymbols() {
 	return true;
 };
 
-},{}],43:[function(require,module,exports){
+},{}],45:[function(require,module,exports){
 'use strict';
 
 var hasSymbols = require('has-symbols/shams');
@@ -4760,14 +4850,14 @@ module.exports = function hasToStringTagShams() {
 	return hasSymbols() && !!Symbol.toStringTag;
 };
 
-},{"has-symbols/shams":42}],44:[function(require,module,exports){
+},{"has-symbols/shams":44}],46:[function(require,module,exports){
 'use strict';
 
 var bind = require('function-bind');
 
 module.exports = bind.call(Function.call, Object.prototype.hasOwnProperty);
 
-},{"function-bind":39}],45:[function(require,module,exports){
+},{"function-bind":39}],47:[function(require,module,exports){
 'use strict';
 
 var hasToStringTag = require('has-tostringtag/shams')();
@@ -4802,7 +4892,7 @@ isStandardArguments.isLegacyArguments = isLegacyArguments; // for tests
 
 module.exports = supportsStandardArguments ? isStandardArguments : isLegacyArguments;
 
-},{"call-bind/callBound":34,"has-tostringtag/shams":43}],46:[function(require,module,exports){
+},{"call-bind/callBound":34,"has-tostringtag/shams":45}],48:[function(require,module,exports){
 'use strict';
 
 var getDay = Date.prototype.getDay;
@@ -4826,7 +4916,7 @@ module.exports = function isDateObject(value) {
 	return hasToStringTag ? tryDateObject(value) : toStr.call(value) === dateClass;
 };
 
-},{"has-tostringtag/shams":43}],47:[function(require,module,exports){
+},{"has-tostringtag/shams":45}],49:[function(require,module,exports){
 'use strict';
 
 var callBound = require('call-bind/callBound');
@@ -4886,7 +4976,7 @@ module.exports = hasToStringTag
 		return $toString(value) === regexClass;
 	};
 
-},{"call-bind/callBound":34,"has-tostringtag/shams":43}],48:[function(require,module,exports){
+},{"call-bind/callBound":34,"has-tostringtag/shams":45}],50:[function(require,module,exports){
 exports = module.exports = stringify
 exports.getSerialize = serializer
 
@@ -4915,7 +5005,7 @@ function serializer(replacer, cycleReplacer) {
   }
 }
 
-},{}],49:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 'use strict';
 
 var numberIsNaN = function (value) {
@@ -4936,7 +5026,7 @@ module.exports = function is(a, b) {
 };
 
 
-},{}],50:[function(require,module,exports){
+},{}],52:[function(require,module,exports){
 'use strict';
 
 var define = require('define-properties');
@@ -4956,7 +5046,7 @@ define(polyfill, {
 
 module.exports = polyfill;
 
-},{"./implementation":49,"./polyfill":51,"./shim":52,"call-bind":35,"define-properties":37}],51:[function(require,module,exports){
+},{"./implementation":51,"./polyfill":53,"./shim":54,"call-bind":35,"define-properties":37}],53:[function(require,module,exports){
 'use strict';
 
 var implementation = require('./implementation');
@@ -4965,7 +5055,7 @@ module.exports = function getPolyfill() {
 	return typeof Object.is === 'function' ? Object.is : implementation;
 };
 
-},{"./implementation":49}],52:[function(require,module,exports){
+},{"./implementation":51}],54:[function(require,module,exports){
 'use strict';
 
 var getPolyfill = require('./polyfill');
@@ -4981,7 +5071,7 @@ module.exports = function shimObjectIs() {
 	return polyfill;
 };
 
-},{"./polyfill":51,"define-properties":37}],53:[function(require,module,exports){
+},{"./polyfill":53,"define-properties":37}],55:[function(require,module,exports){
 'use strict';
 
 var keysShim;
@@ -5105,7 +5195,7 @@ if (!Object.keys) {
 }
 module.exports = keysShim;
 
-},{"./isArguments":55}],54:[function(require,module,exports){
+},{"./isArguments":57}],56:[function(require,module,exports){
 'use strict';
 
 var slice = Array.prototype.slice;
@@ -5139,7 +5229,7 @@ keysShim.shim = function shimObjectKeys() {
 
 module.exports = keysShim;
 
-},{"./implementation":53,"./isArguments":55}],55:[function(require,module,exports){
+},{"./implementation":55,"./isArguments":57}],57:[function(require,module,exports){
 'use strict';
 
 var toStr = Object.prototype.toString;
@@ -5158,7 +5248,7 @@ module.exports = function isArguments(value) {
 	return isArgs;
 };
 
-},{}],56:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -5344,8 +5434,10 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],57:[function(require,module,exports){
+},{}],59:[function(require,module,exports){
 'use strict';
+
+var functionsHaveConfigurableNames = require('functions-have-names').functionsHaveConfigurableNames();
 
 var $Object = Object;
 var $TypeError = TypeError;
@@ -5355,6 +5447,9 @@ module.exports = function flags() {
 		throw new $TypeError('RegExp.prototype.flags getter called on non-object');
 	}
 	var result = '';
+	if (this.hasIndices) {
+		result += 'd';
+	}
 	if (this.global) {
 		result += 'g';
 	}
@@ -5376,7 +5471,11 @@ module.exports = function flags() {
 	return result;
 };
 
-},{}],58:[function(require,module,exports){
+if (functionsHaveConfigurableNames && Object.defineProperty) {
+	Object.defineProperty(module.exports, 'name', { value: 'get flags' });
+}
+
+},{"functions-have-names":40}],60:[function(require,module,exports){
 'use strict';
 
 var define = require('define-properties');
@@ -5386,7 +5485,7 @@ var implementation = require('./implementation');
 var getPolyfill = require('./polyfill');
 var shim = require('./shim');
 
-var flagsBound = callBind(implementation);
+var flagsBound = callBind(getPolyfill());
 
 define(flagsBound, {
 	getPolyfill: getPolyfill,
@@ -5396,29 +5495,45 @@ define(flagsBound, {
 
 module.exports = flagsBound;
 
-},{"./implementation":57,"./polyfill":59,"./shim":60,"call-bind":35,"define-properties":37}],59:[function(require,module,exports){
+},{"./implementation":59,"./polyfill":61,"./shim":62,"call-bind":35,"define-properties":37}],61:[function(require,module,exports){
 'use strict';
 
 var implementation = require('./implementation');
 
 var supportsDescriptors = require('define-properties').supportsDescriptors;
 var $gOPD = Object.getOwnPropertyDescriptor;
-var $TypeError = TypeError;
 
 module.exports = function getPolyfill() {
-	if (!supportsDescriptors) {
-		throw new $TypeError('RegExp.prototype.flags requires a true ES5 environment that supports property descriptors');
-	}
-	if ((/a/mig).flags === 'gim') {
+	if (supportsDescriptors && (/a/mig).flags === 'gim') {
 		var descriptor = $gOPD(RegExp.prototype, 'flags');
-		if (descriptor && typeof descriptor.get === 'function' && typeof (/a/).dotAll === 'boolean') {
-			return descriptor.get;
+		if (
+			descriptor
+			&& typeof descriptor.get === 'function'
+			&& typeof RegExp.prototype.dotAll === 'boolean'
+			&& typeof RegExp.prototype.hasIndices === 'boolean'
+		) {
+			/* eslint getter-return: 0 */
+			var calls = '';
+			var o = {};
+			Object.defineProperty(o, 'hasIndices', {
+				get: function () {
+					calls += 'd';
+				}
+			});
+			Object.defineProperty(o, 'sticky', {
+				get: function () {
+					calls += 'y';
+				}
+			});
+			if (calls === 'dy') {
+				return descriptor.get;
+			}
 		}
 	}
 	return implementation;
 };
 
-},{"./implementation":57,"define-properties":37}],60:[function(require,module,exports){
+},{"./implementation":59,"define-properties":37}],62:[function(require,module,exports){
 'use strict';
 
 var supportsDescriptors = require('define-properties').supportsDescriptors;
@@ -5446,7 +5561,7 @@ module.exports = function shimFlags() {
 	return polyfill;
 };
 
-},{"./polyfill":59,"define-properties":37}],61:[function(require,module,exports){
+},{"./polyfill":61,"define-properties":37}],63:[function(require,module,exports){
 (function (process){(function (){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -5510,7 +5625,7 @@ describe('xhr', () => {
 });
 
 }).call(this)}).call(this,require('_process'))
-},{"../../../../../../lib/agent":1,"../../../../../../lib/agent/parser/json":2,"../../../../../../lib/agent/transform/json":4,"../../../../../../lib/agent/transform/multipart":5,"../../../../../../lib/agent/transport/xhr":6,"../../../../../../lib/cookie/container/memory":9,"../../../../../../lib/response":16,"@quenk/noni/lib/control/monad/future":21,"@quenk/test/lib/assert":33,"_process":56}],62:[function(require,module,exports){
+},{"../../../../../../lib/agent":1,"../../../../../../lib/agent/parser/json":2,"../../../../../../lib/agent/transform/json":4,"../../../../../../lib/agent/transform/multipart":5,"../../../../../../lib/agent/transport/xhr":6,"../../../../../../lib/cookie/container/memory":9,"../../../../../../lib/response":16,"@quenk/noni/lib/control/monad/future":21,"@quenk/test/lib/assert":33,"_process":58}],64:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const assert_1 = require("@quenk/test/lib/assert");
@@ -5542,8 +5657,8 @@ describe('browser', () => {
     });
 });
 
-},{"../../../../lib/browser":7,"@quenk/test/lib/assert":33}],63:[function(require,module,exports){
-require("./agent/transport/xhr_test.js");
+},{"../../../../lib/browser":7,"@quenk/test/lib/assert":33}],65:[function(require,module,exports){
 require("./browser_test.js");
+require("./agent/transport/xhr_test.js");
 
-},{"./agent/transport/xhr_test.js":61,"./browser_test.js":62}]},{},[63]);
+},{"./agent/transport/xhr_test.js":63,"./browser_test.js":64}]},{},[65]);

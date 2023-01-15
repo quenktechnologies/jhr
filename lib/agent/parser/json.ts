@@ -1,4 +1,4 @@
-import * as json from '@quenk/noni/lib/data/json';
+import * as json from '@quenk/noni/lib/data/jsonx';
 
 import { merge } from '@quenk/noni/lib/data/record';
 import { Except, attempt } from '@quenk/noni/lib/control/error';
