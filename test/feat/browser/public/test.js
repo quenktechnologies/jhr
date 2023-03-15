@@ -84,7 +84,7 @@ class Agent {
 }
 exports.Agent = Agent;
 
-},{"../request":14,"../util":18,"@quenk/noni/lib/control/monad/future":21,"@quenk/noni/lib/data/record":28,"@quenk/noni/lib/data/string":30}],2:[function(require,module,exports){
+},{"../request":14,"../util":18,"@quenk/noni/lib/control/monad/future":21,"@quenk/noni/lib/data/record":26,"@quenk/noni/lib/data/string":29}],2:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.JSONParser = void 0;
@@ -116,7 +116,7 @@ class JSONParser {
 }
 exports.JSONParser = JSONParser;
 
-},{"@quenk/noni/lib/control/error":20,"@quenk/noni/lib/data/either":25,"@quenk/noni/lib/data/record":28}],3:[function(require,module,exports){
+},{"@quenk/noni/lib/control/error":20,"@quenk/noni/lib/data/either":23,"@quenk/noni/lib/data/record":26}],3:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CSRFProtectionPlugin = exports.DEFAULT_CSRF_HEADER_NAME = exports.DEFAULT_CSRF_COOKIE_NAME = void 0;
@@ -149,7 +149,7 @@ class CSRFProtectionPlugin {
 }
 exports.CSRFProtectionPlugin = CSRFProtectionPlugin;
 
-},{"@quenk/noni/lib/control/monad/future":21,"@quenk/noni/lib/data/record":28}],4:[function(require,module,exports){
+},{"@quenk/noni/lib/control/monad/future":21,"@quenk/noni/lib/data/record":26}],4:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.JSONTransform = void 0;
@@ -190,7 +190,7 @@ class MultipartTransform {
 }
 exports.MultipartTransform = MultipartTransform;
 
-},{"@quenk/noni/lib/data/either":25}],6:[function(require,module,exports){
+},{"@quenk/noni/lib/data/either":23}],6:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.XHRTransport = void 0;
@@ -214,7 +214,7 @@ class XHRTransport {
         let xhr = new XMLHttpRequest();
         let portNumer = (port && (port !== 80) && (port !== 443)) ? `:${port}` : '';
         let url = `${host}${portNumer}${path[0] === '/' ? '' : '/'}${path}`;
-        return new future_1.Run((onError, onSuccess) => {
+        return new future_1.Run(() => new Promise((onSuccess, onError) => {
             let transBody = undefined;
             if (body != null) {
                 let exceptBody = transform.apply(body);
@@ -258,7 +258,7 @@ class XHRTransport {
             //^ multipart forms set a custom content type
             xhr.send(transBody);
             return () => xhr.abort();
-        });
+        }));
     }
 }
 exports.XHRTransport = XHRTransport;
@@ -345,7 +345,7 @@ class DocumentContainer {
 }
 exports.DocumentContainer = DocumentContainer;
 
-},{"../":10,"@quenk/noni/lib/data/record":28}],9:[function(require,module,exports){
+},{"../":10,"@quenk/noni/lib/data/record":26}],9:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MemoryContainer = void 0;
@@ -394,7 +394,7 @@ const willKeep = (now, c) => {
         return true;
 };
 
-},{"../":10,"../parser":11,"@quenk/noni/lib/data/array":24,"@quenk/noni/lib/data/record":28}],10:[function(require,module,exports){
+},{"../":10,"../parser":11,"@quenk/noni/lib/data/array":22,"@quenk/noni/lib/data/record":26}],10:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.toCookieHeader = exports.getCookieByName = exports.fromList = exports.fromCookieHeader = void 0;
@@ -444,7 +444,7 @@ exports.getCookieByName = getCookieByName;
 const toCookieHeader = (store) => (0, record_1.mapTo)(store, c => `${c.name}=${c.value}`).join('; ');
 exports.toCookieHeader = toCookieHeader;
 
-},{"@quenk/noni/lib/data/record":28}],11:[function(require,module,exports){
+},{"@quenk/noni/lib/data/record":26}],11:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.parseCookie = void 0;
@@ -1629,7 +1629,7 @@ function stringify(target, opts = {}) {
 exports.stringify = stringify;
 ;
 
-},{"@quenk/noni/lib/data/record":28}],20:[function(require,module,exports){
+},{"@quenk/noni/lib/data/record":26}],20:[function(require,module,exports){
 "use strict";
 /**
  * This module provides functions and types to make dealing with ES errors
@@ -1674,32 +1674,47 @@ const attempt = (f) => {
 };
 exports.attempt = attempt;
 
-},{"../data/either":25}],21:[function(require,module,exports){
+},{"../data/either":23}],21:[function(require,module,exports){
 "use strict";
+var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
+    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
+    return new (P || (P = Promise))(function (resolve, reject) {
+        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
+        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
+        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
+        step((generator = generator.apply(thisArg, _arguments || [])).next());
+    });
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.doFuture = exports.liftP = exports.fromExcept = exports.toPromise = exports.some = exports.race = exports.reduce = exports.sequential = exports.parallel = exports.batch = exports.fromCallback = exports.fromAbortable = exports.wait = exports.delay = exports.attempt = exports.raise = exports.run = exports.wrap = exports.voidPure = exports.pure = exports.Run = exports.Raise = exports.Trap = exports.Finally = exports.Catch = exports.Call = exports.Bind = exports.Pure = exports.Future = void 0;
+exports.doFuture = exports.fromExcept = exports.toPromise = exports.some = exports.race = exports.reduce = exports.batch = exports.sequential = exports.parallel = exports.fromCallback = exports.wait = exports.delay = exports.attempt = exports.raise = exports.liftP = exports.run = exports.wrap = exports.voidPure = exports.pure = exports.Tag = exports.Generation = exports.Run = exports.Raise = exports.Trap = exports.Finally = exports.Catch = exports.Call = exports.Bind = exports.Pure = exports.Future = void 0;
 const function_1 = require("../../data/function");
-const timer_1 = require("../timer");
 const error_1 = require("../error");
-const _1 = require("./");
 const array_1 = require("../../data/array");
+const stack_1 = require("../../data/stack");
+const trapTags = ['Trap', 'Generation'];
 /**
- * Future represents an asynchronous task or sequence of asynchronous tasks that
- * have not yet happened.
+ * Future represents a chain of asynchronous tasks that some result when
+ * executed.
  *
- * Use the fork() or then() methods to trigger computation or via the await
- * keyword.
+ * The Future implementation is different that a Promise as it does not
+ * execute it's tasks until instructed to giving control back to the calling
+ * code (unlike Promises). To accomplish this, a state machine is built up
+ * from the various calls to chain(), map() etc and executed in the run()
+ * method.
  *
- * Note: Multiple chains of Futures should not be executed via await, instead
- * use the doFuture() function or chain them together manually to retain
- * control over execution.
+ * To make using this API easier, doFuture() is provided which allows chains
+ * of Futures to be created without callback hell via generators. Use the run()
+ * method to get a Promise that contains the final value or treat the future
+ * itself as a Promise (calling then() also executes the Future).
+ *
+ * @typeParam A - The type of the final value.
  */
 class Future {
-    constructor() {
-        /**
-         * tag identifies each Future subclass.
-         */
-        this.tag = 'Future';
+    /**
+     * @param tag - Used internally to distinguish Future types.
+     */
+    constructor(tag = 'Future') {
+        this.tag = tag;
     }
     get [Symbol.toStringTag]() {
         return 'Future';
@@ -1719,133 +1734,128 @@ class Future {
     trap(f) {
         return new Catch(this, f);
     }
-    catch(f) {
-        // XXX: any used here because catch() previously expected the resulting
-        // Future to be of the same type. This is not the case with promises.
-        return new Catch(this, (e) => (0, exports.run)((onError, onSuccess) => {
-            if (f) {
-                let result = f(e);
-                switch (Object.prototype.toString.call(result)) {
-                    case '[object Future]':
-                        let asFuture = result;
-                        asFuture.fork(e => onError(e), v => onSuccess(v));
-                        break;
-                    case '[object Promise]':
-                        let asPromise = result;
-                        asPromise.then(v => onSuccess(v), e => onError(e));
-                        break;
-                    default:
-                        onSuccess(result);
-                        break;
-                }
-            }
-            else {
-                //XXX: This should be an error but not much we can do with the
-                // type signature for a Promise. We do not want to throw at 
-                // runtime.
-                onSuccess(undefined);
-            }
-            return function_1.noop;
-        }));
-    }
-    finialize(f) {
+    finish(f) {
         return new Finally(this, f);
     }
-    finally(f) {
-        return this.finialize(() => {
-            f();
-            return this;
-        });
-    }
     then(onResolve, onReject) {
-        return new Promise((resolve, reject) => {
-            this.fork(reject, resolve);
-        }).then(onResolve, onReject);
+        return this.run().then(onResolve).catch(onReject);
     }
-    _fork(value, stack, onError, onSuccess) {
-        let pending = true;
-        let failure = (e) => {
-            if (pending) {
-                stack.push(new Raise(e));
-                pending = false;
-                this._fork(value, stack, onError, onSuccess);
-            }
-            else {
-                console.warn(`${this.tag}: onError called after task completed`);
-                console.warn(e);
-            }
-        };
-        let success = (val) => {
-            if (pending) {
-                pending = false;
-                if ((0, array_1.empty)(stack))
-                    onSuccess(val);
-                else
-                    this._fork(val, stack, onError, onSuccess);
-            }
-            else {
-                console.warn(`${this.tag}: onSuccess called after task completed`);
-                console.trace();
-            }
-        };
-        while (!(0, array_1.empty)(stack)) {
-            let next = stack.pop();
-            if (next.tag === 'Pure') {
-                (0, timer_1.tick)(() => success(next.value));
-                return function_1.noop;
-            }
-            else if (next.tag === 'Bind') {
-                let future = next;
-                stack.push(new Call(future.func));
-                stack.push(future.target);
-            }
-            else if (next.tag === 'Call') {
-                let future = next;
-                stack.push(future.target(value));
-            }
-            else if (next.tag === 'Catch') {
-                let future = next;
-                stack.push(new Trap(future.func));
-                stack.push(future.target);
-            }
-            else if (next.tag === 'Finally') {
-                let future = next;
-                stack.push(new Trap(future.func));
-                stack.push(new Call(future.func));
-                stack.push(future.target);
-            }
-            else if (next.tag === 'Trap') {
-                // Avoid hanging when catch().catch().catch() etc. is done.
-                if ((0, array_1.empty)(stack))
-                    onSuccess(value);
-            }
-            else if (next.tag === 'Raise') {
-                let future = next;
-                let err = (0, error_1.convert)(future.value);
-                // Clear the stack until we encounter a Trap instance.
-                while (!(0, array_1.empty)(stack) && (0, array_1.tail)(stack).tag !== 'Trap')
-                    stack.pop();
-                if ((0, array_1.empty)(stack)) {
-                    // No handlers detected, finish with an error.
-                    onError(err);
-                    return function_1.noop;
-                }
-                else {
-                    stack.push(stack.pop().func(err));
-                }
-            }
-            else if (next.tag === 'Run') {
-                return next.task(failure, success);
-            }
-        }
-        return function_1.noop;
+    catch(f) {
+        return this.run().catch(f);
+    }
+    finally(f) {
+        return this.run().finally(f);
     }
     /**
-     * fork this Future causing its side-effects to take place.
+     * fork triggers the asynchronous execution of the Future passing the
+     * result or error to the provided callbacks.
      */
-    fork(onError = function_1.noop, onSuccess = function_1.noop) {
-        // XXX: There is no value until async computation begins.
-        return this._fork(undefined, [this], onError, onSuccess);
+    fork(onError = console.error, onSuccess = function_1.noop) {
+        this.run().then(onSuccess).catch(onError);
+    }
+    /**
+     * run this Future triggering execution of its asynchronous work.
+     */
+    run() {
+        return __awaiter(this, void 0, void 0, function* () {
+            let stack = new stack_1.UnsafeStack([this]);
+            let value = undefined;
+            while (!stack.isEmpty()) {
+                let next = stack.pop();
+                switch (next.tag) {
+                    case 'Pure': {
+                        value = next.value;
+                        break;
+                    }
+                    case 'Bind': {
+                        let future = next;
+                        stack.push(new Call(future.func));
+                        stack.push(future.target);
+                        break;
+                    }
+                    case 'Call': {
+                        let future = next;
+                        stack.push(future.target(value));
+                        break;
+                    }
+                    case 'Catch': {
+                        let future = next;
+                        stack.push(new Trap(future.func));
+                        stack.push(future.target);
+                        break;
+                    }
+                    case 'Finally': {
+                        let future = next;
+                        stack.push(new Trap(future.func));
+                        stack.push(new Call(future.func));
+                        stack.push(future.target);
+                        break;
+                    }
+                    case 'Raise': {
+                        let future = next;
+                        let err = (0, error_1.convert)(future.value);
+                        // Clear the stack until we encounter a Trap or Generation.
+                        while (!stack.isEmpty() &&
+                            !(0, array_1.contains)(trapTags, stack.peek().tag))
+                            stack.pop();
+                        // If no handlers detected, we should proceed no further and
+                        // finish up with an error.
+                        if (stack.isEmpty())
+                            throw err;
+                        let top = stack.peek();
+                        if (top.tag === 'Generation') {
+                            // Hook into the engine's generator error 
+                            // handling machinery. We need to capture any errors
+                            // thrown out to give prior traps a chance to handle 
+                            // them.
+                            try {
+                                let { done, value: future } = top.src.throw(err);
+                                // Pop the Generation if the generator finished. 
+                                if (done)
+                                    stack.pop();
+                                stack.push(future);
+                            }
+                            catch (e) {
+                                // The generator did not handle the error or threw
+                                // one of its own. Get rid of it and escalate.
+                                stack.pop();
+                                stack.push(e === err ? next : new Raise(e));
+                            }
+                        }
+                        else if (top.tag === 'Trap') {
+                            stack.push(top.func(err));
+                        }
+                        break;
+                    }
+                    case 'Trap':
+                        break;
+                    case 'Run': {
+                        try {
+                            value = yield next.task();
+                        }
+                        catch (e) {
+                            stack.push(new Raise(e));
+                        }
+                        break;
+                    }
+                    case 'Generation': {
+                        let { done, value: future } = next.src.next(value);
+                        if (future != null) {
+                            // Put the Generation back on the stack if it still has
+                            // items.
+                            if (!done)
+                                stack.push(next);
+                            stack.push(future);
+                        }
+                        break;
+                    }
+                    default:
+                        let tag = next ? next.constructor.name : next;
+                        throw new Error(`Unknown Future: ${tag}`);
+                }
+            }
+            return value;
+        });
     }
 }
 exports.Future = Future;
@@ -1854,9 +1864,8 @@ exports.Future = Future;
  */
 class Pure extends Future {
     constructor(value) {
-        super();
+        super('Pure');
         this.value = value;
-        this.tag = 'Pure';
     }
     map(f) {
         return new Pure(f(this.value));
@@ -1868,64 +1877,59 @@ class Pure extends Future {
 exports.Pure = Pure;
 /**
  * Bind constructor.
- * @private
+ * @internal
  */
 class Bind extends Future {
     constructor(target, func) {
-        super();
+        super('Bind');
         this.target = target;
         this.func = func;
-        this.tag = 'Bind';
     }
 }
 exports.Bind = Bind;
 /**
  * Call constructor.
- * @private
+ * @internal
  */
 class Call extends Future {
     constructor(target) {
-        super();
+        super('Call');
         this.target = target;
-        this.tag = 'Call';
     }
 }
 exports.Call = Call;
 /**
  * Catch constructor.
- * @private
+ * @internal
  */
 class Catch extends Future {
     constructor(target, func) {
-        super();
+        super('Catch');
         this.target = target;
         this.func = func;
-        this.tag = 'Catch';
     }
 }
 exports.Catch = Catch;
 /**
  * Finally constructor.
- * @private
+ * @internal
  */
 class Finally extends Future {
     constructor(target, func) {
-        super();
+        super('Finally');
         this.target = target;
         this.func = func;
-        this.tag = 'Finally';
     }
 }
 exports.Finally = Finally;
 /**
  * Trap constructor.
- * @private
+ * @internal
  */
 class Trap extends Future {
     constructor(func) {
-        super();
+        super('Trap');
         this.func = func;
-        this.tag = 'Trap';
     }
 }
 exports.Trap = Trap;
@@ -1934,9 +1938,8 @@ exports.Trap = Trap;
  */
 class Raise extends Future {
     constructor(value) {
-        super();
+        super('Raise');
         this.value = value;
-        this.tag = 'Raise';
     }
     map(_) {
         return new Raise(this.value);
@@ -1951,16 +1954,37 @@ class Raise extends Future {
 exports.Raise = Raise;
 /**
  * Run constructor.
- * @private
+ * @internal
  */
 class Run extends Future {
     constructor(task) {
-        super();
+        super('Run');
         this.task = task;
-        this.tag = 'Run';
     }
 }
 exports.Run = Run;
+/**
+ * Generation constructor.
+ *
+ * @internal
+ */
+class Generation extends Future {
+    constructor(src) {
+        super('Generation');
+        this.src = src;
+    }
+}
+exports.Generation = Generation;
+/**
+ * @internal
+ */
+class Tag {
+    constructor(index, value) {
+        this.index = index;
+        this.value = value;
+    }
+}
+exports.Tag = Tag;
 /**
  * pure wraps a synchronous value in a Future.
  */
@@ -1981,6 +2005,7 @@ exports.wrap = wrap;
  */
 const run = (task) => new Run(task);
 exports.run = run;
+exports.liftP = exports.run;
 /**
  * raise wraps an Error in a Future.
  *
@@ -1991,104 +2016,43 @@ exports.raise = raise;
 /**
  * attempt a synchronous task, trapping any thrown errors in the Future.
  */
-const attempt = (f) => (0, exports.run)((onError, onSuccess) => {
-    (0, timer_1.tick)(() => {
-        try {
-            onSuccess(f());
-        }
-        catch (e) {
-            onError(e);
-        }
-    });
-    return function_1.noop;
-});
+const attempt = (f) => (0, exports.run)(() => __awaiter(void 0, void 0, void 0, function* () { return f(); }));
 exports.attempt = attempt;
 /**
  * delay execution of a function f after n milliseconds have passed.
  *
  * Any errors thrown are caught and processed in the Future chain.
  */
-const delay = (f, n = 0) => (0, exports.run)((onError, onSuccess) => {
+const delay = (f, n = 0) => (0, exports.run)(() => new Promise((resolve, reject) => {
     setTimeout(() => {
         try {
-            onSuccess(f());
+            resolve(f());
         }
         catch (e) {
-            onError(e);
+            reject(e);
         }
     }, n);
-    return function_1.noop;
-});
+}));
 exports.delay = delay;
 /**
  * wait n milliseconds before continuing the Future chain.
  */
-const wait = (n) => (0, exports.run)((_, onSuccess) => {
-    setTimeout(() => { onSuccess(undefined); }, n);
-    return function_1.noop;
-});
+const wait = (n) => (0, exports.run)(() => new Promise(resolve => {
+    setTimeout(() => { resolve(undefined); }, n);
+}));
 exports.wait = wait;
 /**
- * fromAbortable takes an Aborter and a node style async function and
- * produces a Future.
- *
- * Note: The function used here is not called in the "next tick".
- */
-const fromAbortable = (abort) => (f) => (0, exports.run)((onError, onSuccess) => {
-    f((err, a) => (err != null) ? onError(err) : onSuccess(a));
-    return abort;
-});
-exports.fromAbortable = fromAbortable;
-/**
  * fromCallback produces a Future from a node style async function.
- *
- * Note: The function used here is not called in the "next tick".
  */
-const fromCallback = (f) => (0, exports.fromAbortable)(function_1.noop)(f);
+const fromCallback = (f) => (0, exports.run)(() => new Promise((resolve, reject) => {
+    f((err, a) => (err != null) ? reject(err) : resolve(a));
+}));
 exports.fromCallback = fromCallback;
-class Tag {
-    constructor(index, value) {
-        this.index = index;
-        this.value = value;
-    }
-}
-/**
- * batch runs a list of batched Futures one batch at a time.
- */
-const batch = (list) => (0, exports.sequential)(list.map(w => (0, exports.parallel)(w)));
-exports.batch = batch;
 /**
  * parallel runs a list of Futures in parallel failing if any
  * fail and succeeding with a list of successful values.
  */
-const parallel = (list) => (0, exports.run)((onError, onSuccess) => {
-    let completed = [];
-    let finished = false;
-    let aborters = [];
-    let indexCmp = (a, b) => a.index - b.index;
-    let abortAll = () => {
-        finished = true;
-        aborters.map(f => f());
-    };
-    let onErr = (e) => {
-        if (!finished) {
-            abortAll();
-            onError(e);
-        }
-    };
-    let reconcile = () => completed.sort(indexCmp).map(t => t.value);
-    let onSucc = (t) => {
-        if (!finished) {
-            completed.push(t);
-            if (completed.length === list.length)
-                onSuccess(reconcile());
-        }
-    };
-    aborters.push.apply(aborters, list.map((f, i) => f.map((value) => new Tag(i, value)).fork(onErr, onSucc)));
-    if ((0, array_1.empty)(aborters))
-        onSuccess([]);
-    return () => abortAll();
-});
+const parallel = (list) => (0, exports.run)(() => Promise.all(list));
 exports.parallel = parallel;
 /**
  * sequential execution of a list of futures.
@@ -2096,24 +2060,18 @@ exports.parallel = parallel;
  * This function succeeds with a list of all results or fails on the first
  * error.
  */
-const sequential = (list) => (0, exports.run)((onError, onSuccess) => {
-    let i = 0;
-    let r = [];
-    let onErr = (e) => onError(e);
-    let success = (a) => { r.push(a); next(); };
-    let abort;
-    let next = () => {
-        if (i < list.length)
-            abort = list[i].fork(onErr, success);
-        else
-            onSuccess(r);
-        i++;
-    };
-    next();
-    return () => { if (abort)
-        abort(); };
-});
+const sequential = (list) => (0, exports.run)(() => __awaiter(void 0, void 0, void 0, function* () {
+    let results = Array(list.length);
+    for (let i = 0; i < list.length; i++)
+        results[i] = yield list[i];
+    return results;
+}));
 exports.sequential = sequential;
+/**
+ * batch runs a list of batched Futures one batch at a time.
+ */
+const batch = (list) => (0, exports.sequential)(list.map(w => (0, exports.parallel)(w)));
+exports.batch = batch;
 /**
  * reduce a list of values into a single value using a reducer function that
  * produces a Future.
@@ -2128,33 +2086,12 @@ exports.reduce = reduce;
 /**
  * race given a list of Futures, will return a Future that is settled by
  * the first error or success to occur.
+ *
+ * Raising an error if the list is empty.
  */
-const race = (list) => (0, exports.run)((onError, onSuccess) => {
-    let aborters = [];
-    let finished = false;
-    let abortAll = () => {
-        finished = true;
-        aborters.map(f => f());
-    };
-    let onErr = (e) => {
-        if (!finished) {
-            finished = true;
-            abortAll();
-            onError(e);
-        }
-    };
-    let onSucc = (t) => {
-        if (!finished) {
-            finished = true;
-            aborters.map((f, i) => (i !== t.index) ? f() : undefined);
-            onSuccess(t.value);
-        }
-    };
-    aborters.push.apply(aborters, list.map((f, i) => f.map((value) => new Tag(i, value)).fork(onErr, onSucc)));
-    if (aborters.length === 0)
-        onError(new Error(`race(): Cannot race an empty list!`));
-    return () => abortAll();
-});
+const race = (list) => (0, exports.run)(() => (0, array_1.empty)(list) ?
+    Promise.reject(new Error('race(): Cannot race an empty list!')) :
+    Promise.race(list));
 exports.race = race;
 /**
  * some executes a list of Futures sequentially until one resolves with a
@@ -2163,22 +2100,17 @@ exports.race = race;
  * If none resolve successfully, the final error is raised.
  */
 const some = (list) => (0, exports.doFuture)(function* () {
-    let result = undefined;
-    for (let [index, future] of list.entries()) {
-        let keepGoing = false;
-        result = yield (future.catch(e => {
-            if (index === (list.length - 1)) {
+    for (let i = 0; i < list.length; i++) {
+        try {
+            let result = yield list[i];
+            return (0, exports.pure)(result);
+        }
+        catch (e) {
+            if (i === (list.length - 1))
                 return (0, exports.raise)(e);
-            }
-            else {
-                keepGoing = true;
-                return exports.voidPure;
-            }
-        }));
-        if (!keepGoing)
-            break;
+        }
     }
-    return (0, exports.pure)(result);
+    return (0, exports.raise)(new Error('some: empty list'));
 });
 exports.some = some;
 /**
@@ -2189,7 +2121,7 @@ exports.some = some;
  *
  * @deprecated
  */
-const toPromise = (ft) => new Promise((yes, no) => ft.fork(no, yes));
+const toPromise = (ft) => ft;
 exports.toPromise = toPromise;
 /**
  * fromExcept converts an Except to a Future.
@@ -2197,162 +2129,24 @@ exports.toPromise = toPromise;
 const fromExcept = (e) => e.fold(e => (0, exports.raise)(e), a => (0, exports.pure)(a));
 exports.fromExcept = fromExcept;
 /**
- * liftP turns a function that produces a Promise into a Future.
- */
-const liftP = (f) => (0, exports.run)((onError, onSuccess) => {
-    f()
-        .then(a => onSuccess(a))
-        .catch(e => onError(e));
-    return function_1.noop;
-});
-exports.liftP = liftP;
-/**
- * doFuture provides a do notation function specialized to Futures.
+ * doFuture allows for multiple Futures to be chained together in an almost
+ * monadic fashion via a generator function.
  *
- * Use this function to avoid explicit type assertions with control/monad#doN.
+ * Each Future yielded from the generator is executed sequentially with results
+ * made available via the Generator#next() method. Raise values trigger an
+ * internal error handling mechanism and can be caught via try/catch clauses
+ * in the generator.
+ *
+ * Note: due to the lazy nature of how Futures are evaluated, try/catch will not
+ * intercept a Raise used with a return statement. At that point the generator
+ * is already complete and that Raise must be handled by the calling code if
+ * desired. Alternatively, you can yield the final Future instead of returning
+ * it. That way it can be intercepted by the try/catch.
  */
-const doFuture = (f) => (0, _1.doN)(f);
+const doFuture = (f) => new Generation(f());
 exports.doFuture = doFuture;
 
-},{"../../data/array":24,"../../data/function":26,"../error":20,"../timer":23,"./":22}],22:[function(require,module,exports){
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.doMonad = exports.doN = exports.pipeN = exports.pipe = exports.compose = exports.join = void 0;
-/**
- * join flattens a Monad that contains another Monad.
- */
-const join = (outer) => outer.chain((x) => x);
-exports.join = join;
-/**
- * compose right composes functions that produce Monads so that the output
- * of the second is the input of the first.
- */
-const compose = (g, f) => (0, exports.pipe)(f, g);
-exports.compose = compose;
-/**
- * pipe left composes functions that produce Monads so that the output of the
- * first is the input of the second.
- */
-const pipe = (f, g) => (value) => f(value).chain(b => g(b));
-exports.pipe = pipe;
-/**
- * pipeN is like pipe but takes variadic parameters.
- *
- * Because of this, the resulting function only maps from A -> B.
- */
-const pipeN = (f, ...list) => (value) => list.reduce((p, c) => p.chain(v => c(v)), f(value));
-exports.pipeN = pipeN;
-/**
- * doN simulates haskell's do notation using ES6's generator syntax.
- *
- * Example:
- *
- * ```typescript
- * doN(function*() {
- *
- *   const a = yield pure(1);
- *   const b = yield pure(a+2);
- *   const c = yield pure(b+1);
- *
- *   return c;
- *
- * })
- * ```
- * Each yield is results in a level of nesting added to the chain. The above
- * could be re-written as:
- *
- * ```typescript
- *
- * pure(1)
- *  .chain(a =>
- *   pure(a + 2)
- *    .chain(b =>
- *       pure(b + 1)));
- *
- * ```
- *
- * NOTE: You MUST wrap your return values manually, this function
- *       will not do it for you.
- *
- * NOTE1: Errors thrown in the body of a generator function simply
- * bring the generator to an end. According to MDN:
- *
- * "Much like a return statement, an error thrown inside the generator will
- * make the generator finished -- unless caught within the generator's body."
- *
- * Source: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Generator.
- *
- * Beware of uncaught errors being swallowed in the function body.
- */
-const doN = (f) => {
-    let gen = f();
-    let next = (val) => {
-        let r = gen.next(val);
-        if (r.done)
-            return r.value;
-        else
-            return r.value.chain(next);
-    };
-    return next();
-};
-exports.doN = doN;
-exports.doMonad = exports.doN;
-
-},{}],23:[function(require,module,exports){
-(function (process){(function (){
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.throttle = exports.debounce = exports.tick = void 0;
-/**
- * tick runs a function in the "next tick" using process.nextTick in node
- * or setTimeout(f, 0) elsewhere.
- */
-const tick = (f) => (typeof window == 'undefined') ?
-    setTimeout(f, 0) :
-    process.nextTick(f);
-exports.tick = tick;
-/**
- * debounce delays the application of a function until the specified time
- * has passed.
- *
- * If multiple attempts to apply the function have occured, then each attempt
- * will restart the delay process. The function will only ever be applied once
- * after the delay, using the value of the final attempt for application.
- */
-const debounce = (f, delay) => {
-    let id = -1;
-    return (a) => {
-        if (id === -1) {
-            id = setTimeout(() => f(a), delay);
-        }
-        else {
-            clearTimeout(id);
-            id = setTimeout(() => f(a), delay);
-        }
-    };
-};
-exports.debounce = debounce;
-/**
- * throttle limits the application of a function to occur only one within the
- * specified duration.
- *
- * The first application will execute immediately subsequent applications
- * will be ignored until the duration has passed.
- */
-const throttle = (f, duration) => {
-    let wait = false;
-    return (a) => {
-        if (wait === false) {
-            f(a);
-            wait = true;
-            setTimeout(() => wait = false, duration);
-        }
-    };
-};
-exports.throttle = throttle;
-
-}).call(this)}).call(this,require('_process'))
-},{"_process":58}],24:[function(require,module,exports){
+},{"../../data/array":22,"../../data/function":24,"../../data/stack":28,"../error":20}],22:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.isEqual = exports.find = exports.compact = exports.flatten = exports.combine = exports.make = exports.removeAt = exports.remove = exports.dedupe = exports.distribute = exports.group = exports.partition = exports.concat = exports.flatMap = exports.map = exports.contains = exports.empty = exports.tail = exports.head = void 0;
@@ -2520,7 +2314,7 @@ exports.find = find;
 const isEqual = (list1, list2) => list1.every((val, idx) => list2[idx] === val);
 exports.isEqual = isEqual;
 
-},{"../../math":32,"../maybe":27,"../record":28}],25:[function(require,module,exports){
+},{"../../math":31,"../maybe":25,"../record":26}],23:[function(require,module,exports){
 "use strict";
 /**
  * Either represents a value that may be one of two types.
@@ -2693,7 +2487,7 @@ exports.fromBoolean = fromBoolean;
 const either = (f) => (g) => (e) => (e instanceof Right) ? g(e.takeRight()) : f(e.takeLeft());
 exports.either = either;
 
-},{"./maybe":27}],26:[function(require,module,exports){
+},{"./maybe":25}],24:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.noop = exports.curry5 = exports.curry4 = exports.curry3 = exports.curry = exports.id = exports.identity = exports.flip = exports.cons = exports.compose5 = exports.compose4 = exports.compose3 = exports.compose = void 0;
@@ -2759,7 +2553,7 @@ exports.curry5 = curry5;
 const noop = () => { };
 exports.noop = noop;
 
-},{}],27:[function(require,module,exports){
+},{}],25:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.fromNaN = exports.fromNumber = exports.fromBoolean = exports.fromString = exports.fromObject = exports.fromArray = exports.fromNullable = exports.just = exports.nothing = exports.of = exports.Just = exports.Nothing = void 0;
@@ -2986,7 +2780,7 @@ exports.fromNumber = fromNumber;
 const fromNaN = (n) => isNaN(n) ? new Nothing() : new Just(n);
 exports.fromNaN = fromNaN;
 
-},{}],28:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.isEqual = exports.pickValue = exports.pickKey = exports.make = exports.rcompact = exports.compact = exports.isBadKey = exports.set = exports.every = exports.some = exports.empty = exports.count = exports.clone = exports.hasKey = exports.values = exports.group = exports.partition = exports.exclude = exports.rmerge5 = exports.rmerge4 = exports.rmerge3 = exports.rmerge = exports.merge5 = exports.merge4 = exports.merge3 = exports.merge = exports.filter = exports.reduce = exports.forEach = exports.mapTo = exports.map = exports.keys = exports.isRecord = exports.assign = exports.badKeys = void 0;
@@ -3296,7 +3090,7 @@ const isEqual = (rec1, rec2) => (0, exports.keys)(rec1).every(key => rec2[key] =
     rec1[key]);
 exports.isEqual = isEqual;
 
-},{"../array":24,"../maybe":27,"../type":31}],29:[function(require,module,exports){
+},{"../array":22,"../maybe":25,"../type":30}],27:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.project = exports.unflatten = exports.flatten = exports.unescapeRecord = exports.escapeRecord = exports.unescape = exports.escape = exports.set = exports.getString = exports.getDefault = exports.get = exports.unsafeGet = exports.tokenize = void 0;
@@ -3554,7 +3348,80 @@ exports.unflatten = unflatten;
 const project = (spec, rec) => (0, _1.reduce)(spec, {}, (p, c, k) => (c === true) ? (0, exports.set)(k, (0, exports.unsafeGet)(k, rec), p) : p);
 exports.project = project;
 
-},{"../maybe":27,"./":28}],30:[function(require,module,exports){
+},{"../maybe":25,"./":26}],28:[function(require,module,exports){
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.SafeStack = exports.UnsafeStack = void 0;
+const maybe_1 = require("./maybe");
+/**
+ * @internal
+ */
+class GenericStack {
+    constructor(data = []) {
+        this.data = data;
+    }
+    /**
+     * length of the stack.
+     */
+    get length() {
+        return this.data.length;
+    }
+    /**
+     * isEmpty indicates whether the stack is empty or not.
+     */
+    isEmpty() {
+        return this.data.length === 0;
+    }
+    /**
+     * push an item onto the stack
+     */
+    push(item) {
+        this.data.push(item);
+        return this;
+    }
+}
+/**
+ * UnsafeStack is a generic implementation of a stack data structure using a
+ * JS array.
+ *
+ * Peeked and popped items are not wrapped in a Maybe.
+ */
+class UnsafeStack extends GenericStack {
+    /**
+     * peek returns the item at the top of the stack or undefined if the stack is
+     * empty.
+     */
+    peek() {
+        return this.data[this.data.length - 1];
+    }
+    /**
+     * pop an item off the stack, if the stack is empty, undefined is returned.
+     */
+    pop() {
+        return this.data.pop();
+    }
+}
+exports.UnsafeStack = UnsafeStack;
+/**
+ * SafeStack is a type safe stack that uses Maybe for pops() and peek().
+ */
+class SafeStack extends GenericStack {
+    /**
+     * peek returns the item at the top of the stack.
+     */
+    peek() {
+        return (0, maybe_1.fromNullable)(this.data[this.data.length - 1]);
+    }
+    /**
+     * pop an item off the stack.
+     */
+    pop() {
+        return (0, maybe_1.fromNullable)(this.data.pop());
+    }
+}
+exports.SafeStack = SafeStack;
+
+},{"./maybe":25}],29:[function(require,module,exports){
 "use strict";
 /**
  *  Common functions used to manipulate strings.
@@ -3726,7 +3593,7 @@ exports.numeric = numeric;
 const alphanumeric = (str) => str.replace(/[\W]|[_]/g, '');
 exports.alphanumeric = alphanumeric;
 
-},{"../function":26,"../record":28,"../record/path":29}],31:[function(require,module,exports){
+},{"../function":24,"../record":26,"../record/path":27}],30:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.toString = exports.show = exports.test = exports.is = exports.isPrim = exports.isFunction = exports.isBoolean = exports.isNumber = exports.isString = exports.isArray = exports.isObject = exports.Any = void 0;
@@ -3847,7 +3714,7 @@ exports.show = show;
 const toString = (val) => (val == null) ? '' : String(val);
 exports.toString = toString;
 
-},{}],32:[function(require,module,exports){
+},{}],31:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.round = exports.isMultipleOf = void 0;
@@ -3892,7 +3759,7 @@ const round = (x, n = 0) => {
 };
 exports.round = round;
 
-},{}],33:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
 "use strict";
 var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
@@ -4088,7 +3955,7 @@ var assert = function (value, name) {
 };
 exports.assert = assert;
 
-},{"deep-equal":36,"json-stringify-safe":50}],34:[function(require,module,exports){
+},{"deep-equal":35,"json-stringify-safe":49}],33:[function(require,module,exports){
 'use strict';
 
 var GetIntrinsic = require('get-intrinsic');
@@ -4105,7 +3972,7 @@ module.exports = function callBoundIntrinsic(name, allowMissing) {
 	return intrinsic;
 };
 
-},{"./":35,"get-intrinsic":41}],35:[function(require,module,exports){
+},{"./":34,"get-intrinsic":40}],34:[function(require,module,exports){
 'use strict';
 
 var bind = require('function-bind');
@@ -4154,7 +4021,7 @@ if ($defineProperty) {
 	module.exports.apply = applyBind;
 }
 
-},{"function-bind":39,"get-intrinsic":41}],36:[function(require,module,exports){
+},{"function-bind":38,"get-intrinsic":40}],35:[function(require,module,exports){
 var objectKeys = require('object-keys');
 var isArguments = require('is-arguments');
 var is = require('object-is');
@@ -4268,7 +4135,7 @@ function objEquiv(a, b, opts) {
 
 module.exports = deepEqual;
 
-},{"is-arguments":47,"is-date-object":48,"is-regex":49,"object-is":52,"object-keys":56,"regexp.prototype.flags":60}],37:[function(require,module,exports){
+},{"is-arguments":46,"is-date-object":47,"is-regex":48,"object-is":51,"object-keys":55,"regexp.prototype.flags":59}],36:[function(require,module,exports){
 'use strict';
 
 var keys = require('object-keys');
@@ -4287,8 +4154,14 @@ var hasPropertyDescriptors = require('has-property-descriptors')();
 var supportsDescriptors = origDefineProperty && hasPropertyDescriptors;
 
 var defineProperty = function (object, name, value, predicate) {
-	if (name in object && (!isFunction(predicate) || !predicate())) {
-		return;
+	if (name in object) {
+		if (predicate === true) {
+			if (object[name] === value) {
+				return;
+			}
+		} else if (!isFunction(predicate) || !predicate()) {
+			return;
+		}
 	}
 	if (supportsDescriptors) {
 		origDefineProperty(object, name, {
@@ -4317,7 +4190,7 @@ defineProperties.supportsDescriptors = !!supportsDescriptors;
 
 module.exports = defineProperties;
 
-},{"has-property-descriptors":42,"object-keys":56}],38:[function(require,module,exports){
+},{"has-property-descriptors":41,"object-keys":55}],37:[function(require,module,exports){
 'use strict';
 
 /* eslint no-invalid-this: 1 */
@@ -4371,14 +4244,14 @@ module.exports = function bind(that) {
     return bound;
 };
 
-},{}],39:[function(require,module,exports){
+},{}],38:[function(require,module,exports){
 'use strict';
 
 var implementation = require('./implementation');
 
 module.exports = Function.prototype.bind || implementation;
 
-},{"./implementation":38}],40:[function(require,module,exports){
+},{"./implementation":37}],39:[function(require,module,exports){
 'use strict';
 
 var functionsHaveNames = function functionsHaveNames() {
@@ -4411,7 +4284,7 @@ functionsHaveNames.boundFunctionsHaveNames = function boundFunctionsHaveNames() 
 
 module.exports = functionsHaveNames;
 
-},{}],41:[function(require,module,exports){
+},{}],40:[function(require,module,exports){
 'use strict';
 
 var undefined;
@@ -4476,6 +4349,8 @@ var INTRINSICS = {
 	'%AsyncIteratorPrototype%': needsEval,
 	'%Atomics%': typeof Atomics === 'undefined' ? undefined : Atomics,
 	'%BigInt%': typeof BigInt === 'undefined' ? undefined : BigInt,
+	'%BigInt64Array%': typeof BigInt64Array === 'undefined' ? undefined : BigInt64Array,
+	'%BigUint64Array%': typeof BigUint64Array === 'undefined' ? undefined : BigUint64Array,
 	'%Boolean%': Boolean,
 	'%DataView%': typeof DataView === 'undefined' ? undefined : DataView,
 	'%Date%': Date,
@@ -4530,6 +4405,14 @@ var INTRINSICS = {
 	'%WeakRef%': typeof WeakRef === 'undefined' ? undefined : WeakRef,
 	'%WeakSet%': typeof WeakSet === 'undefined' ? undefined : WeakSet
 };
+
+try {
+	null.error; // eslint-disable-line no-unused-expressions
+} catch (e) {
+	// https://github.com/tc39/proposal-shadowrealm/pull/384#issuecomment-1364264229
+	var errorProto = getProto(getProto(e));
+	INTRINSICS['%Error.prototype%'] = errorProto;
+}
 
 var doEval = function doEval(name) {
 	var value;
@@ -4747,7 +4630,7 @@ module.exports = function GetIntrinsic(name, allowMissing) {
 	return value;
 };
 
-},{"function-bind":39,"has":46,"has-symbols":43}],42:[function(require,module,exports){
+},{"function-bind":38,"has":45,"has-symbols":42}],41:[function(require,module,exports){
 'use strict';
 
 var GetIntrinsic = require('get-intrinsic');
@@ -4782,7 +4665,7 @@ hasPropertyDescriptors.hasArrayLengthDefineBug = function hasArrayLengthDefineBu
 
 module.exports = hasPropertyDescriptors;
 
-},{"get-intrinsic":41}],43:[function(require,module,exports){
+},{"get-intrinsic":40}],42:[function(require,module,exports){
 'use strict';
 
 var origSymbol = typeof Symbol !== 'undefined' && Symbol;
@@ -4797,7 +4680,7 @@ module.exports = function hasNativeSymbols() {
 	return hasSymbolSham();
 };
 
-},{"./shams":44}],44:[function(require,module,exports){
+},{"./shams":43}],43:[function(require,module,exports){
 'use strict';
 
 /* eslint complexity: [2, 18], max-statements: [2, 33] */
@@ -4841,7 +4724,7 @@ module.exports = function hasSymbols() {
 	return true;
 };
 
-},{}],45:[function(require,module,exports){
+},{}],44:[function(require,module,exports){
 'use strict';
 
 var hasSymbols = require('has-symbols/shams');
@@ -4850,14 +4733,14 @@ module.exports = function hasToStringTagShams() {
 	return hasSymbols() && !!Symbol.toStringTag;
 };
 
-},{"has-symbols/shams":44}],46:[function(require,module,exports){
+},{"has-symbols/shams":43}],45:[function(require,module,exports){
 'use strict';
 
 var bind = require('function-bind');
 
 module.exports = bind.call(Function.call, Object.prototype.hasOwnProperty);
 
-},{"function-bind":39}],47:[function(require,module,exports){
+},{"function-bind":38}],46:[function(require,module,exports){
 'use strict';
 
 var hasToStringTag = require('has-tostringtag/shams')();
@@ -4892,7 +4775,7 @@ isStandardArguments.isLegacyArguments = isLegacyArguments; // for tests
 
 module.exports = supportsStandardArguments ? isStandardArguments : isLegacyArguments;
 
-},{"call-bind/callBound":34,"has-tostringtag/shams":45}],48:[function(require,module,exports){
+},{"call-bind/callBound":33,"has-tostringtag/shams":44}],47:[function(require,module,exports){
 'use strict';
 
 var getDay = Date.prototype.getDay;
@@ -4916,7 +4799,7 @@ module.exports = function isDateObject(value) {
 	return hasToStringTag ? tryDateObject(value) : toStr.call(value) === dateClass;
 };
 
-},{"has-tostringtag/shams":45}],49:[function(require,module,exports){
+},{"has-tostringtag/shams":44}],48:[function(require,module,exports){
 'use strict';
 
 var callBound = require('call-bind/callBound');
@@ -4976,7 +4859,7 @@ module.exports = hasToStringTag
 		return $toString(value) === regexClass;
 	};
 
-},{"call-bind/callBound":34,"has-tostringtag/shams":45}],50:[function(require,module,exports){
+},{"call-bind/callBound":33,"has-tostringtag/shams":44}],49:[function(require,module,exports){
 exports = module.exports = stringify
 exports.getSerialize = serializer
 
@@ -5005,7 +4888,7 @@ function serializer(replacer, cycleReplacer) {
   }
 }
 
-},{}],51:[function(require,module,exports){
+},{}],50:[function(require,module,exports){
 'use strict';
 
 var numberIsNaN = function (value) {
@@ -5026,7 +4909,7 @@ module.exports = function is(a, b) {
 };
 
 
-},{}],52:[function(require,module,exports){
+},{}],51:[function(require,module,exports){
 'use strict';
 
 var define = require('define-properties');
@@ -5046,7 +4929,7 @@ define(polyfill, {
 
 module.exports = polyfill;
 
-},{"./implementation":51,"./polyfill":53,"./shim":54,"call-bind":35,"define-properties":37}],53:[function(require,module,exports){
+},{"./implementation":50,"./polyfill":52,"./shim":53,"call-bind":34,"define-properties":36}],52:[function(require,module,exports){
 'use strict';
 
 var implementation = require('./implementation');
@@ -5055,7 +4938,7 @@ module.exports = function getPolyfill() {
 	return typeof Object.is === 'function' ? Object.is : implementation;
 };
 
-},{"./implementation":51}],54:[function(require,module,exports){
+},{"./implementation":50}],53:[function(require,module,exports){
 'use strict';
 
 var getPolyfill = require('./polyfill');
@@ -5071,7 +4954,7 @@ module.exports = function shimObjectIs() {
 	return polyfill;
 };
 
-},{"./polyfill":53,"define-properties":37}],55:[function(require,module,exports){
+},{"./polyfill":52,"define-properties":36}],54:[function(require,module,exports){
 'use strict';
 
 var keysShim;
@@ -5195,7 +5078,7 @@ if (!Object.keys) {
 }
 module.exports = keysShim;
 
-},{"./isArguments":57}],56:[function(require,module,exports){
+},{"./isArguments":56}],55:[function(require,module,exports){
 'use strict';
 
 var slice = Array.prototype.slice;
@@ -5229,7 +5112,7 @@ keysShim.shim = function shimObjectKeys() {
 
 module.exports = keysShim;
 
-},{"./implementation":55,"./isArguments":57}],57:[function(require,module,exports){
+},{"./implementation":54,"./isArguments":56}],56:[function(require,module,exports){
 'use strict';
 
 var toStr = Object.prototype.toString;
@@ -5248,7 +5131,7 @@ module.exports = function isArguments(value) {
 	return isArgs;
 };
 
-},{}],58:[function(require,module,exports){
+},{}],57:[function(require,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -5434,7 +5317,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],59:[function(require,module,exports){
+},{}],58:[function(require,module,exports){
 'use strict';
 
 var functionsHaveConfigurableNames = require('functions-have-names').functionsHaveConfigurableNames();
@@ -5475,7 +5358,7 @@ if (functionsHaveConfigurableNames && Object.defineProperty) {
 	Object.defineProperty(module.exports, 'name', { value: 'get flags' });
 }
 
-},{"functions-have-names":40}],60:[function(require,module,exports){
+},{"functions-have-names":39}],59:[function(require,module,exports){
 'use strict';
 
 var define = require('define-properties');
@@ -5495,7 +5378,7 @@ define(flagsBound, {
 
 module.exports = flagsBound;
 
-},{"./implementation":59,"./polyfill":61,"./shim":62,"call-bind":35,"define-properties":37}],61:[function(require,module,exports){
+},{"./implementation":58,"./polyfill":60,"./shim":61,"call-bind":34,"define-properties":36}],60:[function(require,module,exports){
 'use strict';
 
 var implementation = require('./implementation');
@@ -5533,7 +5416,7 @@ module.exports = function getPolyfill() {
 	return implementation;
 };
 
-},{"./implementation":59,"define-properties":37}],62:[function(require,module,exports){
+},{"./implementation":58,"define-properties":36}],61:[function(require,module,exports){
 'use strict';
 
 var supportsDescriptors = require('define-properties').supportsDescriptors;
@@ -5561,7 +5444,7 @@ module.exports = function shimFlags() {
 	return polyfill;
 };
 
-},{"./polyfill":61,"define-properties":37}],63:[function(require,module,exports){
+},{"./polyfill":60,"define-properties":36}],62:[function(require,module,exports){
 (function (process){(function (){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -5625,7 +5508,7 @@ describe('xhr', () => {
 });
 
 }).call(this)}).call(this,require('_process'))
-},{"../../../../../../lib/agent":1,"../../../../../../lib/agent/parser/json":2,"../../../../../../lib/agent/transform/json":4,"../../../../../../lib/agent/transform/multipart":5,"../../../../../../lib/agent/transport/xhr":6,"../../../../../../lib/cookie/container/memory":9,"../../../../../../lib/response":16,"@quenk/noni/lib/control/monad/future":21,"@quenk/test/lib/assert":33,"_process":58}],64:[function(require,module,exports){
+},{"../../../../../../lib/agent":1,"../../../../../../lib/agent/parser/json":2,"../../../../../../lib/agent/transform/json":4,"../../../../../../lib/agent/transform/multipart":5,"../../../../../../lib/agent/transport/xhr":6,"../../../../../../lib/cookie/container/memory":9,"../../../../../../lib/response":16,"@quenk/noni/lib/control/monad/future":21,"@quenk/test/lib/assert":32,"_process":57}],63:[function(require,module,exports){
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const assert_1 = require("@quenk/test/lib/assert");
@@ -5657,8 +5540,8 @@ describe('browser', () => {
     });
 });
 
-},{"../../../../lib/browser":7,"@quenk/test/lib/assert":33}],65:[function(require,module,exports){
+},{"../../../../lib/browser":7,"@quenk/test/lib/assert":32}],64:[function(require,module,exports){
 require("./browser_test.js");
 require("./agent/transport/xhr_test.js");
 
-},{"./agent/transport/xhr_test.js":63,"./browser_test.js":64}]},{},[65]);
+},{"./agent/transport/xhr_test.js":62,"./browser_test.js":63}]},{},[64]);

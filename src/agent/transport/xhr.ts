@@ -41,12 +41,12 @@ export class XHRTransport<Raw, Res> implements Transport<Raw, Res> {
     send(ctx: Context<Raw>): Future<Response<Res>> {
 
         let { parser, transform } = this;
-        let { host, port, path, method, body,  options, cookies } = ctx;
+        let { host, port, path, method, body, options, cookies } = ctx;
         let xhr = new XMLHttpRequest();
         let portNumer = (port && (port !== 80) && (port !== 443)) ? `:${port}` : '';
         let url = `${host}${portNumer}${path[0] === '/' ? '' : '/'}${path}`;
 
-        return new Run((onError, onSuccess) => {
+        return new Run(() => new Promise((onSuccess, onError) => {
 
             let transBody = undefined;
 
@@ -117,7 +117,7 @@ export class XHRTransport<Raw, Res> implements Transport<Raw, Res> {
 
             return () => xhr.abort();
 
-        });
+        }));
 
     }
 

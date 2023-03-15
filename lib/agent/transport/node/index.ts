@@ -94,7 +94,7 @@ export class NodeHTTPTransport<Raw, Res> implements Transport<Raw, Res> {
         let request = (this.agent instanceof https.Agent) ?
             https.request : http.request;
 
-        return new Run((onError,onSuccess) => {
+        return new Run(()=> new Promise((onSuccess, onError) => {
 
             let req = request(opts, res => {
 
@@ -161,7 +161,7 @@ export class NodeHTTPTransport<Raw, Res> implements Transport<Raw, Res> {
 
             return () => req.abort();
 
-        });
+        }));
 
     }
 
