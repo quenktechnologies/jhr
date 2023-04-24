@@ -1,20 +1,31 @@
-import { Future } from '@quenk/noni/lib/control/monad/future';
+import { Future, pure } from '@quenk/noni/lib/control/monad/future';
+
 import { Context } from '../../request/context';
 import { Response } from '../../response';
 
 /**
- * Plugin allow requests and responses to be modified before transfer.
+ * Plugin allow outgoing requests and incomming responses to be intercepted.
  */
-export interface Plugin<ReqBody, ResParsed> {
+export abstract class Plugin<ReqBody, ResParsed> {
 
     /**
-     * beforeRequest
+     * beforeRequest receives the request context before it is passed to the 
+     * transport.
      */
-    beforeRequest(ctx: Context<ReqBody>): Future<Context<ReqBody>>
+    beforeRequest(ctx: Context<ReqBody>): Future<Context<ReqBody>> {
+
+        return pure(ctx);
+
+    }
 
     /**
-     * afterResponse
+     * afterResponse receives the response from the transport just before it 
+     * is returned to the caller.
      */
-    afterResponse(r: Response<ResParsed>): Future<Response<ResParsed>>
+    afterResponse(res: Response<ResParsed>): Future<Response<ResParsed>> {
+
+        return pure(res);
+
+    }
 
 }
